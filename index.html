@@ -35,13 +35,13 @@
           />
         </div>
         <h1 class="text-2xl font-bold text-slate-800 tracking-tight text-center">استمارة إدخال البيانات</h1>
-        <p class="text-sm text-slate-500 mt-1">يرجى ملء الحقول المطلوبة أدناه بدقة</p>
+        <p class="text-sm text-slate-500 mt-1">اختر طريقة الإرسال المناسبة لك بعد ملء الحقول</p>
       </div>
 
       <!-- Form Starts Here -->
-      <form id="dataForm" class="space-y-6" novalidate>
+      <form id="dataForm" class="space-y-5" novalidate>
         
-        <!-- Full Name (الاسم الثلاثي) - Arabic only, Mandatory -->
+        <!-- Full Name (الاسم الثلاثي) - Arabic only -->
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
             الاسم الثلاثي <span class="text-red-500">*</span>
@@ -84,9 +84,9 @@
           <p id="copiesError" class="text-xs text-red-500 mt-1 hidden">الرجاء إدخال عدد نسخ صحيح (رقم أكبر من 0).</p>
         </div>
 
-        <!-- File Upload (رفع الملفات) - Optional but highly styled -->
+        <!-- File Upload (رفع الملفات) -->
         <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-1.5">تحميل المستند (اختياري)</label>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">تحميل المستند من الجهاز (اختياري للزر الأول)</label>
           <div class="relative border-2 border-dashed border-slate-200 hover:border-[#f19124] rounded-xl bg-white/50 transition-colors duration-200">
             <input
               type="file"
@@ -98,7 +98,7 @@
               <span class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-[#f19124] mb-2">
                 <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
               </span>
-              <span class="text-xs font-semibold text-slate-600" id="fileBtnLabel">اختر ملفاً لرفعه...</span>
+              <span class="text-xs font-semibold text-slate-600" id="fileBtnLabel">اختر ملفاً لرفعه من جهازك...</span>
               <span class="text-[10px] text-slate-400 mt-1" id="fileNameDisplay">لم يتم اختيار أي ملف</span>
             </div>
           </div>
@@ -108,6 +108,328 @@
         <div>
           <div class="flex justify-between items-center mb-1.5">
             <label class="text-sm font-semibold text-slate-700">ملاحظات إضافية (اختياري)</label>
+            <span id="wordCounter" class="text-[10px] text-slate-400 font-medium">0 / 20 كلمة</span>
+          </div>
+          <textarea
+            id="notes"
+            name="الملاحظات"
+            rows="2"
+            placeholder="اكتب أي ملاحظات إضافية باللغة العربية (بحد أقصى 20 كلمة)..."
+            class="w-full p-3 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-sm text-slate-800 resize-none"
+          ></textarea>
+          <p id="notesError" class="text-xs text-red-500 mt-1 hidden">يجب أن تكون الكتابة باللغة العربية فقط ولا تتجاوز 20 كلمة.</p>
+        </div>
+
+        <!-- Submission Feedback Message -->
+        <div id="statusMessage" class="hidden p-3 rounded-xl text-center text-xs font-bold transition-all duration-300"></div>
+
+        <!-- Form Action Buttons Block -->
+        <div class="space-y-3 pt-2">
+          
+          <!-- الطريقة الأولى: رفع مباشر مع المستند -->
+          <button
+            type="button"
+            id="submitDirectBtn"
+            class="w-full py-3 bg-[#0e1d3e] hover:bg-[#152a55] text-white font-bold text-sm rounded-xl shadow-md active:scale-[0.99] transition-all flex items-center justify-center gap-2"
+          >
+            <i class="fa-solid fa-paper-plane text-xs"></i>
+            <span>إرسال مباشر (مع الملف المرفوع أعلاه)</span>
+          </button>
+
+          <!-- الطريقة الثانية: تحويل لواتساب لإرسال الملف من هناك -->
+          <button
+            type="button"
+            id="submitWhatsappBtn"
+            class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-md active:scale-[0.99] transition-all flex items-center justify-center gap-2"
+          >
+            <i class="fa-brands fa-whatsapp text-base"></i>
+            <span>تأكيد وإرسال الملف عبر واتساب</span>
+          </button>
+
+          <!-- زر الإلغاء -->
+          <button
+            type="button"
+            id="cancelBtn"
+            class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-500 font-semibold text-xs rounded-xl transition-all"
+          >
+            إلغاء وتفريغ الحقول
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Script Section for Validations & API Integration -->
+    <script>
+      const form = document.getElementById("dataForm");
+      const submitDirectBtn = document.getElementById("submitDirectBtn");
+      const submitWhatsappBtn = document.getElementById("submitWhatsappBtn");
+      const statusMessage = document.getElementById("statusMessage");
+      const fileInput = document.getElementById("fileInput");
+      const fileNameDisplay = document.getElementById("fileNameDisplay");
+      const fileBtnLabel = document.getElementById("fileBtnLabel");
+      const cancelBtn = document.getElementById("cancelBtn");
+
+      // Validation Element References
+      const fullNameInput = document.getElementById("fullName");
+      const nameError = document.getElementById("nameError");
+      const copiesInput = document.getElementById("copiesCount");
+      const copiesError = document.getElementById("copiesError");
+      const notesInput = document.getElementById("notes");
+      const notesError = document.getElementById("notesError");
+      const wordCounter = document.getElementById("wordCounter");
+
+      // 🛑 ضع رابط سكريبت غوغل (Web App URL) الخاص بك هنا
+      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2_c3ubwJ1VALZHRTr9QnxdxK5GJvpha-k5GxyyJX08a0Xf6VMQ-madmZ5SeVhH2XaOA/exec";
+      
+      // 🛑 ضع رقم الواتساب الخاص بك هنا بمفتاح الدولة وبدون أصفار أو علامة زائد (+)
+      const MY_WHATSAPP_NUMBER = "966500000000";
+
+      // File handling state
+      let base64FileData = null;
+
+      // Handle file selection and convert to Base64
+      fileInput.addEventListener("change", function () {
+        if (this.files && this.files.length > 0) {
+          const file = this.files[0];
+          fileNameDisplay.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+          fileBtnLabel.textContent = "تم اختيار الملف بنجاح";
+          
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const splitData = e.target.result.split(",");
+            base64FileData = {
+              fileName: file.name,
+              mimeType: splitData[0].match(/:(\w.+);/)[1],
+              data: splitData[1]
+            };
+          };
+          reader.readAsDataURL(file);
+        } else {
+          resetFileState();
+        }
+      });
+
+      function resetFileState() {
+        fileInput.value = "";
+        fileNameDisplay.textContent = "لم يتم اختيار أي ملف";
+        fileBtnLabel.textContent = "اختر ملفاً لرفعه من جهازك...";
+        base64FileData = null;
+      }
+
+      // Word count handler
+      notesInput.addEventListener("input", function () {
+        const text = this.value.trim();
+        const words = text ? text.split(/\s+/) : [];
+        const wordCount = words.length;
+        
+        wordCounter.textContent = `${wordCount} / 20 كلمة`;
+        if (wordCount > 20) {
+          wordCounter.classList.add("text-red-500");
+          wordCounter.classList.remove("text-slate-400");
+        } else {
+          wordCounter.classList.remove("text-red-500");
+          wordCounter.classList.add("text-slate-400");
+        }
+        validateNotesField();
+      });
+
+      function isArabicOnly(text) {
+        return /^[\u0600-\u06FF\s]+$/.test(text);
+      }
+
+      function isArabicNotesOnly(text) {
+        if (!text) return true;
+        return /^[\u0600-\u06FF\s0-9\d\.,،؛\?\!\(\)\[\]"'\-\_]+$/.test(text);
+      }
+
+      function validateNameField() {
+        const value = fullNameInput.value.trim();
+        if (!value || !isArabicOnly(value)) {
+          nameError.classList.remove("hidden");
+          fullNameInput.classList.add("border-red-400", "focus:ring-red-500/20");
+          return false;
+        } else {
+          nameError.classList.add("hidden");
+          fullNameInput.classList.remove("border-red-400", "focus:ring-red-500/20");
+          return true;
+        }
+      }
+
+      function validateCopiesField() {
+        const value = parseInt(copiesInput.value, 10);
+        if (isNaN(value) || value <= 0) {
+          copiesError.classList.remove("hidden");
+          copiesInput.classList.add("border-red-400", "focus:ring-red-500/20");
+          return false;
+        } else {
+          copiesError.classList.add("hidden");
+          copiesInput.classList.remove("border-red-400", "focus:ring-red-500/20");
+          return true;
+        }
+      }
+
+      function validateNotesField() {
+        const value = notesInput.value.trim();
+        const words = value ? value.split(/\s+/) : [];
+        const isArabic = isArabicNotesOnly(value);
+        const isValidWordCount = words.length <= 20;
+
+        if (!isArabic || !isValidWordCount) {
+          notesError.classList.remove("hidden");
+          notesInput.classList.add("border-red-400", "focus:ring-red-500/20");
+          return false;
+        } else {
+          notesError.classList.add("hidden");
+          notesInput.classList.remove("border-red-400", "focus:ring-red-500/20");
+          return true;
+        }
+      }
+
+      function validateForm() {
+        return validateNameField() && validateCopiesField() && validateNotesField();
+      }
+
+      function disableActionButtons(disabled) {
+        submitDirectBtn.disabled = disabled;
+        submitWhatsappBtn.disabled = disabled;
+        if(disabled) {
+          submitDirectBtn.classList.add("opacity-50");
+          submitWhatsappBtn.classList.add("opacity-50");
+        } else {
+          submitDirectBtn.classList.remove("opacity-50");
+          submitWhatsappBtn.classList.remove("opacity-50");
+        }
+      }
+
+      function resetUIFeedback() {
+        statusMessage.classList.add("hidden");
+        nameError.classList.add("hidden");
+        copiesError.classList.add("hidden");
+        notesError.classList.add("hidden");
+      }
+
+      // 🔥 [الزر الأول]: إرسال مباشر بالملف المرفوع عبر الموقع
+      submitDirectBtn.addEventListener("click", async function() {
+        if (!validateForm()) {
+          showNotification("يرجى التحقق من صحة البيانات المدخلة أولاً.", "error");
+          return;
+        }
+        
+        if (!base64FileData) {
+          showNotification("يرجى اختيار ملف من الجهاز أولاً للإرسال المباشر، أو استخدم زر الواتساب بالأسفل.", "error");
+          return;
+        }
+
+        disableActionButtons(true);
+        showNotification("جاري إرسال البيانات والملف لغوغل شيت...", "success");
+
+        try {
+          const payload = {
+            "الاسم الثلاثي": fullNameInput.value.trim(),
+            "عدد النسخ": parseInt(copiesInput.value, 10),
+            "الملاحظات": notesInput.value.trim() || "لا يوجد",
+            fileData: base64FileData
+          };
+
+          const response = await fetch(GOOGLE_SCRIPT_URL, {
+            redirect: "follow",
+            method: "POST",
+            body: JSON.stringify(payload),
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+          });
+
+          const result = await response.json();
+
+          if (result.status === "success") {
+            showNotification("تم إرسال طلبك والملف بنجاح إلى النظام! شكراً لك.", "success");
+            form.reset();
+            resetFileState();
+            wordCounter.textContent = "0 / 20 كلمة";
+          } else {
+            throw new Error(result.message || "فشلت عملية الإرسال.");
+          }
+        } catch (error) {
+          showNotification("حدث خطأ أثناء الإرسال: " + error.message, "error");
+        } finally {
+          disableActionButtons(false);
+        }
+      });
+
+      // 🟢 [الزر الثاني]: حفظ البيانات فقط والتحويل لواتساب لإرسال الملف
+      submitWhatsappBtn.addEventListener("click", async function() {
+        if (!validateForm()) {
+          showNotification("يرجى التحقق من صحة البيانات المدخلة أولاً.", "error");
+          return;
+        }
+
+        disableActionButtons(true);
+        showNotification("جاري حفظ بيانات الطلب والتحويل لواتساب...", "success");
+
+        try {
+          const payload = {
+            "الاسم الثلاثي": fullNameInput.value.trim(),
+            "عدد النسخ": parseInt(copiesInput.value, 10),
+            "الملاحظات": notesInput.value.trim() || "لا يوجد",
+            fileData: null // لن نرسل ملف لغوغل شيت لأن العميل سيرسله عبر واتساب
+          };
+
+          // تسجيل حجز الطلب في غوغل شيت أولاً
+          const response = await fetch(GOOGLE_SCRIPT_URL, {
+            redirect: "follow",
+            method: "POST",
+            body: JSON.stringify(payload),
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+          });
+
+          const result = await response.json();
+
+          if (result.status === "success") {
+            showNotification("تم تسجيل الطلب بالنظام! جاري فتح واتساب لتسليم ملفك...", "success");
+
+            const waMessage = `مرحباً، قمت بحجز طلب طباعة عبر الموقع:\n\n` +
+                              `👤 *الاسم:* ${payload["الاسم الثلاثي"]}\n` +
+                              `📄 *عدد النسخ:* ${payload["عدد النسخ"]}\n` +
+                              `📝 *الملاحظات:* ${payload["الملاحظات"]}\n\n` +
+                              `📥 *مرفق أدناه الملف المطلوب طباعته (يرجى إرسال أو تحويل الملف الآن).*`;
+
+            const encodedMessage = encodeURIComponent(waMessage);
+
+            setTimeout(() => {
+              window.open(`https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
+              form.reset();
+              resetFileState();
+              wordCounter.textContent = "0 / 20 كلمة";
+            }, 1500);
+          } else {
+            throw new Error(result.message || "فشلت عملية الحفظ.");
+          }
+        } catch (error) {
+          showNotification("حدث خطأ: " + error.message, "error");
+        } finally {
+          disableActionButtons(false);
+        }
+      });
+
+      cancelBtn.addEventListener("click", function () {
+        form.reset();
+        resetFileState();
+        resetUIFeedback();
+        wordCounter.textContent = "0 / 20 كلمة";
+      });
+
+      function showNotification(msg, type) {
+        statusMessage.textContent = msg;
+        statusMessage.classList.remove("hidden");
+        if (type === "success") {
+          statusMessage.className = "p-3 rounded-xl text-center text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200";
+        } else {
+          statusMessage.className = "p-3 rounded-xl text-center text-xs font-bold bg-red-50 text-red-800 border border-red-200";
+        }
+      }
+    </script>
+  </body>
+  </html>            <label class="text-sm font-semibold text-slate-700">ملاحظات إضافية (اختياري)</label>
             <span id="wordCounter" class="text-[10px] text-slate-400 font-medium">0 / 20 كلمة</span>
           </div>
           <textarea
