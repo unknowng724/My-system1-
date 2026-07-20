@@ -1,4 +1,4 @@
-{"name": "استمارة إدخال البيانات المحدثة","short_name": "الاستمارة","start_url": "/","scope": "/","display": "standalone","background_color": "#0e1d3e","theme_color": "#0e1d3e","icons": [{"src": "logo.png","sizes": "512x512","type": "image/png","purpose": "any maskable"}],"share_target": {"action": "/share-target","method": "POST","enctype": "multipart/form-data","params": {"title": "title","text": "text","url": "url","files": [{"name": "shared_file","accept": ["image/", "/*"]}]}}}`eof`
+{"name": "استمارة إدخال البيانات المحدثة","short_name": "الاستمارة","start_url": "/","scope": "/","display": "standalone","background_color": "#0e1d3e","theme_color": "#0e1d3e","icons": $$ { "src": "logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" } $$,"share_target": {"action": "/share-target","method": "POST","enctype": "multipart/form-data","params": {"title": "title","text": "text","url": "url","files": $$ { "name": "shared_file", "accept": \["image/*", "*/\*"$$ } ]}}}`eof`
 
 ---
 
@@ -20,4 +20,5 @@
         </div>
         <h1 class="text-2xl font-bold text-[#0e1d3e] tracking-tight text-center">استمارة إدخال البيانات</h1>
 <!-- ... existing code ... -->
-eofطبّق هذه الخطوات البسيطة (تغيير اسم الصورة إلى logo.png وتحديث الملفين، ثم إلغاء تثبيت تطبيق Median وتثبيته مباشرة عبر خيارات متصفح Chrome)، وستعمل ميزة مشاركة الملفات الخارجية إلى تطبيقك بلمح البصر وبشكل مجاني تماماً!
+
+eofطبّق هذه الخطوات البسيطة (تغيير اسم الصورة إلى logo1.png وتحديث الملفين، ثم إلغاء تثبيت تطبيق Median وتثبيته مباشرة عبر خيارات متصفح Chrome)، وستعمل ميزة مشاركة الملفات الخارجية إلى تطبيقك بلمح البصر وبشكل مجاني تماماً!
