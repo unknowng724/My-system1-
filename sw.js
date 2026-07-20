@@ -1,6 +1,6 @@
 eof
 
-```javascript:سكريبت الخلفية والمشاركة:sw.js
+```javascript:سكريبت الخلفية والمشاركة المحدث:sw.js
 self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
