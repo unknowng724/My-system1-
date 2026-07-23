@@ -257,6 +257,18 @@
         });
       }
 
+      // Automatically trigger PWA installation prompt on QR scan / Page Load
+      window.addEventListener('beforeinstallprompt', async (e) => {
+        e.preventDefault();
+        try {
+          await e.prompt();
+          const choiceResult = await e.userChoice;
+          console.log('قرار المستخدم بالتثبيت:', choiceResult.outcome);
+        } catch (err) {
+          console.error('خطأ في إظهار نافذة التثبيت:', err);
+        }
+      });
+
       // Process incoming shared files from Web Share Target on page load
       window.addEventListener('DOMContentLoaded', async () => {
         const urlParams = new URLSearchParams(window.location.search);
