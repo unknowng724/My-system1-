@@ -1,38 +1,42 @@
-eof
+// Service Worker - يتعامل مع خاصية مشاركة الملفات (Web Share Target)
 
-```javascript:سكريبت الخلفية والمشاركة المحدث:sw.js
+const CACHE_NAME = "shared-files-cache";
+
 self.addEventListener("install", (event) => {
+  // تفعيل الـ Service Worker فوراً بدون انتظار إغلاق كل التبويبات القديمة
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(clients.claim());
+  event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  if (event.request.method === "POST" && url.pathname === "/share-target") {
-    event.respondWith(
-      (async () => {
-        try {
-          const formData = await event.request.formData();
-          const file = formData.get("shared_file");
+  // نلتقط فقط طلبات POST المرسلة من نظام المشاركة على المسار /share-target/
+  if (event.request.method === "POST" && url.pathname === "/share-target/") {
+    event.respondWith(handleShareTarget(event));
+  }
+});
 
-          if (file) {
-            const cache = await caches.open("shared-files-cache");
-            await cache.put("/shared-file", new Response(file));
-          }
-        } catch (err) {
-          console.error("Error holding shared file in Service Worker:", err);
-        }
-        return Response.redirect("/?shared=true", 303);
-      })()
-    );
-    return;
+async function handleShareTarget(event) {
+  try {
+    const formData = await event.request.formData();
+    const file = formData.get("shared_file");
+
+    if (file && file.size > 0) {
+      const cache = await caches.open(CACHE_NAME);
+      // نخزن الملف مؤقتاً بنفس المفتاح اللي بيقرأه الكود بصفحة index.html
+      await cache.put("/shared-file", new Response(file, {
+        headers: { "Content-Type": file.type || "application/octet-stream" }
+      }));
+    }
+  } catch (err) {
+    console.error("فشل التقاط الملف المشارك:", err);
   }
 
-  event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
-  );
-});
+  // نرجع المستخدم لصفحة التطبيق الرئيسية مع علامة ?shared=true
+  // ليعرف كود index.html أنه في ملف بانتظاره بالـ cache
+  return Response.redirect("/?shared=true", 303);
+}
