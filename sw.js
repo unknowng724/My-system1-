@@ -38,14 +38,13 @@ function saveSharedFileToIDB(fileObj) {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  if (event.request.method === "POST" && url.pathname === "/share-target") {
+  if (event.request.method === "POST" && (url.pathname === "/share-target" || url.pathname.endsWith("/share-target"))) {
     event.respondWith(
       (async () => {
         try {
           const formData = await event.request.formData();
           let sharedFile = null;
 
-          // البحث في جميع حقول الفورم المستلمة للوصول للملف بدقة مهما كان اسمه
           for (const [key, value] of formData.entries()) {
             if (value && typeof value === "object" && (value instanceof Blob || value.name)) {
               sharedFile = value;
@@ -60,14 +59,13 @@ self.addEventListener("fetch", (event) => {
           console.error("Error processing Web Share Target file:", err);
         }
         
-        // التوجيه للواجهة الرئيسية مع إضافة معامل المشاركة
-        return Response.redirect("/?shared=true", 303);
+        // استخدام الرابط المباشر الكامل لمنع التوقف الصامت في أندرويد
+        return Response.redirect(url.origin + "/?shared=true", 303);
       })()
     );
     return;
   }
 
-  // الاستجابة العادية للطلبات
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
   );
