@@ -1,4 +1,4 @@
-// Service Worker - يتعامل مع خاصية مشاركة الملفات (Web Share Target)
+// Service Worker - يتعامل مع خاصية مشاركة الملفات (Web Share Target) والتثبيت
 
 const CACHE_NAME = "shared-files-cache";
 
@@ -17,6 +17,9 @@ self.addEventListener("fetch", (event) => {
   // نلتقط فقط طلبات POST المرسلة من نظام المشاركة على المسار /share-target/
   if (event.request.method === "POST" && url.pathname === "/share-target/") {
     event.respondWith(handleShareTarget(event));
+  } else {
+    // الطلبات العادية لتشغيل الموقع بشكل طبيعي
+    event.respondWith(fetch(event.request));
   }
 });
 
@@ -37,6 +40,5 @@ async function handleShareTarget(event) {
   }
 
   // نرجع المستخدم لصفحة التطبيق الرئيسية مع علامة ?shared=true
-  // ليعرف كود index.html أنه في ملف بانتظاره بالـ cache
   return Response.redirect("/?shared=true", 303);
 }
