@@ -22,14 +22,13 @@
   </head>
   <body class="min-h-screen bg-gradient-to-tr from-slate-100 via-orange-50/40 to-slate-200 flex items-center justify-center p-4 md:p-8">
     
-    <!-- Main glassmorphism card container -->
     <div class="w-full max-w-md bg-white/70 backdrop-blur-md rounded-2xl shadow-xl border border-white/40 p-6 md:p-8 transition-all duration-300">
       
       <div class="flex flex-col items-center mb-6">
         <div class="w-24 h-24 rounded-full bg-white/90 p-2 shadow-md flex items-center justify-center mb-4 border border-slate-100 overflow-hidden">
           <img 
             id="logoDisplay" 
-            src="ChatGPT Image 16 أبريل 2026، 09_52_52 ص.png" 
+            src="logo1.png" 
             alt="الشعار" 
             class="w-full h-full object-contain"
             onerror="this.src='https://placehold.co/150x150/e2e8f0/475569?text=شعار'"
@@ -39,7 +38,6 @@
         <p class="text-sm text-slate-500 mt-1">يرجى ملء الحقول المطلوبة بدقة</p>
       </div>
 
-      <!-- Form Starts Here -->
       <form id="dataForm" class="space-y-5" novalidate>
         
         <!-- Full Name (الاسم الثلاثي) - Arabic only, Mandatory -->
@@ -77,7 +75,7 @@
               name="طباعة كتب"
               class="w-full pl-3 pr-10 py-2.5 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-sm text-slate-800 appearance-none cursor-pointer"
             >
-              <option value="اختر الصف<"اختر الصف</option>
+              <option value="">-- اختر الصف الدراسي إذا كنت ترغب بالطباعة --</option>
               <option value="الصف الأول">الصف الأول</option>
               <option value="الصف الثاني">الصف الثاني</option>
               <option value="الصف الثالث">الصف الثالث</option>
@@ -252,55 +250,92 @@
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
-            .then((reg) => console.log('Service Worker registered:', reg))
+            .then((reg) => console.log('Service Worker registered successfully:', reg))
             .catch((err) => console.error('Service Worker registration failed:', err));
         });
       }
 
-      // Process incoming shared files from Web Share Target on page load
-      window.addEventListener('DOMContentLoaded', async () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('shared') && 'caches' in window) {
-          try {
-            const cache = await caches.open('shared-files-cache');
-            const response = await cache.match('/shared-file');
-            if (response) {
-              const blob = await response.blob();
-              const mimeType = blob.type || 'application/octet-stream';
-              
-              // Reconstruct File object from cache
-              const sharedFile = new File([blob], "shared_file_" + Date.now() + (mimeType.includes('/') ? '.' + mimeType.split('/')[1] : ''), { type: mimeType });
-              
-              // Put the shared file in the correct upload field based on mime type
-              if (mimeType.startsWith('image/')) {
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(sharedFile);
-                tshirtInput.files = dataTransfer.files;
-                
-                // Trigger change event to compress and preview
-                const event = new Event('change');
-                tshirtInput.dispatchEvent(event);
-              } else {
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(sharedFile);
-                fileInput.files = dataTransfer.files;
+      // Read shared files directly from IndexedDB when launched via Share Menu
+      function getSharedFileFromIDB() {
+        return new Promise((resolve) => {
+          const request = indexedDB.open("PWA_Share_DB", 1);
+          request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains("shared_files")) {
+              db.createObjectStore("shared_files");
+            }
+          };
+          request.onsuccess = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains("shared_files")) {
+              return resolve(null);
+            }
+            const tx = db.transaction("shared_files", "readwrite");
+            const store = tx.objectStore("shared_files");
+            const getReq = store.get("pending_shared_file");
 
-                // Trigger change event to set names
-                const event = new Event('change');
-                fileInput.dispatchEvent(event);
+            getReq.onsuccess = () => {
+              const result = getReq.result;
+              if (result) {
+                // Delete file from IDB after reading it to clean memory
+                store.delete("pending_shared_file");
               }
+              resolve(result);
+            };
+            getReq.onerror = () => resolve(null);
+          };
+          request.onerror = () => resolve(null);
+        });
+      }
 
-              // Cleanup cache and URL query parameter to avoid infinite re-population
-              await cache.delete('/shared-file');
+      async function handleSharedFileOnLoad() {
+        try {
+          const sharedData = await getSharedFileFromIDB();
+          if (sharedData && sharedData.blob) {
+            // Reconstruct genuine File object with exact name & type
+            const reconstructedFile = new File([sharedData.blob], sharedData.name, {
+              type: sharedData.type || "application/octet-stream"
+            });
+
+            const mimeType = sharedData.type || "";
+            const isImage = mimeType.startsWith("image/");
+
+            if (isImage) {
+              // Automatically put shared image in T-Shirt Design upload field
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(reconstructedFile);
+              tshirtInput.files = dataTransfer.files;
+
+              // Fire change event to compress and build live preview
+              const event = new Event("change", { bubbles: true });
+              tshirtInput.dispatchEvent(event);
+            } else {
+              // Automatically put shared document in Document upload field
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(reconstructedFile);
+              fileInput.files = dataTransfer.files;
+
+              // Fire change event to set labels and base64
+              const event = new Event("change", { bubbles: true });
+              fileInput.dispatchEvent(event);
+            }
+
+            showNotification("تم استلام الملف المشارك بنجاح ووضعه في الاستمارة!", "success");
+
+            // Clean URL query parameters if present
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has("shared")) {
               window.history.replaceState({}, document.title, "/");
             }
-          } catch (err) {
-            console.error("Failed to read shared file from cache:", err);
           }
+        } catch (err) {
+          console.error("Error retrieving shared file from IndexedDB:", err);
         }
-      });
+      }
 
-      // Client-side instant image compression (Supercharge upload times)
+      window.addEventListener("DOMContentLoaded", handleSharedFileOnLoad);
+
+      // Client-side instant image compression
       async function compressImage(file, maxWidth = 1200, quality = 0.75) {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
@@ -323,7 +358,6 @@
               const ctx = canvas.getContext("2d");
               ctx.drawImage(img, 0, 0, width, height);
               
-              // Export canvas back to optimized low-size data URL
               const compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
               resolve(compressedDataUrl);
             };
@@ -358,9 +392,8 @@
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
           
-          // Verify that selected file is indeed an image
           if (!file.type.startsWith('image/')) {
-            alert('يرجى اختيار ملف صورة فقط لطباعة التيشرت.');
+            showNotification('يرجى اختيار ملف صورة فقط لطباعة التيشرت.', 'error');
             resetTshirtState();
             return;
           }
@@ -369,17 +402,15 @@
           tshirtBtnLabel.textContent = "جاري المعالجة";
 
           try {
-            // Compress image down instantly to run blazing fast on Apps Script
             const compressedDataUrl = await compressImage(file, 1200, 0.75);
             const splitData = compressedDataUrl.split(",");
             
             base64TshirtData = {
-              fileName: file.name.replace(/\.[^/.]+$/, "") + ".jpg", // Force JPG extension
+              fileName: file.name.replace(/\.[^/.]+$/, "") + ".jpg",
               mimeType: "image/jpeg",
               data: splitData[1]
             };
 
-            // Set up real-time live preview window
             tshirtPreview.src = compressedDataUrl;
             tshirtPreviewContainer.classList.remove("hidden");
             tshirtNameDisplay.textContent = `${file.name} (تم تحسين الحجم)`;
@@ -394,13 +425,11 @@
         }
       });
 
-      // Remove current T-shirt image state
       removeTshirtBtn.addEventListener("click", function (e) {
         e.preventDefault();
         resetTshirtState();
       });
 
-      // Reset document upload state variables
       function resetFileState() {
         fileInput.value = "";
         fileNameDisplay.textContent = "لم يتم اختيار أي ملف";
@@ -408,7 +437,6 @@
         base64FileData = null;
       }
 
-      // Reset T-shirt upload state variables
       function resetTshirtState() {
         tshirtInput.value = "";
         tshirtNameDisplay.textContent = "يقبل ملفات الصور فقط";
@@ -418,7 +446,6 @@
         base64TshirtData = null;
       }
 
-      // Notes length counter and Arabic verification
       notesInput.addEventListener("input", function () {
         const text = this.value.trim();
         const words = text ? text.split(/\s+/) : [];
@@ -435,13 +462,11 @@
         validateNotesField();
       });
 
-      // RegExp for validating pure Arabic text
       function isArabicOnly(text) {
         const arabicRegex = /^[\u0600-\u06FF\s]+$/;
         return arabicRegex.test(text);
       }
 
-      // RegExp for notes that accepts Arabic, numbers and punctuations but no Western characters
       function isArabicNotesOnly(text) {
         if (!text) return true;
         const arabicNotesRegex = /^[\u0600-\u06FF\s0-9\d\.,،؛\?\!\(\)\[\]"'\-\_]+$/;
@@ -520,7 +545,6 @@
           return;
         }
 
-        // Toggle load styling on buttons
         submitBtn.disabled = true;
         spinner.classList.remove("hidden");
         submitText.textContent = "جاري إرسال البيانات والملفات...";
@@ -566,7 +590,6 @@
         }
       });
 
-      // Clear all inputs on cancel
       cancelBtn.addEventListener("click", function () {
         form.reset();
         resetFileState();
@@ -575,7 +598,6 @@
         wordCounter.textContent = "0 / 20 كلمة";
       });
 
-      // Display dynamic notification alerts below form
       function showNotification(msg, type) {
         statusMessage.textContent = msg;
         statusMessage.classList.remove("hidden");
