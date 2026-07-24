@@ -38,6 +38,7 @@ function saveSharedFileToIDB(fileObj) {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
+  // استقبال ميزة المشاركة Web Share Target
   if (event.request.method === "POST" && (url.pathname === "/share-target" || url.pathname.endsWith("/share-target"))) {
     event.respondWith(
       (async () => {
