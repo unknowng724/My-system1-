@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet" />
     <!-- Link to PWA Manifest for Web Share Target support -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json" />
     <style>
       body {
         font-family: 'Cairo', sans-serif;
@@ -37,6 +37,18 @@
         </div>
         <h1 class="text-2xl font-bold text-[#0e1d3e] tracking-tight text-center">أدخل بياناتك لتسجيل طباعة ملفاتك</h1>
         <p class="text-sm text-slate-500 mt-1">يرجى ملء الحقول المطلوبة بدقة</p>
+      </div>
+
+      <!-- زر تثبيت التطبيق - يظهر فقط عندما يكون المتصفح جاهزاً للتثبيت -->
+      <div id="installContainer" class="hidden mb-6">
+        <button
+          id="pwaInstallBtn"
+          type="button"
+          class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-emerald-500 animate-pulse"
+        >
+          <i class="fa-solid fa-download text-lg"></i>
+          <span>تثبيت التطبيق على جهازك</span>
+        </button>
       </div>
 
       <!-- Form Starts Here -->
@@ -241,6 +253,11 @@
       const tshirtPreview = document.getElementById("tshirtPreview");
       const removeTshirtBtn = document.getElementById("removeTshirtBtn");
 
+      // PWA Elements
+      const installContainer = document.getElementById("installContainer");
+      const pwaInstallBtn = document.getElementById("pwaInstallBtn");
+      let deferredPrompt = null;
+
       // Deployment Web App URL Link from Apps Script
       const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2_c3ubwJ1VALZHRTr9QnxdxK5GJvpha-k5GxyyJX08a0Xf6VMQ-madmZ5SeVhH2XaOA/exec";
 
@@ -257,16 +274,31 @@
         });
       }
 
-      // Automatically trigger PWA installation prompt on QR scan / Page Load
-      window.addEventListener('beforeinstallprompt', async (e) => {
+      // Capture install prompt event and show install button
+      window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
-        try {
-          await e.prompt();
-          const choiceResult = await e.userChoice;
-          console.log('قرار المستخدم بالتثبيت:', choiceResult.outcome);
-        } catch (err) {
-          console.error('خطأ في إظهار نافذة التثبيت:', err);
-        }
+        deferredPrompt = e;
+        // إظهار زر التثبيت الأخضر للمستخدم
+        installContainer.classList.remove('hidden');
+      });
+
+      // Handle user clicking install button
+      pwaInstallBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('قرار المستخدم بالتثبيت:', outcome);
+        
+        deferredPrompt = null;
+        installContainer.classList.add('hidden');
+      });
+
+      // Hide button if app is successfully installed
+      window.addEventListener('appinstalled', () => {
+        installContainer.classList.add('hidden');
+        deferredPrompt = null;
+        console.log('تم تثبيت التطبيق بنجاح!');
       });
 
       // Process incoming shared files from Web Share Target on page load
