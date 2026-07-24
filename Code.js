@@ -1,8 +1,6 @@
 const DATA_ENTRY_SHEET_NAME = "Sheet1";
 const TIME_STAMP_COLUMN_NAME = "التاريخ والوقت";
-const FOLDER_ID = ""; // Enter your Google Drive Folder ID here, or leave it empty for auto-creation
-const FILE_LINK_COLUMN_NAME = "رابط الملف";
-const UPLOADED_FILE_NAME_COLUMN = "اسم الملف المرفوع";
+const FOLDER_ID = ""; // ينشئ المجلد تلقائياً في Google Drive باسم "مرفوعات الاستمارة"
 
 function doPost(e) {
   try {
@@ -15,20 +13,43 @@ function doPost(e) {
 
     const formData = e.postData.contents ? JSON.parse(e.postData.contents) : {};
 
-    let fileInfo = null;
+    // معالجة ملف المستند العام
+    let docFileInfo = null;
     if (formData.fileData) {
-      fileInfo = saveFile(formData.fileData);
+      docFileInfo = saveFile(formData.fileData);
       delete formData.fileData;
     }
 
+    // معالجة ملف الصور العامة
+    let photoFileInfo = null;
+    if (formData.photoFileData) {
+      photoFileInfo = saveFile(formData.photoFileData);
+      delete formData.photoFileData;
+    }
+
+    // معالجة صورة تصميم التيشرت / الكوب
+    let tshirtFileInfo = null;
+    if (formData.tshirtFileData) {
+      tshirtFileInfo = saveFile(formData.tshirtFileData);
+      delete formData.tshirtFileData;
+    }
+
+    // تجهيز الصف المرفوع
     const rowData = {
       ...formData,
       [TIME_STAMP_COLUMN_NAME]: new Date().toLocaleString("ar-EG"),
     };
 
-    if (fileInfo) {
-      rowData[FILE_LINK_COLUMN_NAME] = fileInfo.url;
-      rowData[UPLOADED_FILE_NAME_COLUMN] = fileInfo.name;
+    if (docFileInfo) {
+      rowData["رابط المستند"] = docFileInfo.url;
+    }
+
+    if (photoFileInfo) {
+      rowData["رابط الصورة المرفوعة"] = photoFileInfo.url;
+    }
+
+    if (tshirtFileInfo) {
+      rowData["رابط تصميم التيشرت/الكوب"] = tshirtFileInfo.url;
     }
 
     appendToGoogleSheet(rowData, sheet);
@@ -59,45 +80,57 @@ function saveFile(fileData) {
     );
     
     let folder = null;
-    
-    if (FOLDER_ID && FOLDER_ID.trim() !== "" && FOLDER_ID !== "YOUR_GOOGLE_DRIVE_FOLDER_ID_HERE") {
+    if (FOLDER_ID && FOLDER_ID.trim() !== "") {
       try {
         folder = DriveApp.getFolderById(FOLDER_ID.trim());
-      } catch (folderError) {
-        console.warn("Specified FOLDER_ID was not found or has no access. Creating fallback folder.");
-      }
+      } catch (e) {}
     }
     
     if (!folder) {
-      const fallbackFolderName = "مرفوعات الاستمارة";
-      const existingFolders = DriveApp.getFoldersByName(fallbackFolderName);
+      const folderName = "مرفوعات الاستمارة";
+      const existingFolders = DriveApp.getFoldersByName(folderName);
       if (existingFolders.hasNext()) {
         folder = existingFolders.next();
       } else {
-        folder = DriveApp.createFolder(fallbackFolderName);
+        folder = DriveApp.createFolder(folderName);
       }
     }
     
     const file = folder.createFile(blob);
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    try {
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    } catch (sharingError) {}
     
     return {
       url: `https://drive.google.com/uc?export=view&id=${file.getId()}`,
       name: fileData.fileName,
     };
   } catch (error) {
-    console.error("File upload process failed:", error);
     throw new Error("Failed to upload file: " + error.toString());
   }
 }
 
 function appendToGoogleSheet(data, sheet) {
-  let headers = sheet.getRange(1, 1, 1, Math.max(1, sheet.getLastColumn())).getValues()[0];
+  const lastCol = sheet.getLastColumn();
+  let headers = [];
+  
+  if (lastCol > 0) {
+    headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  }
 
-  if (headers.length === 0 || headers[0] === "") {
+  headers = headers.map(h => h.toString().trim());
+
+  if (headers.length === 0 || headers.every(h => h === "")) {
     const newHeaders = Object.keys(data);
     sheet.getRange(1, 1, 1, newHeaders.length).setValues([newHeaders]);
     headers = newHeaders;
+  } else {
+    const newKeys = Object.keys(data).filter(key => !headers.includes(key));
+    if (newKeys.length > 0) {
+      const nextCol = headers.length + 1;
+      sheet.getRange(1, nextCol, 1, newKeys.length).setValues([newKeys]);
+      headers = headers.concat(newKeys);
+    }
   }
 
   const rowData = headers.map((header) => data[header] !== undefined ? data[header] : "");
