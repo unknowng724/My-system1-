@@ -18,25 +18,32 @@
       body {
         font-family: 'Cairo', sans-serif;
       }
-      @keyframes marquee {
+      
+      /* حركة الشريط باتجاه اليسار */
+      @keyframes marqueeLeft {
         0% { transform: translateX(100%); }
         100% { transform: translateX(-100%); }
       }
-      .animate-marquee {
+
+      .animate-marquee-left {
         display: inline-block;
         white-space: nowrap;
-        animation: marquee 12s linear infinite;
+        animation: marqueeLeft 22s linear infinite; /* يمكنك زيادة أو تقليل الثواني للتحكم بالسرعة */
+      }
+
+      /* إيقاف الحركة مؤقتاً عند وضع الماوس أو اللمس */
+      .marquee-container:hover .animate-marquee-left {
+        animation-play-state: paused;
       }
     </style>
   </head>
   <body class="min-h-screen bg-gradient-to-tr from-slate-100 via-orange-50/40 to-slate-200 flex flex-col items-center justify-start p-4 md:p-8">
     
-    <!-- 1. شريط إخباري متحرك: صلي على النبي -->
-    <div class="w-full max-w-md bg-[#0e1d3e] text-amber-300 py-2 px-4 rounded-xl shadow-md mb-4 overflow-hidden border border-amber-400/30 flex items-center">
-      <i class="fa-solid fa-[#f19124] fa-star text-xs ml-2"></i>
+    <!-- 1. شريط إخباري متحرك: الصلاة الإبراهيمية باتجاه اليسار وبلون منتقى من زر الإرسال -->
+    <div class="marquee-container w-full max-w-md bg-[#0e1d3e] text-amber-300 py-2 px-4 rounded-xl shadow-md mb-4 overflow-hidden border border-amber-400/30 flex items-center">
       <div class="w-full overflow-hidden relative">
-        <div class="animate-marquee font-bold text-sm text-center">
-          ✨ صلي على النبي ✨
+        <div class="animate-marquee-left font-bold text-xs md:text-sm">
+          ✨ اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ ✨
         </div>
       </div>
     </div>
