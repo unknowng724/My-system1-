@@ -1,72 +1,44 @@
+// Service Worker - يتعامل مع خاصية مشاركة الملفات (Web Share Target) والتثبيت
+
+const CACHE_NAME = "shared-files-cache";
+
 self.addEventListener("install", (event) => {
+  // تفعيل الـ Service Worker فوراً بدون انتظار إغلاق كل التبويبات القديمة
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(clients.claim());
+  event.waitUntil(self.clients.claim());
 });
-
-function saveSharedFileToIDB(fileObj) {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open("PWA_Share_DB", 1);
-    request.onupgradeneeded = (e) => {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains("shared_files")) {
-        db.createObjectStore("shared_files");
-      }
-    };
-    request.onsuccess = (e) => {
-      const db = e.target.result;
-      const tx = db.transaction("shared_files", "readwrite");
-      const store = tx.objectStore("shared_files");
-      
-      const fileData = {
-        blob: fileObj,
-        name: fileObj.name || "shared_file_" + Date.now(),
-        type: fileObj.type || "application/octet-stream",
-        timestamp: Date.now()
-      };
-      
-      store.put(fileData, "pending_shared_file");
-      tx.oncomplete = () => resolve();
-      tx.onerror = (err) => reject(err);
-    };
-    request.onerror = (err) => reject(err);
-  });
-}
 
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  // استقبال ميزة المشاركة Web Share Target
-  if (event.request.method === "POST" && (url.pathname === "/share-target" || url.pathname.endsWith("/share-target"))) {
-    event.respondWith(
-      (async () => {
-        try {
-          const formData = await event.request.formData();
-          let sharedFile = null;
+  // نلتقط فقط طلبات POST المرسلة من نظام المشاركة على المسار /share-target/
+  if (event.request.method === "POST" && url.pathname === "/share-target/") {
+    event.respondWith(handleShareTarget(event));
+  } else {
+    // الطلبات العادية لتشغيل الموقع بشكل طبيعي
+    event.respondWith(fetch(event.request));
+  }
+});
 
-          for (const [key, value] of formData.entries()) {
-            if (value && typeof value === "object" && (value instanceof Blob || value.name)) {
-              sharedFile = value;
-              break;
-            }
-          }
+async function handleShareTarget(event) {
+  try {
+    const formData = await event.request.formData();
+    const file = formData.get("shared_file");
 
-          if (sharedFile) {
-            await saveSharedFileToIDB(sharedFile);
-          }
-        } catch (err) {
-          console.error("Error processing Web Share Target file:", err);
-        }
-        
-        return Response.redirect(url.origin + "/?shared=true", 303);
-      })()
-    );
-    return;
+    if (file && file.size > 0) {
+      const cache = await caches.open(CACHE_NAME);
+      // نخزن الملف مؤقتاً بنفس المفتاح اللي بيقرأه الكود بصفحة index.html
+      await cache.put("/shared-file", new Response(file, {
+        headers: { "Content-Type": file.type || "application/octet-stream" }
+      }));
+    }
+  } catch (err) {
+    console.error("فشل التقاط الملف المشارك:", err);
   }
 
-  event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
-  );
-});
+  // نرجع المستخدم لصفحة التطبيق الرئيسية مع علامة ?shared=true
+  return Response.redirect("/?shared=true", 303);
+}
