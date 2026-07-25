@@ -20,16 +20,17 @@
         font-family: 'Cairo', sans-serif;
       }
       
-      /* حركة الشريط من اليسار إلى اليمين بشكل بطيء وهادئ */
+      /* حركة شريط الصلاة على النبي بشكل سلس ومستمر دون انقطاع */
       @keyframes marqueeRight {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
+        0% { transform: translateX(-50%); }
+        100% { transform: translateX(0%); }
       }
 
       .animate-marquee-right {
-        display: inline-block;
+        display: flex;
+        width: max-content;
         white-space: nowrap;
-        animation: marqueeRight 50s linear infinite; /* سرعة هادئة ومنتظمة */
+        animation: marqueeRight 25s linear infinite;
         will-change: transform;
       }
 
@@ -42,15 +43,22 @@
   </head>
   <body class="min-h-screen bg-gradient-to-tr from-slate-100 via-orange-50/40 to-slate-200 flex flex-col items-center justify-start p-4 md:p-8">
     
-    <!-- 1. شريط الصلاة على النبي: حركة من اليسار لليمين بسرعه هادئة ولون مميز -->
+    <!-- 1. شريط الصلاة على النبي: حركة سلسة ومستمرة -->
     <div class="marquee-container w-full max-w-md bg-gradient-to-r from-[#0e1d3e] via-[#1a3260] to-[#f19124] text-white py-2.5 px-4 rounded-xl shadow-lg shadow-orange-600/10 mb-4 overflow-hidden border border-amber-300/40 flex items-center">
       <div class="w-full overflow-hidden relative flex items-center">
         <div class="animate-marquee-right font-semibold text-xs md:text-sm tracking-wide flex items-center gap-6">
-          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
-          <span class="text-amber-300">✦</span>
-          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
-          <span class="text-amber-300">✦</span>
-          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+          <div class="flex items-center gap-6">
+            <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+            <span class="text-amber-300">✦</span>
+            <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+            <span class="text-amber-300">✦</span>
+          </div>
+          <div class="flex items-center gap-6">
+            <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+            <span class="text-amber-300">✦</span>
+            <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+            <span class="text-amber-300">✦</span>
+          </div>
         </div>
       </div>
     </div>
@@ -476,7 +484,7 @@
       // =========================================================================
       const AIRTABLE_PAT = "patRAeLv5uCORr38T.1fbdac69026d3512d8a7dcd75a07c45073de41bac13b8af2740c808b2a31ba88";
       const AIRTABLE_BASE_ID = "appdzr6ifxsKDNzLJ";
-      const AIRTABLE_TABLE_NAME = "Table 1"; // اسم الجدول الافتراضي في Airtable (يمكن تغييره لاسم جدولك إذا لزم الأمر)
+      const AIRTABLE_TABLE_NAME = "طلبات الطباعة";
 
       let base64FileData = null;
       let base64ImageData = null;
@@ -733,13 +741,13 @@
           if (!nameOk || !copiesOk || !notesOk) isValid = false;
 
           airtableFields = {
-            "الخدمة": "طباعة ملفات",
-            "الاسم الثلاثي": document.getElementById('fullName1').value.trim(),
-            "عدد النسخ": parseInt(document.getElementById('copiesCount1').value, 10),
-            "الملاحظات": document.getElementById('notes1').value.trim(),
-            "رابط المستند": base64FileData || "",
-            "رابط الصورة المرفوعة": base64ImageData || "",
-            "التاريخ والوقت": timestamp
+            "Service": "طباعة ملفات",
+            "FullName": document.getElementById('fullName1').value.trim(),
+            "Copies": parseInt(document.getElementById('copiesCount1').value, 10),
+            "Notes": document.getElementById('notes1').value.trim(),
+            "Document": base64FileData || "",
+            "Image": base64ImageData || "",
+            "Date": timestamp
           };
 
         } else if (currentPage === 'page2') {
@@ -751,12 +759,12 @@
           if (!nameOk || !bookOk || !copiesOk || !notesOk) isValid = false;
 
           airtableFields = {
-            "الخدمة": "طباعة كتب مدرسية",
-            "الاسم الثلاثي": document.getElementById('fullName2').value.trim(),
-            "طباعة كتب": document.getElementById('bookPrint').value,
-            "عدد النسخ": parseInt(document.getElementById('copiesCount2').value, 10),
-            "الملاحظات": document.getElementById('notes2').value.trim(),
-            "التاريخ والوقت": timestamp
+            "Service": "طباعة كتب مدرسية",
+            "FullName": document.getElementById('fullName2').value.trim(),
+            "Book": document.getElementById('bookPrint').value,
+            "Copies": parseInt(document.getElementById('copiesCount2').value, 10),
+            "Notes": document.getElementById('notes2').value.trim(),
+            "Date": timestamp
           };
 
         } else if (currentPage === 'page3') {
@@ -769,11 +777,11 @@
           if (!nameOk || !tshirtOk || !notesOk) isValid = false;
 
           airtableFields = {
-            "الخدمة": "طباعة تيشرت او كوب",
-            "الاسم الثلاثي": document.getElementById('fullName3').value.trim(),
-            "الملاحظات": document.getElementById('notes3').value.trim(),
-            "رابط تصميم التيشرت/الكوب": base64TshirtData || "",
-            "التاريخ والوقت": timestamp
+            "Service": "طباعة تيشرت او كوب",
+            "FullName": document.getElementById('fullName3').value.trim(),
+            "Notes": document.getElementById('notes3').value.trim(),
+            "Design": base64TshirtData || "",
+            "Date": timestamp
           };
         }
 
