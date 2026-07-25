@@ -618,28 +618,73 @@
         statusMessage.textContent = "";
       }
 
-      // دالة الرفع السحابي مع توليد رابط تنزيل مباشر بنقرة واحدة
+      // دالة الرفع السحابي السريعة مع توليد رابط تنزيل مباشر وبدون إعلانات
       async function uploadFileCloud(file) {
         if (!file) return "لا يوجد";
+
+        // 1. الخيار الأول المباشر والدائم (Catbox)
+        try {
+          const formData = new FormData();
+          formData.append("reqtype", "fileupload");
+          formData.append("fileToUpload", file);
+
+          const res = await fetch("https://catbox.moe/user/api.php", {
+            method: "POST",
+            body: formData
+          });
+
+          if (res.ok) {
+            const url = await res.text();
+            if (url && url.trim().startsWith("http")) {
+              return url.trim();
+            }
+          }
+        } catch (e) {
+          console.warn("تعذر الرفع عبر Catbox، جاري تجربة المزود الثاني...", e);
+        }
+
+        // 2. الخيار الثاني المباشر بضغطة زر تنزيل (Pixeldrain)
         try {
           const formData = new FormData();
           formData.append("file", file);
 
-          const res = await fetch("https://tmpfiles.org/api/v1/upload", {
+          const res = await fetch("https://pixeldrain.com/api/file", {
             method: "POST",
             body: formData
           });
 
           if (res.ok) {
             const data = await res.json();
-            if (data.status === "success" && data.data && data.data.url) {
-              // تحويل الرابط إلى رابط تنزيل مباشر وبدون فتح صفحة المعاينة
-              return data.data.url.replace("tmpfiles.org/", "tmpfiles.org/dl/");
+            if (data.success && data.id) {
+              return `https://pixeldrain.com/api/file/${data.id}?download`;
             }
           }
         } catch (e) {
-          console.warn("تعذر الرفع السحابي للملف، سيتم إرسال الاسم بدلاً من ذلك:", e);
+          console.warn("تعذر الرفع عبر Pixeldrain، جاري تجربة المزود الثالث...", e);
         }
+
+        // 3. الخيار الثالث للتحميل المؤقت لـ 72 ساعة (Litterbox)
+        try {
+          const formData = new FormData();
+          formData.append("reqtype", "fileupload");
+          formData.append("time", "72h");
+          formData.append("fileToUpload", file);
+
+          const res = await fetch("https://litterbox.catbox.moe/resources/internals/api.php", {
+            method: "POST",
+            body: formData
+          });
+
+          if (res.ok) {
+            const url = await res.text();
+            if (url && url.trim().startsWith("http")) {
+              return url.trim();
+            }
+          }
+        } catch (e) {
+          console.warn("تعذر الرفع عبر كافة خوادم السحابة، تم التراجع لاسم الملف:", e);
+        }
+
         return file.name;
       }
 
