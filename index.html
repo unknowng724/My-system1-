@@ -490,74 +490,8 @@
       let base64ImageData = null;
       let base64TshirtData = null;
 
-      // Register PWA Service Worker
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((reg) => console.log('Service Worker registered:', reg))
-            .catch((err) => console.error('Service Worker registration failed:', err));
-        });
-      }
-
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installContainer.classList.remove('hidden');
-      });
-
-      pwaInstallBtn.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        installContainer.classList.add('hidden');
-      });
-
-      window.addEventListener('appinstalled', () => {
-        installContainer.classList.add('hidden');
-        deferredPrompt = null;
-      });
-
-      // Handle Shared Files Incoming
-      window.addEventListener('DOMContentLoaded', async () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('shared') && 'caches' in window) {
-          try {
-            const cache = await caches.open('shared-files-cache');
-            const response = await cache.match('/shared-file');
-            if (response) {
-              const blob = await response.blob();
-              const mimeType = blob.type || 'application/octet-stream';
-              const sharedFile = new File([blob], "shared_file_" + Date.now() + (mimeType.includes('/') ? '.' + mimeType.split('/')[1] : ''), { type: mimeType });
-              
-              // Switch automatically to Page 1
-              switchPage('page1');
-
-              if (mimeType.startsWith('image/')) {
-                // Route image to Image Upload Button on Page 1
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(sharedFile);
-                imageFileInput.files = dataTransfer.files;
-                imageFileInput.dispatchEvent(new Event('change'));
-              } else {
-                // Route document to Document Upload Button on Page 1
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(sharedFile);
-                fileInput.files = dataTransfer.files;
-                fileInput.dispatchEvent(new Event('change'));
-              }
-
-              await cache.delete('/shared-file');
-              window.history.replaceState({}, document.title, "/");
-            }
-          } catch (err) {
-            console.error("Failed to read shared file from cache:", err);
-          }
-        }
-      });
-
-      // Compress Images
-      async function compressImage(file, maxWidth = 1200, quality = 0.75) {
+      // Compress Images to fit safely into text fields
+      async function compressImage(file, maxWidth = 800, quality = 0.6) {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.readAsDataURL(file);
@@ -593,7 +527,7 @@
           
           const reader = new FileReader();
           reader.onload = function (e) {
-            base64FileData = e.target.result; // Complete Data URL
+            base64FileData = e.target.result;
           };
           reader.readAsDataURL(file);
         } else {
@@ -614,8 +548,8 @@
           imageBtnLabel.textContent = "جاري المعالجة";
 
           try {
-            const compressed = await compressImage(file, 1200, 0.75);
-            base64ImageData = compressed; // Compressed Data URL
+            const compressed = await compressImage(file, 800, 0.6);
+            base64ImageData = compressed;
             imageNameDisplay.textContent = `${file.name} (تم تحسين الحجم)`;
             imageBtnLabel.textContent = "تم تجهيز الصورة";
           } catch (err) {
@@ -640,7 +574,7 @@
           tshirtBtnLabel.textContent = "جاري المعالجة";
 
           try {
-            const compressedDataUrl = await compressImage(file, 1200, 0.75);
+            const compressedDataUrl = await compressImage(file, 800, 0.6);
             base64TshirtData = compressedDataUrl;
 
             tshirtPreview.src = compressedDataUrl;
@@ -792,11 +726,10 @@
 
         submitBtn.disabled = true;
         spinner.classList.remove("hidden");
-        submitText.textContent = "جاري إرسال البيانات إلى Airtable...";
+        submitText.textContent = "جاري إرسال البيانات...";
         statusMessage.classList.add("hidden");
 
         try {
-          // Send request directly to Airtable REST API
           const airtableEndpoint = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
 
           const response = await fetch(airtableEndpoint, {
@@ -813,15 +746,19 @@
           const result = await response.json();
 
           if (response.ok) {
-            showNotification("تم إرسال البيانات وحفظها بنجاح في قاعدة بيانات Airtable، شكراً لك!", "success");
+            showNotification("تم إرسال البيانات وحفظها بنجاح في Airtable!", "success");
             form.reset();
             resetFileState();
             resetImageState();
             resetTshirtState();
             ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
           } else {
-            const errorMsg = (result.error && result.error.message) ? result.error.message : "فشلت عملية الإرسال إلى Airtable.";
-            throw new Error(errorMsg);
+            const errType = result.error?.type || "";
+            let friendlyError = result.error?.message || "فشلت عملية الإرسال إلى Airtable.";
+            if (errType === "INVALID_PERMISSIONS_OR_MODEL_NOT_FOUND") {
+              friendlyError = "تأكد من صلاحية الـ Token ومنحها وصولاً لقاعدة البيانات " + AIRTABLE_BASE_ID + " والموافقة على إذن data.records:write، وأن اسم الجدول هو 'طلبات الطباعة'.";
+            }
+            throw new Error(friendlyError);
           }
         } catch (error) {
           console.error("Submission error:", error);
