@@ -11,39 +11,46 @@
     <!-- Google Font (Cairo) for premium Arabic typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
     <!-- Link to PWA Manifest for Web Share Target support -->
     <link rel="manifest" href="manifest.json" />
+    
     <style>
       body {
         font-family: 'Cairo', sans-serif;
       }
       
-      /* حركة الشريط باتجاه اليسار */
-      @keyframes marqueeLeft {
-        0% { transform: translateX(100%); }
-        100% { transform: translateX(-100%); }
+      /* حركة الشريط من اليسار إلى اليمين بشكل بطيء وهادئ */
+      @keyframes marqueeRight {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
       }
 
-      .animate-marquee-left {
+      .animate-marquee-right {
         display: inline-block;
         white-space: nowrap;
-        animation: marqueeLeft 22s linear infinite; /* يمكنك زيادة أو تقليل الثواني للتحكم بالسرعة */
+        animation: marqueeRight 50s linear infinite; /* سرعة هادئة ومنتظمة */
+        will-change: transform;
       }
 
-      /* إيقاف الحركة مؤقتاً عند وضع الماوس أو اللمس */
-      .marquee-container:hover .animate-marquee-left {
+      /* إيقاف الحركة مؤقتاً عند التأشير أو اللمس */
+      .marquee-container:hover .animate-marquee-right,
+      .marquee-container:active .animate-marquee-right {
         animation-play-state: paused;
       }
     </style>
   </head>
   <body class="min-h-screen bg-gradient-to-tr from-slate-100 via-orange-50/40 to-slate-200 flex flex-col items-center justify-start p-4 md:p-8">
     
-    <!-- 1. شريط إخباري متحرك: الصلاة الإبراهيمية باتجاه اليسار وبلون منتقى من زر الإرسال -->
-    <div class="marquee-container w-full max-w-md bg-[#0e1d3e] text-amber-300 py-2 px-4 rounded-xl shadow-md mb-4 overflow-hidden border border-amber-400/30 flex items-center">
-      <div class="w-full overflow-hidden relative">
-        <div class="animate-marquee-left font-bold text-xs md:text-sm">
-          ✨ اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ ✨
+    <!-- 1. شريط الصلاة على النبي: حركة من اليسار لليمين بسرعه هادئة ولون مميز -->
+    <div class="marquee-container w-full max-w-md bg-gradient-to-r from-[#0e1d3e] via-[#1a3260] to-[#f19124] text-white py-2.5 px-4 rounded-xl shadow-lg shadow-orange-600/10 mb-4 overflow-hidden border border-amber-300/40 flex items-center">
+      <div class="w-full overflow-hidden relative flex items-center">
+        <div class="animate-marquee-right font-semibold text-xs md:text-sm tracking-wide flex items-center gap-6">
+          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+          <span class="text-amber-300">✦</span>
+          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+          <span class="text-amber-300">✦</span>
+          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
         </div>
       </div>
     </div>
@@ -77,36 +84,36 @@
         </button>
       </div>
 
-      <!-- الأزرار الرئيسية للربط بين الصفحات الـ 3 (تحت بعضها البعض) -->
-      <div class="space-y-2 mb-6">
+      <!-- الأزرار الرئيسية للربط بين الصفحات بتصميم تبويبات عصري وأنيق بدون زوائد -->
+      <div class="grid grid-cols-3 gap-1.5 mb-6 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200/70 shadow-inner">
         <button
           type="button"
           id="tabBtn1"
           onclick="switchPage('page1')"
-          class="w-full py-3 px-4 rounded-xl font-bold text-sm transition-all text-right flex items-center justify-between shadow-sm bg-[#0e1d3e] text-white border-2 border-[#0e1d3e]"
+          class="py-2.5 px-2 rounded-xl font-bold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 bg-[#0e1d3e] text-white shadow-md active:scale-95"
         >
-          <span><i class="fa-solid fa-file-pdf ml-2"></i>هل تريد طباعة ملفات اضغط هنا</span>
-          <i class="fa-solid fa-chevron-left text-xs opacity-70"></i>
+          <i class="fa-solid fa-file-pdf text-sm"></i>
+          <span>طباعة ملفات</span>
         </button>
 
         <button
           type="button"
           id="tabBtn2"
           onclick="switchPage('page2')"
-          class="w-full py-3 px-4 rounded-xl font-bold text-sm transition-all text-right flex items-center justify-between shadow-sm bg-slate-100 text-slate-700 hover:bg-slate-200 border-2 border-transparent"
+          class="py-2.5 px-2 rounded-xl font-semibold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60 bg-transparent shadow-none"
         >
-          <span><i class="fa-solid fa-book-open ml-2"></i>هل تريد طباعة الكتب المدرسية اضغط هنا</span>
-          <i class="fa-solid fa-chevron-left text-xs opacity-70"></i>
+          <i class="fa-solid fa-book-open text-sm"></i>
+          <span>كتب مدرسية</span>
         </button>
 
         <button
           type="button"
           id="tabBtn3"
           onclick="switchPage('page3')"
-          class="w-full py-3 px-4 rounded-xl font-bold text-sm transition-all text-right flex items-center justify-between shadow-sm bg-slate-100 text-slate-700 hover:bg-slate-200 border-2 border-transparent"
+          class="py-2.5 px-2 rounded-xl font-semibold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60 bg-transparent shadow-none"
         >
-          <span><i class="fa-solid fa-shirt ml-2"></i>هل تريد طباعة تيشرت او كوب اضغط هنا</span>
-          <i class="fa-solid fa-chevron-left text-xs opacity-70"></i>
+          <i class="fa-solid fa-shirt text-sm"></i>
+          <span>تيشرت / كوب</span>
         </button>
       </div>
 
@@ -411,7 +418,7 @@
     <script>
       let currentPage = 'page1';
 
-      // Page Switching Logic
+      // Page Switching Logic with sleek tab styling
       function switchPage(pageId) {
         currentPage = pageId;
         ['page1', 'page2', 'page3'].forEach(p => {
@@ -419,22 +426,19 @@
         });
         document.getElementById(pageId).classList.remove('hidden');
 
-        // Style tab buttons
+        // Style tab buttons dynamically
         const btn1 = document.getElementById('tabBtn1');
         const btn2 = document.getElementById('tabBtn2');
         const btn3 = document.getElementById('tabBtn3');
 
-        [btn1, btn2, btn3].forEach(btn => {
-          btn.className = "w-full py-3 px-4 rounded-xl font-bold text-sm transition-all text-right flex items-center justify-between shadow-sm bg-slate-100 text-slate-700 hover:bg-slate-200 border-2 border-transparent";
-        });
+        const inactiveStyle = "py-2.5 px-2 rounded-xl font-semibold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60 bg-transparent shadow-none";
+        const activeStyle = "py-2.5 px-2 rounded-xl font-bold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 bg-[#0e1d3e] text-white shadow-md active:scale-95";
 
-        if (pageId === 'page1') {
-          btn1.className = "w-full py-3 px-4 rounded-xl font-bold text-sm transition-all text-right flex items-center justify-between shadow-sm bg-[#0e1d3e] text-white border-2 border-[#0e1d3e]";
-        } else if (pageId === 'page2') {
-          btn2.className = "w-full py-3 px-4 rounded-xl font-bold text-sm transition-all text-right flex items-center justify-between shadow-sm bg-[#0e1d3e] text-white border-2 border-[#0e1d3e]";
-        } else if (pageId === 'page3') {
-          btn3.className = "w-full py-3 px-4 rounded-xl font-bold text-sm transition-all text-right flex items-center justify-between shadow-sm bg-[#0e1d3e] text-white border-2 border-[#0e1d3e]";
-        }
+        [btn1, btn2, btn3].forEach(btn => btn.className = inactiveStyle);
+
+        if (pageId === 'page1') btn1.className = activeStyle;
+        else if (pageId === 'page2') btn2.className = activeStyle;
+        else if (pageId === 'page3') btn3.className = activeStyle;
         
         resetUIFeedback();
       }
