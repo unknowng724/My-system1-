@@ -166,7 +166,7 @@
 
           <!-- زر تحميل مستند -->
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">زر تحميل مستند (اختياري)</label>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">رفع مستند / PDF / Word / إلخ (اختياري)</label>
             <div class="relative border-2 border-dashed border-slate-200 hover:border-[#f19124] rounded-xl bg-white/50 transition-colors duration-200">
               <input
                 type="file"
@@ -186,7 +186,7 @@
 
           <!-- زر رفع الصور -->
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">زر رفع الصور (اختياري)</label>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">رفع صورة إضافية (اختياري)</label>
             <div class="relative border-2 border-dashed border-slate-200 hover:border-[#0e1d3e] rounded-xl bg-white/50 transition-colors duration-200">
               <input
                 type="file"
@@ -635,8 +635,8 @@
           recordFields = {
             "الخدمة": "طباعة ملفات",
             "الاسم الثلاثي": document.getElementById('fullName1').value.trim(),
-            "عدد النسخ": parseInt(document.getElementById('copiesCount1').value, 10),
-            "الملاحظات": document.getElementById('notes1').value.trim() || "",
+            "عدد النسخ": String(document.getElementById('copiesCount1').value.trim()),
+            "الملاحظات": document.getElementById('notes1').value.trim() || "لا يوجد",
             "اسم المستند": selectedDocFile ? selectedDocFile.name : "لا يوجد",
             "اسم الصورة": selectedImgFile ? selectedImgFile.name : "لا يوجد",
             "طباعة كتب": "لا يوجد",
@@ -655,8 +655,8 @@
             "الخدمة": "طباعة كتب مدرسية",
             "الاسم الثلاثي": document.getElementById('fullName2').value.trim(),
             "طباعة كتب": document.getElementById('bookPrint').value,
-            "عدد النسخ": parseInt(document.getElementById('copiesCount2').value, 10),
-            "الملاحظات": document.getElementById('notes2').value.trim() || "",
+            "عدد النسخ": String(document.getElementById('copiesCount2').value.trim()),
+            "الملاحظات": document.getElementById('notes2').value.trim() || "لا يوجد",
             "اسم المستند": "لا يوجد",
             "اسم الصورة": "لا يوجد",
             "اسم تصميم التيشرت": "لا يوجد"
@@ -674,8 +674,8 @@
           recordFields = {
             "الخدمة": "طباعة تيشرت او كوب",
             "الاسم الثلاثي": document.getElementById('fullName3').value.trim(),
-            "عدد النسخ": 1,
-            "الملاحظات": document.getElementById('notes3').value.trim() || "",
+            "عدد النسخ": "1",
+            "الملاحظات": document.getElementById('notes3').value.trim() || "لا يوجد",
             "اسم تصميم التيشرت": selectedTshirtFile ? selectedTshirtFile.name : "لا يوجد",
             "طباعة كتب": "لا يوجد",
             "اسم المستند": "لا يوجد",
@@ -690,7 +690,7 @@
 
         submitBtn.disabled = true;
         spinner.classList.remove("hidden");
-        submitText.textContent = "جاري إرسال البيانات إلى Airtable...";
+        submitText.textContent = "جاري إرسال البيانات...";
         statusMessage.classList.add("hidden");
 
         try {
@@ -703,7 +703,8 @@
               "Content-Type": "application/json"
             },
             body: JSON.stringify({
-              fields: recordFields
+              fields: recordFields,
+              typecast: true // يتيح لـ Airtable تحويل القيم إلى أنواع الأعمدة المناسبة تلقائياً
             })
           });
 
@@ -717,7 +718,8 @@
             resetTshirtState();
             ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
           } else {
-            throw new Error(result.error?.message || "فشل الاتصال بـ Airtable");
+            const errDetail = result.error?.message || JSON.stringify(result.error);
+            throw new Error(errDetail);
           }
         } catch (error) {
           console.error("Airtable Error:", error);
