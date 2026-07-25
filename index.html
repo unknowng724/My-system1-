@@ -80,7 +80,7 @@
         <p class="text-xs text-slate-500 mt-1">اختر نوع الخدمة التي ترغب بها</p>
       </div>
 
-      <!-- زر تثبيت التطبيق - يظهر فقط عندما يكون المتصفح جاهزاً للتثبيت -->
+      <!-- زر تثبيت التطبيق -->
       <div id="installContainer" class="hidden mb-4">
         <button
           id="pwaInstallBtn"
@@ -92,7 +92,7 @@
         </button>
       </div>
 
-      <!-- الأزرار الرئيسية للربط بين الصفحات بتصميم تبويبات عصري وأنيق بدون زوائد -->
+      <!-- الأزرار الرئيسية للربط بين الصفحات -->
       <div class="grid grid-cols-3 gap-1.5 mb-6 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200/70 shadow-inner">
         <button
           type="button"
@@ -424,9 +424,14 @@
     </div>
 
     <script>
+      // إعدادات Airtable المباشرة
+      const AIRTABLE_PAT = "patRAeLv5uCORr38T.1fbdac69026d3512d8a7dcd75a07c45073de41bac13b8af2740c808b2a31ba88";
+      const AIRTABLE_BASE_ID = "appdzr6ifxsKDNzLJ";
+      const AIRTABLE_TABLE_NAME = "طلبات الطباعة";
+      const AIRTABLE_API_URL = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
+
       let currentPage = 'page1';
 
-      // Page Switching Logic with sleek tab styling
       function switchPage(pageId) {
         currentPage = pageId;
         ['page1', 'page2', 'page3'].forEach(p => {
@@ -434,7 +439,6 @@
         });
         document.getElementById(pageId).classList.remove('hidden');
 
-        // Style tab buttons dynamically
         const btn1 = document.getElementById('tabBtn1');
         const btn2 = document.getElementById('tabBtn2');
         const btn3 = document.getElementById('tabBtn3');
@@ -458,7 +462,6 @@
       const statusMessage = document.getElementById("statusMessage");
       const cancelBtn = document.getElementById("cancelBtn");
 
-      // File Inputs
       const fileInput = document.getElementById("fileInput");
       const fileNameDisplay = document.getElementById("fileNameDisplay");
       const fileBtnLabel = document.getElementById("fileBtnLabel");
@@ -474,23 +477,11 @@
       const tshirtPreview = document.getElementById("tshirtPreview");
       const removeTshirtBtn = document.getElementById("removeTshirtBtn");
 
-      // PWA Elements
-      const installContainer = document.getElementById("installContainer");
-      const pwaInstallBtn = document.getElementById("pwaInstallBtn");
-      let deferredPrompt = null;
-
-      // =========================================================================
-      // Airtable Database Credentials & Integration Parameters
-      // =========================================================================
-      const AIRTABLE_PAT = "patRAeLv5uCORr38T.1fbdac69026d3512d8a7dcd75a07c45073de41bac13b8af2740c808b2a31ba88";
-      const AIRTABLE_BASE_ID = "appdzr6ifxsKDNzLJ";
-      const AIRTABLE_TABLE_NAME = "طلبات الطباعة";
-
-      let base64FileData = null;
+      let docFileName = "";
       let base64ImageData = null;
       let base64TshirtData = null;
 
-      // Compress Images to fit safely into text fields
+      // ضغط الصور لحجم خفيف جداً لتجنب خطأ شبكة Airtable
       async function compressImage(file, maxWidth = 800, quality = 0.6) {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
@@ -518,24 +509,17 @@
         });
       }
 
-      // Page 1: Document Upload Change
       fileInput.addEventListener("change", function () {
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
-          fileNameDisplay.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+          docFileName = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+          fileNameDisplay.textContent = docFileName;
           fileBtnLabel.textContent = "تم اختيار المستند";
-          
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            base64FileData = e.target.result;
-          };
-          reader.readAsDataURL(file);
         } else {
           resetFileState();
         }
       });
 
-      // Page 1: Image Upload Change
       imageFileInput.addEventListener("change", async function () {
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
@@ -548,10 +532,9 @@
           imageBtnLabel.textContent = "جاري المعالجة";
 
           try {
-            const compressed = await compressImage(file, 800, 0.6);
-            base64ImageData = compressed;
-            imageNameDisplay.textContent = `${file.name} (تم تحسين الحجم)`;
-            imageBtnLabel.textContent = "تم تجهيز الصورة";
+            base64ImageData = await compressImage(file, 800, 0.6);
+            imageNameDisplay.textContent = `${file.name} (تم تجهيز الصورة)`;
+            imageBtnLabel.textContent = "تمت المعالجة";
           } catch (err) {
             resetImageState();
           }
@@ -560,7 +543,6 @@
         }
       });
 
-      // Page 3: T-Shirt/Cup Image Upload
       tshirtInput.addEventListener("change", async function () {
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
@@ -574,10 +556,8 @@
           tshirtBtnLabel.textContent = "جاري المعالجة";
 
           try {
-            const compressedDataUrl = await compressImage(file, 800, 0.6);
-            base64TshirtData = compressedDataUrl;
-
-            tshirtPreview.src = compressedDataUrl;
+            base64TshirtData = await compressImage(file, 800, 0.6);
+            tshirtPreview.src = base64TshirtData;
             tshirtPreviewContainer.classList.remove("hidden");
             tshirtNameDisplay.textContent = `${file.name} (جاهز)`;
             tshirtBtnLabel.textContent = "تم تجهيز التصميم";
@@ -598,7 +578,7 @@
         fileInput.value = "";
         fileNameDisplay.textContent = "لم يتم اختيار أي مستند";
         fileBtnLabel.textContent = "اختر مستنداً لرفعه...";
-        base64FileData = null;
+        docFileName = "";
       }
 
       function resetImageState() {
@@ -617,7 +597,6 @@
         base64TshirtData = null;
       }
 
-      // Word Counters & Arabic Checks
       ['1', '2', '3'].forEach(num => {
         const input = document.getElementById(`notes${num}`);
         const counter = document.getElementById(`wordCounter${num}`);
@@ -664,8 +643,7 @@
         e.preventDefault();
 
         let isValid = true;
-        let airtableFields = {};
-        const timestamp = new Date().toLocaleString("ar-EG");
+        let fields = {};
 
         if (currentPage === 'page1') {
           const nameOk = validateField(document.getElementById('fullName1'), document.getElementById('nameError1'), val => val && isArabicOnly(val));
@@ -674,14 +652,13 @@
 
           if (!nameOk || !copiesOk || !notesOk) isValid = false;
 
-          airtableFields = {
+          fields = {
             "Service": "طباعة ملفات",
             "FullName": document.getElementById('fullName1').value.trim(),
             "Copies": parseInt(document.getElementById('copiesCount1').value, 10),
             "Notes": document.getElementById('notes1').value.trim(),
-            "Document": base64FileData || "",
-            "Image": base64ImageData || "",
-            "Date": timestamp
+            "Document": docFileName,
+            "Image": base64ImageData || ""
           };
 
         } else if (currentPage === 'page2') {
@@ -692,13 +669,12 @@
 
           if (!nameOk || !bookOk || !copiesOk || !notesOk) isValid = false;
 
-          airtableFields = {
+          fields = {
             "Service": "طباعة كتب مدرسية",
             "FullName": document.getElementById('fullName2').value.trim(),
             "Book": document.getElementById('bookPrint').value,
             "Copies": parseInt(document.getElementById('copiesCount2').value, 10),
-            "Notes": document.getElementById('notes2').value.trim(),
-            "Date": timestamp
+            "Notes": document.getElementById('notes2').value.trim()
           };
 
         } else if (currentPage === 'page3') {
@@ -710,12 +686,11 @@
 
           if (!nameOk || !tshirtOk || !notesOk) isValid = false;
 
-          airtableFields = {
+          fields = {
             "Service": "طباعة تيشرت او كوب",
             "FullName": document.getElementById('fullName3').value.trim(),
             "Notes": document.getElementById('notes3').value.trim(),
-            "Design": base64TshirtData || "",
-            "Date": timestamp
+            "Design": base64TshirtData || ""
           };
         }
 
@@ -724,41 +699,44 @@
           return;
         }
 
+        fields["Date"] = new Date().toLocaleString("ar-EG");
+
         submitBtn.disabled = true;
         spinner.classList.remove("hidden");
         submitText.textContent = "جاري إرسال البيانات...";
         statusMessage.classList.add("hidden");
 
-        try {
-          const airtableEndpoint = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
+        const airtablePayload = {
+          records: [
+            {
+              fields: fields
+            }
+          ],
+          typecast: true
+        };
 
-          const response = await fetch(airtableEndpoint, {
+        try {
+          const response = await fetch(AIRTABLE_API_URL, {
             method: "POST",
             headers: {
               "Authorization": `Bearer ${AIRTABLE_PAT}`,
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-              fields: airtableFields
-            })
+            body: JSON.stringify(airtablePayload)
           });
 
           const result = await response.json();
 
-          if (response.ok) {
-            showNotification("تم إرسال البيانات وحفظها بنجاح في Airtable!", "success");
+          if (response.ok && result.records) {
+            showNotification("تم إرسال البيانات بنجاح إلى قاعدة البيانات، شكراً لك!", "success");
             form.reset();
             resetFileState();
             resetImageState();
             resetTshirtState();
             ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
           } else {
-            const errType = result.error?.type || "";
-            let friendlyError = result.error?.message || "فشلت عملية الإرسال إلى Airtable.";
-            if (errType === "INVALID_PERMISSIONS_OR_MODEL_NOT_FOUND") {
-              friendlyError = "تأكد من صلاحية الـ Token ومنحها وصولاً لقاعدة البيانات " + AIRTABLE_BASE_ID + " والموافقة على إذن data.records:write، وأن اسم الجدول هو 'طلبات الطباعة'.";
-            }
-            throw new Error(friendlyError);
+            const errDetail = result.error ? (result.error.message || result.error) : "فشلت عملية الإرسال.";
+            throw new Error(errDetail);
           }
         } catch (error) {
           console.error("Submission error:", error);
