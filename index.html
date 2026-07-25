@@ -618,12 +618,36 @@
         statusMessage.textContent = "";
       }
 
+      // دالة الرفع السحابي السريع للملفات لتوليد روابط مباشرة
+      async function uploadFileCloud(file) {
+        if (!file) return "لا يوجد";
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const res = await fetch("https://tmpfiles.org/api/v1/upload", {
+            method: "POST",
+            body: formData
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.status === "success" && data.data && data.data.url) {
+              // تحويل الرابط إلى رابط تنزيل مباشر في Airtable
+              return data.data.url.replace("tmpfiles.org/", "tmpfiles.org/dl/");
+            }
+          }
+        } catch (e) {
+          console.warn("تعذر الرفع السحابي للملف، سيتم إرسال الاسم بدلاً من ذلك:", e);
+        }
+        return file.name; // في حال تعثر الرفع السحابي، يتم إرسال اسم الملف
+      }
+
       // Submit Form Handler
       form.addEventListener("submit", async function (e) {
         e.preventDefault();
 
         let isValid = true;
-        let recordFields = {};
 
         if (currentPage === 'page1') {
           const nameOk = validateField(document.getElementById('fullName1'), document.getElementById('nameError1'), val => val && isArabicOnly(val));
@@ -631,17 +655,6 @@
           const notesOk = validateField(document.getElementById('notes1'), document.getElementById('notesError1'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
 
           if (!nameOk || !copiesOk || !notesOk) isValid = false;
-
-          recordFields = {
-            "الخدمة": "طباعة ملفات",
-            "الاسم الثلاثي": document.getElementById('fullName1').value.trim(),
-            "عدد النسخ": String(document.getElementById('copiesCount1').value.trim()),
-            "الملاحظات": document.getElementById('notes1').value.trim() || "لا يوجد",
-            "اسم المستند": selectedDocFile ? selectedDocFile.name : "لا يوجد",
-            "اسم الصورة": selectedImgFile ? selectedImgFile.name : "لا يوجد",
-            "طباعة كتب": "لا يوجد",
-            "اسم تصميم التيشرت": "لا يوجد"
-          };
 
         } else if (currentPage === 'page2') {
           const nameOk = validateField(document.getElementById('fullName2'), document.getElementById('nameError2'), val => val && isArabicOnly(val));
@@ -651,17 +664,6 @@
 
           if (!nameOk || !bookOk || !copiesOk || !notesOk) isValid = false;
 
-          recordFields = {
-            "الخدمة": "طباعة كتب مدرسية",
-            "الاسم الثلاثي": document.getElementById('fullName2').value.trim(),
-            "طباعة كتب": document.getElementById('bookPrint').value,
-            "عدد النسخ": String(document.getElementById('copiesCount2').value.trim()),
-            "الملاحظات": document.getElementById('notes2').value.trim() || "لا يوجد",
-            "اسم المستند": "لا يوجد",
-            "اسم الصورة": "لا يوجد",
-            "اسم تصميم التيشرت": "لا يوجد"
-          };
-
         } else if (currentPage === 'page3') {
           const nameOk = validateField(document.getElementById('fullName3'), document.getElementById('nameError3'), val => val && isArabicOnly(val));
           const tshirtOk = selectedTshirtFile !== null;
@@ -670,17 +672,6 @@
           const notesOk = validateField(document.getElementById('notes3'), document.getElementById('notesError3'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
 
           if (!nameOk || !tshirtOk || !notesOk) isValid = false;
-
-          recordFields = {
-            "الخدمة": "طباعة تيشرت او كوب",
-            "الاسم الثلاثي": document.getElementById('fullName3').value.trim(),
-            "عدد النسخ": "1",
-            "الملاحظات": document.getElementById('notes3').value.trim() || "لا يوجد",
-            "اسم تصميم التيشرت": selectedTshirtFile ? selectedTshirtFile.name : "لا يوجد",
-            "طباعة كتب": "لا يوجد",
-            "اسم المستند": "لا يوجد",
-            "اسم الصورة": "لا يوجد"
-          };
         }
 
         if (!isValid) {
@@ -690,10 +681,57 @@
 
         submitBtn.disabled = true;
         spinner.classList.remove("hidden");
-        submitText.textContent = "جاري إرسال البيانات...";
+        submitText.textContent = "جاري رفع الملفات وحفظ الطلب...";
         statusMessage.classList.add("hidden");
 
         try {
+          let docUrl = "لا يوجد";
+          let imgUrl = "لا يوجد";
+          let tshirtUrl = "لا يوجد";
+          let recordFields = {};
+
+          if (currentPage === 'page1') {
+            if (selectedDocFile) docUrl = await uploadFileCloud(selectedDocFile);
+            if (selectedImgFile) imgUrl = await uploadFileCloud(selectedImgFile);
+
+            recordFields = {
+              "الخدمة": "طباعة ملفات",
+              "الاسم الثلاثي": document.getElementById('fullName1').value.trim(),
+              "عدد النسخ": String(document.getElementById('copiesCount1').value.trim()),
+              "الملاحظات": document.getElementById('notes1').value.trim() || "لا يوجد",
+              "اسم المستند": docUrl,
+              "اسم الصورة": imgUrl,
+              "طباعة كتب": "لا يوجد",
+              "اسم تصميم التيشرت": "لا يوجد"
+            };
+
+          } else if (currentPage === 'page2') {
+            recordFields = {
+              "الخدمة": "طباعة كتب مدرسية",
+              "الاسم الثلاثي": document.getElementById('fullName2').value.trim(),
+              "طباعة كتب": document.getElementById('bookPrint').value,
+              "عدد النسخ": String(document.getElementById('copiesCount2').value.trim()),
+              "الملاحظات": document.getElementById('notes2').value.trim() || "لا يوجد",
+              "اسم المستند": "لا يوجد",
+              "اسم الصورة": "لا يوجد",
+              "اسم تصميم التيشرت": "لا يوجد"
+            };
+
+          } else if (currentPage === 'page3') {
+            if (selectedTshirtFile) tshirtUrl = await uploadFileCloud(selectedTshirtFile);
+
+            recordFields = {
+              "الخدمة": "طباعة تيشرت او كوب",
+              "الاسم الثلاثي": document.getElementById('fullName3').value.trim(),
+              "عدد النسخ": "1",
+              "الملاحظات": document.getElementById('notes3').value.trim() || "لا يوجد",
+              "اسم تصميم التيشرت": tshirtUrl,
+              "طباعة كتب": "لا يوجد",
+              "اسم المستند": "لا يوجد",
+              "اسم الصورة": "لا يوجد"
+            };
+          }
+
           const airtableEndpoint = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
 
           const response = await fetch(airtableEndpoint, {
@@ -704,14 +742,14 @@
             },
             body: JSON.stringify({
               fields: recordFields,
-              typecast: true // يتيح لـ Airtable تحويل القيم إلى أنواع الأعمدة المناسبة تلقائياً
+              typecast: true
             })
           });
 
           const result = await response.json();
 
           if (response.ok) {
-            showNotification("تم إرسال الطلب وحفظه بنجاح في قاعدة البيانات (Airtable)!", "success");
+            showNotification("تم إرسال الطلب ورفع الملفات بنجاح إلى جدول Airtable!", "success");
             form.reset();
             resetFileState();
             resetImageState();
