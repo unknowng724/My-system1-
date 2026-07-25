@@ -618,7 +618,7 @@
         statusMessage.textContent = "";
       }
 
-      // دالة الرفع السحابي السريع للملفات لتوليد روابط مباشرة
+      // دالة الرفع السحابي مع توليد رابط تنزيل مباشر بنقرة واحدة
       async function uploadFileCloud(file) {
         if (!file) return "لا يوجد";
         try {
@@ -633,14 +633,14 @@
           if (res.ok) {
             const data = await res.json();
             if (data.status === "success" && data.data && data.data.url) {
-              // تحويل الرابط إلى رابط تنزيل مباشر في Airtable
+              // تحويل الرابط إلى رابط تنزيل مباشر وبدون فتح صفحة المعاينة
               return data.data.url.replace("tmpfiles.org/", "tmpfiles.org/dl/");
             }
           }
         } catch (e) {
           console.warn("تعذر الرفع السحابي للملف، سيتم إرسال الاسم بدلاً من ذلك:", e);
         }
-        return file.name; // في حال تعثر الرفع السحابي، يتم إرسال اسم الملف
+        return file.name;
       }
 
       // Submit Form Handler
