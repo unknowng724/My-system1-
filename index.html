@@ -3,24 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>مرحبا في تطبيق مكتبتي</title>
-    <!-- Tailwind CSS for modern responsive styling -->
+    <title>تطبيق مكتبتي - خدمات الطباعة</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome for sleek icons -->
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <!-- Google Font (Cairo) for premium Arabic typography -->
+    <!-- Google Font (Cairo) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
-    <!-- Link to PWA Manifest for Web Share Target support -->
     <link rel="manifest" href="manifest.json" />
     
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
       body {
         font-family: 'Cairo', sans-serif;
       }
       
-      /* حركة شريط الصلاة على النبي بشكل سلس ومستمر دون انقطاع */
       @keyframes marqueeRight {
         0% { transform: translateX(-50%); }
         100% { transform: translateX(0%); }
@@ -34,7 +35,6 @@
         will-change: transform;
       }
 
-      /* إيقاف الحركة مؤقتاً عند التأشير أو اللمس */
       .marquee-container:hover .animate-marquee-right,
       .marquee-container:active .animate-marquee-right {
         animation-play-state: paused;
@@ -43,7 +43,7 @@
   </head>
   <body class="min-h-screen bg-gradient-to-tr from-slate-100 via-orange-50/40 to-slate-200 flex flex-col items-center justify-start p-4 md:p-8">
     
-    <!-- 1. شريط الصلاة على النبي: حركة سلسة ومستمرة -->
+    <!-- شريط الصلاة على النبي -->
     <div class="marquee-container w-full max-w-md bg-gradient-to-r from-[#0e1d3e] via-[#1a3260] to-[#f19124] text-white py-2.5 px-4 rounded-xl shadow-lg shadow-orange-600/10 mb-4 overflow-hidden border border-amber-300/40 flex items-center">
       <div class="w-full overflow-hidden relative flex items-center">
         <div class="animate-marquee-right font-semibold text-xs md:text-sm tracking-wide flex items-center gap-6">
@@ -63,7 +63,7 @@
       </div>
     </div>
 
-    <!-- Main glassmorphism card container -->
+    <!-- Main Card -->
     <div class="w-full max-w-md bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/40 p-5 md:p-7 transition-all duration-300">
       
       <div class="flex flex-col items-center mb-5">
@@ -80,19 +80,7 @@
         <p class="text-xs text-slate-500 mt-1">اختر نوع الخدمة التي ترغب بها</p>
       </div>
 
-      <!-- زر تثبيت التطبيق -->
-      <div id="installContainer" class="hidden mb-4">
-        <button
-          id="pwaInstallBtn"
-          type="button"
-          class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-emerald-500 animate-pulse"
-        >
-          <i class="fa-solid fa-download text-sm"></i>
-          <span>تثبيت التطبيق على جهازك</span>
-        </button>
-      </div>
-
-      <!-- الأزرار الرئيسية للربط بين الصفحات -->
+      <!-- تبويب الخدمات -->
       <div class="grid grid-cols-3 gap-1.5 mb-6 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200/70 shadow-inner">
         <button
           type="button"
@@ -134,7 +122,6 @@
             📄 نموذج طلب طباعة الملفات والمستندات
           </div>
 
-          <!-- الاسم الثلاثي -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
               الاسم الثلاثي <span class="text-red-500">*</span>
@@ -153,7 +140,6 @@
             <p id="nameError1" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
           </div>
 
-          <!-- عدد النسخ -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
               عدد النسخ <span class="text-red-500">*</span>
@@ -173,15 +159,13 @@
             <p id="copiesError1" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال عدد نسخ صحيح (رقم أكبر من 0).</p>
           </div>
 
-          <!-- زر تحميل مستند -->
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">زر تحميل مستند (اختياري)</label>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">رفع مستند (PDF / Word / إلخ)</label>
             <div class="relative border-2 border-dashed border-slate-200 hover:border-[#f19124] rounded-xl bg-white/50 transition-colors duration-200">
               <input
                 type="file"
                 id="fileInput"
                 class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                accept="*/*"
               />
               <div class="p-2.5 flex flex-col items-center justify-center text-center">
                 <span class="w-7 h-7 rounded-full bg-orange-50 flex items-center justify-center text-[#f19124] mb-1">
@@ -193,9 +177,8 @@
             </div>
           </div>
 
-          <!-- زر رفع الصور -->
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">زر رفع الصور (اختياري)</label>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">رفع صورة إضافية (اختياري)</label>
             <div class="relative border-2 border-dashed border-slate-200 hover:border-[#0e1d3e] rounded-xl bg-white/50 transition-colors duration-200">
               <input
                 type="file"
@@ -213,7 +196,6 @@
             </div>
           </div>
 
-          <!-- ملاحظات -->
           <div>
             <div class="flex justify-between items-center mb-1">
               <label class="text-xs font-semibold text-slate-700">إضافة ملاحظات (اختياري)</label>
@@ -235,7 +217,6 @@
             📚 نموذج طلب طباعة الكتب المدرسية
           </div>
 
-          <!-- الاسم الثلاثي -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
               الاسم الثلاثي <span class="text-red-500">*</span>
@@ -254,10 +235,9 @@
             <p id="nameError2" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
           </div>
 
-          <!-- اختر الكتب التي تريد طباعتها -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
-              اختر الكتب التي تريد طباعتها <span class="text-red-500">*</span>
+              اختر الصف الدراسي <span class="text-red-500">*</span>
             </label>
             <div class="relative">
               <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
@@ -267,7 +247,7 @@
                 id="bookPrint"
                 class="w-full pl-3 pr-9 py-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800 appearance-none cursor-pointer"
               >
-                <option value="">-- اختر الصف الدراسي والمادة المطلوب طباعتها --</option>
+                <option value="">-- اختر الصف الدراسي --</option>
                 <option value="الصف الأول">الصف الأول</option>
                 <option value="الصف الثاني">الصف الثاني</option>
                 <option value="الصف الثالث">الصف الثالث</option>
@@ -281,14 +261,10 @@
                 <option value="الصف الحادي عشر">الصف الحادي عشر</option>
                 <option value="البكالوريا">البكالوريا</option>
               </select>
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-                <i class="fa-solid fa-chevron-down text-[10px]"></i>
-              </span>
             </div>
-            <p id="bookError" class="text-[10px] text-red-500 mt-1 hidden">الرجاء اختيار الصف/الكتب المراد طباعتها.</p>
+            <p id="bookError" class="text-[10px] text-red-500 mt-1 hidden">الرجاء اختيار الصف الدراسي المراد طباعته.</p>
           </div>
 
-          <!-- عدد النسخ -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
               عدد النسخ <span class="text-red-500">*</span>
@@ -308,7 +284,6 @@
             <p id="copiesError2" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال عدد نسخ صحيح (رقم أكبر من 0).</p>
           </div>
 
-          <!-- ملاحظات -->
           <div>
             <div class="flex justify-between items-center mb-1">
               <label class="text-xs font-semibold text-slate-700">الملاحظات (اختياري)</label>
@@ -324,13 +299,12 @@
           </div>
         </div>
 
-        <!-- PAGE 3: طباعة تيشرت او كوب -->
+        <!-- PAGE 3: طباعة تيشرت أو كوب -->
         <div id="page3" class="space-y-4 hidden">
           <div class="bg-purple-50/50 p-3 rounded-xl border border-purple-100 text-xs font-semibold text-purple-800 mb-2">
             👕☕ نموذج طلب طباعة تيشرت أو كوب
           </div>
 
-          <!-- الاسم الثلاثي -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
               الاسم الثلاثي <span class="text-red-500">*</span>
@@ -349,10 +323,9 @@
             <p id="nameError3" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
           </div>
 
-          <!-- زر تحميل الصورة للطباعة (صور فقط) -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
-              تحميل الصورة التي تريد طباعتها <span class="text-red-500">*</span>
+              تحميل صورة التصميم <span class="text-red-500">*</span>
             </label>
             <div class="relative border-2 border-dashed border-slate-200 hover:border-[#0e1d3e] rounded-xl bg-white/50 transition-colors duration-200">
               <input
@@ -366,23 +339,12 @@
                   <i class="fa-solid fa-image text-xs"></i>
                 </span>
                 <span class="text-xs font-semibold text-slate-600" id="tshirtBtnLabel">اختر صورة التصميم...</span>
-                <span class="text-[10px] text-slate-400 mt-0.5" id="tshirtNameDisplay">لا يقبل إلا الصور فقط</span>
+                <span class="text-[10px] text-slate-400 mt-0.5" id="tshirtNameDisplay">يقبل الصور فقط</span>
               </div>
             </div>
             <p id="tshirtError" class="text-[10px] text-red-500 mt-1 hidden">يرجى رفع صورة التصميم المطلوبة.</p>
-
-            <!-- معاينة الصورة -->
-            <div id="tshirtPreviewContainer" class="hidden mt-2 flex justify-center">
-              <div class="relative w-16 h-16 rounded-lg border border-slate-200 overflow-hidden bg-white shadow-sm">
-                <img id="tshirtPreview" class="w-full h-full object-cover" src="" alt="Preview" />
-                <button type="button" id="removeTshirtBtn" class="absolute top-0.5 left-0.5 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center hover:bg-red-600 transition-colors">
-                  <i class="fa-solid fa-xmark text-[8px]"></i>
-                </button>
-              </div>
-            </div>
           </div>
 
-          <!-- الملاحظات -->
           <div>
             <div class="flex justify-between items-center mb-1">
               <label class="text-xs font-semibold text-slate-700">الملاحظات (اختياري)</label>
@@ -398,10 +360,10 @@
           </div>
         </div>
 
-        <!-- Submission Feedback Message -->
+        <!-- Status Message -->
         <div id="statusMessage" class="hidden p-2.5 rounded-xl text-center text-xs font-bold transition-all duration-300"></div>
 
-        <!-- Form Action Buttons -->
+        <!-- Submit Buttons -->
         <div class="flex items-center gap-2 pt-2">
           <button
             type="submit"
@@ -424,19 +386,20 @@
     </div>
 
     <script>
-      // إعدادات Airtable المباشرة
-      const AIRTABLE_PAT = "patRAeLv5uCORr38T.1fbdac69026d3512d8a7dcd75a07c45073de41bac13b8af2740c808b2a31ba88";
-      const AIRTABLE_BASE_ID = "appdzr6ifxsKDNzLJ";
-      const AIRTABLE_TABLE_NAME = "طلبات الطباعة";
-      const AIRTABLE_API_URL = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
+      // ========================================================
+      // 📌 إعدادات Supabase الخاصة بـ "مكتبتي"
+      // ========================================================
+      const SUPABASE_URL = "https://vpxjyttktkhfowcxjlrs.supabase.co";
+      const SUPABASE_ANON_KEY = "sb_publishable_Rg26eRqPcWgEEly-YbGRJg_77VUqCoM";
+      const BUCKET_NAME = "my library"; // اسم الـ Bucket الخاص بك
+
+      const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       let currentPage = 'page1';
 
       function switchPage(pageId) {
         currentPage = pageId;
-        ['page1', 'page2', 'page3'].forEach(p => {
-          document.getElementById(p).classList.add('hidden');
-        });
+        ['page1', 'page2', 'page3'].forEach(p => document.getElementById(p).classList.add('hidden'));
         document.getElementById(pageId).classList.remove('hidden');
 
         const btn1 = document.getElementById('tabBtn1');
@@ -462,6 +425,7 @@
       const statusMessage = document.getElementById("statusMessage");
       const cancelBtn = document.getElementById("cancelBtn");
 
+      // عناصر رفع الملفات
       const fileInput = document.getElementById("fileInput");
       const fileNameDisplay = document.getElementById("fileNameDisplay");
       const fileBtnLabel = document.getElementById("fileBtnLabel");
@@ -473,130 +437,38 @@
       const tshirtInput = document.getElementById("tshirtInput");
       const tshirtNameDisplay = document.getElementById("tshirtNameDisplay");
       const tshirtBtnLabel = document.getElementById("tshirtBtnLabel");
-      const tshirtPreviewContainer = document.getElementById("tshirtPreviewContainer");
-      const tshirtPreview = document.getElementById("tshirtPreview");
-      const removeTshirtBtn = document.getElementById("removeTshirtBtn");
-
-      let docFileName = "";
-      let base64ImageData = null;
-      let base64TshirtData = null;
-
-      // ضغط الصور لحجم خفيف جداً لتجنب خطأ شبكة Airtable
-      async function compressImage(file, maxWidth = 800, quality = 0.6) {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(file);
-          reader.onload = (event) => {
-            const img = new Image();
-            img.src = event.target.result;
-            img.onload = () => {
-              const canvas = document.createElement("canvas");
-              let width = img.width;
-              let height = img.height;
-              if (width > maxWidth) {
-                height = Math.round((height * maxWidth) / width);
-                width = maxWidth;
-              }
-              canvas.width = width;
-              canvas.height = height;
-              const ctx = canvas.getContext("2d");
-              ctx.drawImage(img, 0, 0, width, height);
-              resolve(canvas.toDataURL("image/jpeg", quality));
-            };
-            img.onerror = (err) => reject(err);
-          };
-          reader.onerror = (err) => reject(err);
-        });
-      }
 
       fileInput.addEventListener("change", function () {
-        if (this.files && this.files.length > 0) {
-          const file = this.files[0];
-          docFileName = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-          fileNameDisplay.textContent = docFileName;
+        if (this.files.length > 0) {
+          fileNameDisplay.textContent = this.files[0].name;
           fileBtnLabel.textContent = "تم اختيار المستند";
         } else {
-          resetFileState();
+          fileNameDisplay.textContent = "لم يتم اختيار أي مستند";
+          fileBtnLabel.textContent = "اختر مستنداً لرفعه...";
         }
       });
 
-      imageFileInput.addEventListener("change", async function () {
-        if (this.files && this.files.length > 0) {
-          const file = this.files[0];
-          if (!file.type.startsWith('image/')) {
-            alert('يرجى اختيار ملف صورة فقط.');
-            resetImageState();
-            return;
-          }
-          imageNameDisplay.textContent = `جاري معالجة الصورة...`;
-          imageBtnLabel.textContent = "جاري المعالجة";
-
-          try {
-            base64ImageData = await compressImage(file, 800, 0.6);
-            imageNameDisplay.textContent = `${file.name} (تم تجهيز الصورة)`;
-            imageBtnLabel.textContent = "تمت المعالجة";
-          } catch (err) {
-            resetImageState();
-          }
+      imageFileInput.addEventListener("change", function () {
+        if (this.files.length > 0) {
+          imageNameDisplay.textContent = this.files[0].name;
+          imageBtnLabel.textContent = "تم اختيار الصورة";
         } else {
-          resetImageState();
+          imageNameDisplay.textContent = "يقبل الصور فقط";
+          imageBtnLabel.textContent = "اختر صورة لرفعها...";
         }
       });
 
-      tshirtInput.addEventListener("change", async function () {
-        if (this.files && this.files.length > 0) {
-          const file = this.files[0];
-          if (!file.type.startsWith('image/')) {
-            alert('يرجى اختيار ملف صورة فقط لطباعة التيشرت أو الكوب.');
-            resetTshirtState();
-            return;
-          }
-
-          tshirtNameDisplay.textContent = `جاري معالجة الصورة...`;
-          tshirtBtnLabel.textContent = "جاري المعالجة";
-
-          try {
-            base64TshirtData = await compressImage(file, 800, 0.6);
-            tshirtPreview.src = base64TshirtData;
-            tshirtPreviewContainer.classList.remove("hidden");
-            tshirtNameDisplay.textContent = `${file.name} (جاهز)`;
-            tshirtBtnLabel.textContent = "تم تجهيز التصميم";
-          } catch (error) {
-            resetTshirtState();
-          }
+      tshirtInput.addEventListener("change", function () {
+        if (this.files.length > 0) {
+          tshirtNameDisplay.textContent = this.files[0].name;
+          tshirtBtnLabel.textContent = "تم اختيار التصميم";
         } else {
-          resetTshirtState();
+          tshirtNameDisplay.textContent = "يقبل الصور فقط";
+          tshirtBtnLabel.textContent = "اختر صورة التصميم...";
         }
       });
 
-      removeTshirtBtn.addEventListener("click", function (e) {
-        e.preventDefault();
-        resetTshirtState();
-      });
-
-      function resetFileState() {
-        fileInput.value = "";
-        fileNameDisplay.textContent = "لم يتم اختيار أي مستند";
-        fileBtnLabel.textContent = "اختر مستنداً لرفعه...";
-        docFileName = "";
-      }
-
-      function resetImageState() {
-        imageFileInput.value = "";
-        imageNameDisplay.textContent = "يقبل الصور فقط";
-        imageBtnLabel.textContent = "اختر صورة لرفعها...";
-        base64ImageData = null;
-      }
-
-      function resetTshirtState() {
-        tshirtInput.value = "";
-        tshirtNameDisplay.textContent = "لا يقبل إلا الصور فقط";
-        tshirtBtnLabel.textContent = "اختر صورة التصميم...";
-        tshirtPreviewContainer.classList.add("hidden");
-        tshirtPreview.src = "";
-        base64TshirtData = null;
-      }
-
+      // عداد الكلمات وتدقيق النصوص العربية
       ['1', '2', '3'].forEach(num => {
         const input = document.getElementById(`notes${num}`);
         const counter = document.getElementById(`wordCounter${num}`);
@@ -604,11 +476,8 @@
           const text = this.value.trim();
           const words = text ? text.split(/\s+/) : [];
           counter.textContent = `${words.length} / 10 كلمة`;
-          if (words.length > 10) {
-            counter.classList.add("text-red-500");
-          } else {
-            counter.classList.remove("text-red-500");
-          }
+          if (words.length > 10) counter.classList.add("text-red-500");
+          else counter.classList.remove("text-red-500");
         });
       });
 
@@ -639,11 +508,33 @@
         statusMessage.textContent = "";
       }
 
+      // دالة رفع الملف السحابي إلى Supabase Storage والحصول على رابط مباشر
+      async function uploadFileToSupabase(file, folderPath) {
+        if (!file) return "";
+        const cleanName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
+        const filePath = `${folderPath}/${Date.now()}_${cleanName}`;
+
+        const { data, error } = await supabaseClient.storage
+          .from(BUCKET_NAME)
+          .upload(filePath, file, { cacheControl: '3600', upsert: true });
+
+        if (error) {
+          throw new Error("فشل رفع الملف: " + error.message);
+        }
+
+        const { data: publicUrlData } = supabaseClient.storage
+          .from(BUCKET_NAME)
+          .getPublicUrl(filePath);
+
+        return publicUrlData.publicUrl;
+      }
+
+      // إرسال البيانات
       form.addEventListener("submit", async function (e) {
         e.preventDefault();
 
         let isValid = true;
-        let fields = {};
+        let payload = {};
 
         if (currentPage === 'page1') {
           const nameOk = validateField(document.getElementById('fullName1'), document.getElementById('nameError1'), val => val && isArabicOnly(val));
@@ -652,13 +543,11 @@
 
           if (!nameOk || !copiesOk || !notesOk) isValid = false;
 
-          fields = {
-            "Service": "طباعة ملفات",
-            "FullName": document.getElementById('fullName1').value.trim(),
-            "Copies": parseInt(document.getElementById('copiesCount1').value, 10),
-            "Notes": document.getElementById('notes1').value.trim(),
-            "Document": docFileName,
-            "Image": base64ImageData || ""
+          payload = {
+            service: "طباعة ملفات",
+            full_name: document.getElementById('fullName1').value.trim(),
+            copies: parseInt(document.getElementById('copiesCount1').value, 10),
+            notes: document.getElementById('notes1').value.trim()
           };
 
         } else if (currentPage === 'page2') {
@@ -669,28 +558,27 @@
 
           if (!nameOk || !bookOk || !copiesOk || !notesOk) isValid = false;
 
-          fields = {
-            "Service": "طباعة كتب مدرسية",
-            "FullName": document.getElementById('fullName2').value.trim(),
-            "Book": document.getElementById('bookPrint').value,
-            "Copies": parseInt(document.getElementById('copiesCount2').value, 10),
-            "Notes": document.getElementById('notes2').value.trim()
+          payload = {
+            service: "طباعة كتب مدرسية",
+            full_name: document.getElementById('fullName2').value.trim(),
+            book: document.getElementById('bookPrint').value,
+            copies: parseInt(document.getElementById('copiesCount2').value, 10),
+            notes: document.getElementById('notes2').value.trim()
           };
 
         } else if (currentPage === 'page3') {
           const nameOk = validateField(document.getElementById('fullName3'), document.getElementById('nameError3'), val => val && isArabicOnly(val));
-          const tshirtOk = base64TshirtData !== null;
-          if (!tshirtOk) document.getElementById('tshirtError').classList.remove('hidden');
+          const tshirtFileSelected = tshirtInput.files.length > 0;
+          if (!tshirtFileSelected) document.getElementById('tshirtError').classList.remove('hidden');
           else document.getElementById('tshirtError').classList.add('hidden');
           const notesOk = validateField(document.getElementById('notes3'), document.getElementById('notesError3'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
 
-          if (!nameOk || !tshirtOk || !notesOk) isValid = false;
+          if (!nameOk || !tshirtFileSelected || !notesOk) isValid = false;
 
-          fields = {
-            "Service": "طباعة تيشرت او كوب",
-            "FullName": document.getElementById('fullName3').value.trim(),
-            "Notes": document.getElementById('notes3').value.trim(),
-            "Design": base64TshirtData || ""
+          payload = {
+            service: "طباعة تيشرت او كوب",
+            full_name: document.getElementById('fullName3').value.trim(),
+            notes: document.getElementById('notes3').value.trim()
           };
         }
 
@@ -699,47 +587,42 @@
           return;
         }
 
-        fields["Date"] = new Date().toLocaleString("ar-EG");
-
         submitBtn.disabled = true;
         spinner.classList.remove("hidden");
-        submitText.textContent = "جاري إرسال البيانات...";
+        submitText.textContent = "جاري رفع الملفات والبيانات...";
         statusMessage.classList.add("hidden");
 
-        const airtablePayload = {
-          records: [
-            {
-              fields: fields
-            }
-          ],
-          typecast: true
-        };
-
         try {
-          const response = await fetch(AIRTABLE_API_URL, {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${AIRTABLE_PAT}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(airtablePayload)
-          });
-
-          const result = await response.json();
-
-          if (response.ok && result.records) {
-            showNotification("تم إرسال البيانات بنجاح إلى قاعدة البيانات، شكراً لك!", "success");
-            form.reset();
-            resetFileState();
-            resetImageState();
-            resetTshirtState();
-            ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
-          } else {
-            const errDetail = result.error ? (result.error.message || result.error) : "فشلت عملية الإرسال.";
-            throw new Error(errDetail);
+          // 1. رفع الملفات إلى Supabase Storage أولاً
+          if (currentPage === 'page1') {
+            if (fileInput.files.length > 0) {
+              payload.document_url = await uploadFileToSupabase(fileInput.files[0], 'documents');
+            }
+            if (imageFileInput.files.length > 0) {
+              payload.image_url = await uploadFileToSupabase(imageFileInput.files[0], 'images');
+            }
+          } else if (currentPage === 'page3') {
+            if (tshirtInput.files.length > 0) {
+              payload.design_url = await uploadFileToSupabase(tshirtInput.files[0], 'designs');
+            }
           }
+
+          // 2. إدراج الطلب في جدول `orders` في Supabase
+          const { data, error } = await supabaseClient.from('orders').insert([payload]);
+
+          if (error) {
+            throw error;
+          }
+
+          showNotification("تم إرسال الطلب ورفع الملفات بنجاح، شكراً لك!", "success");
+          form.reset();
+          fileNameDisplay.textContent = "لم يتم اختيار أي مستند";
+          imageNameDisplay.textContent = "يقبل الصور فقط";
+          tshirtNameDisplay.textContent = "يقبل الصور فقط";
+          ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
+
         } catch (error) {
-          console.error("Submission error:", error);
+          console.error("Supabase Error:", error);
           showNotification("حدث خطأ أثناء الإرسال: " + error.message, "error");
         } finally {
           submitBtn.disabled = false;
@@ -750,10 +633,10 @@
 
       cancelBtn.addEventListener("click", function () {
         form.reset();
-        resetFileState();
-        resetImageState();
-        resetTshirtState();
         resetUIFeedback();
+        fileNameDisplay.textContent = "لم يتم اختيار أي مستند";
+        imageNameDisplay.textContent = "يقبل الصور فقط";
+        tshirtNameDisplay.textContent = "يقبل الصور فقط";
         ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
       });
 
