@@ -14,16 +14,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
     <!-- Link to PWA Manifest for Web Share Target support -->
     <link rel="manifest" href="manifest.json" />
-   
+    
     <style>
       body {
         font-family: 'Cairo', sans-serif;
       }
-     
+      
       /* حركة الشريط من اليسار إلى اليمين بشكل بطيء وهادئ */
       @keyframes marqueeRight {
         0% { transform: translateX(100%); }
-        100% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
       }
 
       .animate-marquee-right {
@@ -41,23 +41,23 @@
     </style>
   </head>
   <body class="min-h-screen bg-gradient-to-tr from-slate-100 via-orange-50/40 to-slate-200 flex flex-col items-center justify-start p-4 md:p-8">
-   
+    
     <!-- 1. شريط الصلاة على النبي: حركة من اليسار لليمين بسرعه هادئة ولون مميز -->
     <div class="marquee-container w-full max-w-md bg-gradient-to-r from-[#0e1d3e] via-[#1a3260] to-[#f19124] text-white py-2.5 px-4 rounded-xl shadow-lg shadow-orange-600/10 mb-4 overflow-hidden border border-amber-300/40 flex items-center">
       <div class="w-full overflow-hidden relative flex items-center">
         <div class="animate-marquee-right font-semibold text-xs md:text-sm tracking-wide flex items-center gap-6">
-          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
           <span class="text-amber-300">✦</span>
-          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
           <span class="text-amber-300">✦</span>
-          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
         </div>
       </div>
     </div>
 
     <!-- Main glassmorphism card container -->
     <div class="w-full max-w-md bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/40 p-5 md:p-7 transition-all duration-300">
-     
+      
       <div class="flex flex-col items-center mb-5">
         <div class="w-20 h-20 rounded-full bg-white/90 p-2 shadow-md flex items-center justify-center mb-3 border border-slate-100 overflow-hidden">
           <img
@@ -119,7 +119,7 @@
 
       <!-- Form Starts Here -->
       <form id="dataForm" class="space-y-4" novalidate>
-       
+        
         <!-- PAGE 1: طباعة ملفات -->
         <div id="page1" class="space-y-4">
           <div class="bg-orange-50/50 p-3 rounded-xl border border-orange-100 text-xs font-semibold text-orange-800 mb-2">
@@ -416,14 +416,12 @@
     </div>
 
     <script>
+      // ⚠️ ضع رابط Web App الخاص بـ Google Apps Script الذي أنشأته هنا
+      const GOOGLE_SCRIPT_URL = "ضع_رابط_WEB_APP_URL_هنا";
+
       let currentPage = 'page1';
 
-      // Airtable Configurations
-      const AIRTABLE_PAT = "patUu1uQVpYg8D4WC.a33a5904fbc46781df5b014f62d65042a4c9e60e7e7f7479005332e3383fd873";
-      const AIRTABLE_BASE_ID = "appvf5K46bOeaHCSi";
-      const AIRTABLE_TABLE_NAME = "طلبات الطباعة";
-
-      // Page Switching Logic
+      // Switch Page Tabs Logic
       function switchPage(pageId) {
         currentPage = pageId;
         ['page1', 'page2', 'page3'].forEach(p => {
@@ -443,7 +441,7 @@
         if (pageId === 'page1') btn1.className = activeStyle;
         else if (pageId === 'page2') btn2.className = activeStyle;
         else if (pageId === 'page3') btn3.className = activeStyle;
-       
+        
         resetUIFeedback();
       }
 
@@ -512,7 +510,7 @@
               const blob = await response.blob();
               const mimeType = blob.type || 'application/octet-stream';
               const sharedFile = new File([blob], "shared_file_" + Date.now() + (mimeType.includes('/') ? '.' + mimeType.split('/')[1] : ''), { type: mimeType });
-             
+              
               switchPage('page1');
 
               if (mimeType.startsWith('image/')) {
@@ -536,14 +534,6 @@
         }
       });
 
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-}
       fileInput.addEventListener("change", function () {
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
@@ -617,20 +607,30 @@ function fileToBase64(file) {
         tshirtPreview.src = "";
       }
 
+      cancelBtn.addEventListener("click", function() {
+        form.reset();
+        resetFileState();
+        resetImageState();
+        resetTshirtState();
+        resetUIFeedback();
+      });
+
       // Word Counters & Arabic Checks
       ['1', '2', '3'].forEach(num => {
         const input = document.getElementById(`notes${num}`);
         const counter = document.getElementById(`wordCounter${num}`);
-        input.addEventListener("input", function () {
-          const text = this.value.trim();
-          const words = text ? text.split(/\s+/) : [];
-          counter.textContent = `${words.length} / 10 كلمة`;
-          if (words.length > 10) {
-            counter.classList.add("text-red-500");
-          } else {
-            counter.classList.remove("text-red-500");
-          }
-        });
+        if(input && counter) {
+          input.addEventListener("input", function () {
+            const text = this.value.trim();
+            const words = text ? text.split(/\s+/) : [];
+            counter.textContent = `${words.length} / 10 كلمة`;
+            if (words.length > 10) {
+              counter.classList.add("text-red-500");
+            } else {
+              counter.classList.remove("text-red-500");
+            }
+          });
+        }
       });
 
       function isArabicOnly(text) {
@@ -660,12 +660,23 @@ function fileToBase64(file) {
         statusMessage.textContent = "";
       }
 
+      // Raw Base64 Helper
+      function fileToRawBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => resolve(reader.result.split(',')[1]);
+          reader.onerror = (error) => reject(error);
+        });
+      }
+
       // Form Submit Event Handler
       form.addEventListener("submit", async function (e) {
         e.preventDefault();
 
         let isValid = true;
         let airtableFields = {};
+        let selectedFile = null;
 
         if (currentPage === 'page1') {
           const nameOk = validateField(document.getElementById('fullName1'), document.getElementById('nameError1'), val => val && isArabicOnly(val));
@@ -674,14 +685,23 @@ function fileToBase64(file) {
 
           if (!nameOk || !copiesOk || !notesOk) isValid = false;
 
-          airtableFields = {
-            "الخدمة": "طباعة ملفات",
-            "الاسم الثلاثي": document.getElementById('fullName1').value.trim(),
-            "عدد النسخ": String(document.getElementById('copiesCount1').value.trim()),
-            "الملاحظات": document.getElementById('notes1').value.trim() || ""
-          };
+          if (isValid) {
+            airtableFields = {
+              "النوع": "طباعة ملفات",
+              "الاسم": document.getElementById('fullName1').value.trim(),
+              "عدد النسخ": parseInt(document.getElementById('copiesCount1').value.trim()),
+              "الملاحظات": document.getElementById('notes1').value.trim()
+            };
 
-        } else if (currentPage === 'page2') {
+            // اختيار الملف لتمريره وتجميعه للدرايف
+            if (fileInput.files.length > 0) {
+              selectedFile = fileInput.files[0];
+            } else if (imageFileInput.files.length > 0) {
+              selectedFile = imageFileInput.files[0];
+            }
+          }
+        } 
+        else if (currentPage === 'page2') {
           const nameOk = validateField(document.getElementById('fullName2'), document.getElementById('nameError2'), val => val && isArabicOnly(val));
           const bookOk = validateField(document.getElementById('bookPrint'), document.getElementById('bookError'), val => val !== "");
           const copiesOk = validateField(document.getElementById('copiesCount2'), document.getElementById('copiesError2'), val => parseInt(val) > 0);
@@ -689,124 +709,82 @@ function fileToBase64(file) {
 
           if (!nameOk || !bookOk || !copiesOk || !notesOk) isValid = false;
 
-          airtableFields = {
-            "الخدمة": "طباعة كتب مدرسية",
-            "الاسم الثلاثي": document.getElementById('fullName2').value.trim(),
-            "طباعة كتب": document.getElementById('bookPrint').value,
-            "عدد النسخ": String(document.getElementById('copiesCount2').value.trim()),
-            "الملاحظات": document.getElementById('notes2').value.trim() || ""
-          };
-
-        } else if (currentPage === 'page3') {
+          if (isValid) {
+            airtableFields = {
+              "النوع": "كتب مدرسية",
+              "الاسم": document.getElementById('fullName2').value.trim(),
+              "الكتاب/الصف": document.getElementById('bookPrint').value,
+              "عدد النسخ": parseInt(document.getElementById('copiesCount2').value.trim()),
+              "الملاحظات": document.getElementById('notes2').value.trim()
+            };
+          }
+        } 
+        else if (currentPage === 'page3') {
           const nameOk = validateField(document.getElementById('fullName3'), document.getElementById('nameError3'), val => val && isArabicOnly(val));
-          const tshirtOk = tshirtInput.files && tshirtInput.files.length > 0;
-          if (!tshirtOk) document.getElementById('tshirtError').classList.remove('hidden');
-          else document.getElementById('tshirtError').classList.add('hidden');
+          const tshirtOk = validateField(document.getElementById('tshirtInput'), document.getElementById('tshirtError'), () => tshirtInput.files.length > 0);
           const notesOk = validateField(document.getElementById('notes3'), document.getElementById('notesError3'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
 
           if (!nameOk || !tshirtOk || !notesOk) isValid = false;
 
-          airtableFields = {
-            "الخدمة": "طباعة تيشرت او كوب",
-            "الاسم الثلاثي": document.getElementById('fullName3').value.trim(),
-            "الملاحظات": document.getElementById('notes3').value.trim() || ""
-          };
+          if (isValid) {
+            airtableFields = {
+              "النوع": "تيشرت / كوب",
+              "الاسم": document.getElementById('fullName3').value.trim(),
+              "الملاحظات": document.getElementById('notes3').value.trim()
+            };
+
+            if (tshirtInput.files.length > 0) {
+              selectedFile = tshirtInput.files[0];
+            }
+          }
         }
 
-        if (!isValid) {
-          showNotification("يرجى التأكد من استكمال كافة الحقول المطلوبة بشكل صحيح.", "error");
-          return;
-        }
+        if (!isValid) return;
 
+        // UI status state -> Loading
         submitBtn.disabled = true;
+        submitText.textContent = "جاري رفع الملف وإرسال الطلب...";
         spinner.classList.remove("hidden");
-        submitText.textContent = "جاري رفع الملفات والإرسال...";
-        statusMessage.classList.add("hidden");
+        resetUIFeedback();
 
         try {
-          if (currentPage === 'page1') {
-  if (fileInput.files && fileInput.files.length > 0) {
-    const base64File = await fileToBase64(fileInput.files[0]);
-    airtableFields["رابط المستند"] = [
-      {
-        url: base64File,
-        filename: fileInput.files[0].name
-      }
-    ];
-  }
-  if (imageFileInput.files && imageFileInput.files.length > 0) {
-    const base64Img = await fileToBase64(imageFileInput.files[0]);
-    airtableFields["رابط الصورة"] = [
-      {
-        url: base64Img,
-        filename: imageFileInput.files[0].name
-      }
-    ];
-  }
-} else if (currentPage === 'page3') {
-  if (tshirtInput.files && tshirtInput.files.length > 0) {
-    const base64Tshirt = await fileToBase64(tshirtInput.files[0]);
-    airtableFields["رابط تصميم التجارة"] = [
-      {
-        url: base64Tshirt,
-        filename: tshirtInput.files[0].name
-      }
-    ];
-  }
+          let payload = {
+            fields: airtableFields
+          };
+
+          if (selectedFile) {
+            payload.fileData = await fileToRawBase64(selectedFile);
+            payload.fileName = selectedFile.name;
+            payload.mimeType = selectedFile.type;
           }
 
-          // Send to Airtable API
-          const response = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`, {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${AIRTABLE_PAT}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              fields: airtableFields
-            })
+          const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
           });
 
-          if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(errData.error?.message || "حدث خطأ أثناء الإرسال لـ Airtable.");
+          const result = await response.json();
+
+          if (result.status === "success") {
+            statusMessage.className = "p-2.5 rounded-xl text-center text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 block";
+            statusMessage.textContent = "تم إرسال طلبك ورفع الملف بنجاح! شكرًا لك.";
+            form.reset();
+            resetFileState();
+            resetImageState();
+            resetTshirtState();
+          } else {
+            throw new Error(result.message || "فشل الإرسال");
           }
-
-          showNotification("تم إرسال البيانات بنجاح، شكراً لك!", "success");
-          form.reset();
-          resetFileState();
-          resetImageState();
-          resetTshirtState();
-          ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
-
-        } catch (error) {
-          console.error("Submission error:", error);
-          showNotification("حدث خطأ أثناء الإرسال: " + error.message, "error");
+        } catch (err) {
+          console.error(err);
+          statusMessage.className = "p-2.5 rounded-xl text-center text-xs font-bold bg-red-100 text-red-800 border border-red-200 block";
+          statusMessage.textContent = "حدث خطأ أثناء رفع الملف وإرسال البيانات. يرجى المحاولة مرة أخرى.";
         } finally {
           submitBtn.disabled = false;
-          spinner.classList.add("hidden");
           submitText.textContent = "إرسال البيانات";
+          spinner.classList.add("hidden");
         }
       });
-
-      cancelBtn.addEventListener("click", function () {
-        form.reset();
-        resetFileState();
-        resetImageState();
-        resetTshirtState();
-        resetUIFeedback();
-        ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
-      });
-
-      function showNotification(msg, type) {
-        statusMessage.textContent = msg;
-        statusMessage.classList.remove("hidden");
-        if (type === "success") {
-          statusMessage.className = "p-2.5 rounded-xl text-center text-xs font-bold transition-all duration-300 bg-emerald-50 text-emerald-800 border border-emerald-200";
-        } else {
-          statusMessage.className = "p-2.5 rounded-xl text-center text-xs font-bold transition-all duration-300 bg-red-50 text-red-800 border border-red-200";
-        }
-      }
     </script>
   </body>
 </html>
