@@ -3,33 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>مكتبتي - نموذج الطلبات</title>
-
-    <!-- Tailwind CSS CDN -->
+    <title>مرحبا في تطبيق مكتبتي</title>
+    <!-- Tailwind CSS for modern responsive styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome Icons -->
+    <!-- Font Awesome for sleek icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    
-    <!-- Google Font: Cairo -->
+    <!-- Google Font (Cairo) for premium Arabic typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    
-    <!-- Manifest Link for PWA & File Share Target -->
-    <link rel="manifest" href="./manifest.json" />
-    <meta name="theme-color" content="#0e1d3e" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="مكتبة حنجيك" />
-    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Link to PWA Manifest for Web Share Target support -->
+    <link rel="manifest" href="manifest.json" />
+   
     <style>
       body {
         font-family: 'Cairo', sans-serif;
-        background-color: #f1f5f9;
-        -webkit-tap-highlight-color: transparent;
       }
-      
+     
+      /* حركة الشريط من اليسار إلى اليمين بشكل بطيء وهادئ */
       @keyframes marqueeRight {
         0% { transform: translateX(-100%); }
         100% { transform: translateX(100%); }
@@ -38,506 +29,396 @@
       .animate-marquee-right {
         display: inline-block;
         white-space: nowrap;
-        animation: marqueeRight 35s linear infinite;
+        animation: marqueeRight 50s linear infinite; /* سرعة هادئة ومنتظمة */
         will-change: transform;
       }
 
+      /* إيقاف الحركة مؤقتاً عند التأشير أو اللمس */
       .marquee-container:hover .animate-marquee-right,
       .marquee-container:active .animate-marquee-right {
         animation-play-state: paused;
       }
     </style>
   </head>
-  <body class="min-h-screen bg-slate-200/60 flex flex-col items-center justify-start py-2 sm:py-6 px-2 sm:px-4">
-    
-    <!-- شريط الصلاة على النبي (تصميم أبيض ناصع ومريح للعين) -->
-    <div class="marquee-container w-full max-w-md bg-white text-slate-800 py-2.5 px-3 rounded-2xl shadow-sm mb-3 overflow-hidden border border-slate-200/90 flex items-center">
+  <body class="min-h-screen bg-gradient-to-tr from-slate-100 via-orange-50/40 to-slate-200 flex flex-col items-center justify-start p-4 md:p-8">
+   
+    <!-- 1. شريط الصلاة على النبي: حركة من اليسار لليمين بسرعه هادئة ولون مميز -->
+    <div class="marquee-container w-full max-w-md bg-gradient-to-r from-[#0e1d3e] via-[#1a3260] to-[#f19124] text-white py-2.5 px-4 rounded-xl shadow-lg shadow-orange-600/10 mb-4 overflow-hidden border border-amber-300/40 flex items-center">
       <div class="w-full overflow-hidden relative flex items-center">
-        <div class="animate-marquee-right font-bold text-xs tracking-wide flex items-center gap-6">
-          <span class="text-slate-800">✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
-          <span class="text-amber-500">✦</span>
-          <span class="text-slate-800">✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+        <div class="animate-marquee-right font-semibold text-xs md:text-sm tracking-wide flex items-center gap-6">
+          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+          <span class="text-amber-300">✦</span>
+          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+          <span class="text-amber-300">✦</span>
+          <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
         </div>
       </div>
     </div>
 
-    <!-- Main Card Container -->
-    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden mb-6">
-      
-      <!-- الهيدر الكحلي الغامق المطابق للصورة تماماً -->
-      <div class="bg-[#0e1d3e] text-white px-6 py-7 text-center rounded-t-3xl relative">
-        <div class="flex items-center justify-center gap-3 mb-1.5">
-          <h1 class="text-2xl font-black tracking-tight text-white">مكتبتي - نموذج الطلبات</h1>
-          <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 text-lg">
-            <i class="fa-solid fa-print"></i>
-          </div>
+    <!-- Main glassmorphism card container -->
+    <div class="w-full max-w-md bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/40 p-5 md:p-7 transition-all duration-300">
+     
+      <div class="flex flex-col items-center mb-5">
+        <div class="w-20 h-20 rounded-full bg-white/90 p-2 shadow-md flex items-center justify-center mb-3 border border-slate-100 overflow-hidden">
+          <img
+            id="logoDisplay"
+            src="logo1.png"
+            alt="الشعار"
+            class="w-full h-full object-contain"
+            onerror="this.src='https://placehold.co/150x150/e2e8f0/475569?text=شعار'"
+          />
         </div>
-        <p class="text-xs text-slate-300 font-medium">أرسل طلبك بسهولة وسنقوم بالطباعة فوراً</p>
+        <h1 class="text-xl font-bold text-[#0e1d3e] tracking-tight text-center">خدمات الطباعة الإلكترونية</h1>
+        <p class="text-xs text-slate-500 mt-1">اختر نوع الخدمة التي ترغب بها</p>
       </div>
 
-      <div class="p-4 sm:p-6 space-y-5">
+      <!-- زر تثبيت التطبيق - يظهر فقط عندما يكون المتصفح جاهزاً للتثبيت -->
+      <div id="installContainer" class="hidden mb-4">
+        <button
+          id="pwaInstallBtn"
+          type="button"
+          class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-emerald-500 animate-pulse"
+        >
+          <i class="fa-solid fa-download text-sm"></i>
+          <span>تثبيت التطبيق على جهازك</span>
+        </button>
+      </div>
 
-        <!-- زر تثبيت التطبيق -->
-        <div id="installContainer" class="mb-2">
+      <!-- الأزرار الرئيسية للربط بين الصفحات بتصميم تبويبات عصري وأنيق بدون زوائد -->
+      <div class="grid grid-cols-3 gap-1.5 mb-6 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200/70 shadow-inner">
+        <button
+          type="button"
+          id="tabBtn1"
+          onclick="switchPage('page1')"
+          class="py-2.5 px-2 rounded-xl font-bold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 bg-[#0e1d3e] text-white shadow-md active:scale-95"
+        >
+          <i class="fa-solid fa-file-pdf text-sm"></i>
+          <span>طباعة ملفات</span>
+        </button>
+
+        <button
+          type="button"
+          id="tabBtn2"
+          onclick="switchPage('page2')"
+          class="py-2.5 px-2 rounded-xl font-semibold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60 bg-transparent shadow-none"
+        >
+          <i class="fa-solid fa-book-open text-sm"></i>
+          <span>كتب مدرسية</span>
+        </button>
+
+        <button
+          type="button"
+          id="tabBtn3"
+          onclick="switchPage('page3')"
+          class="py-2.5 px-2 rounded-xl font-semibold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60 bg-transparent shadow-none"
+        >
+          <i class="fa-solid fa-shirt text-sm"></i>
+          <span>تيشرت / كوب</span>
+        </button>
+      </div>
+
+      <!-- Form Starts Here -->
+      <form id="dataForm" class="space-y-4" novalidate>
+       
+        <!-- PAGE 1: طباعة ملفات -->
+        <div id="page1" class="space-y-4">
+          <div class="bg-orange-50/50 p-3 rounded-xl border border-orange-100 text-xs font-semibold text-orange-800 mb-2">
+            📄 نموذج طلب طباعة الملفات والمستندات
+          </div>
+
+          <!-- الاسم الثلاثي -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              الاسم الثلاثي <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                <i class="fa-solid fa-user text-xs"></i>
+              </span>
+              <input
+                type="text"
+                id="fullName1"
+                placeholder="اكتب اسمك الثلاثي باللغة العربية"
+                class="w-full pl-3 pr-9 py-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800"
+              />
+            </div>
+            <p id="nameError1" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
+          </div>
+
+          <!-- عدد النسخ -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              عدد النسخ <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                <i class="fa-solid fa-copy text-xs"></i>
+              </span>
+              <input
+                type="number"
+                id="copiesCount1"
+                min="1"
+                placeholder="أدخل عدد النسخ المطلوبة"
+                class="w-full pl-3 pr-9 py-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800"
+              />
+            </div>
+            <p id="copiesError1" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال عدد نسخ صحيح (رقم أكبر من 0).</p>
+          </div>
+
+          <!-- زر تحميل مستند -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">زر تحميل مستند (اختياري)</label>
+            <div class="relative border-2 border-dashed border-slate-200 hover:border-[#f19124] rounded-xl bg-white/50 transition-colors duration-200">
+              <input
+                type="file"
+                id="fileInput"
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                accept="*/*"
+              />
+              <div class="p-2.5 flex flex-col items-center justify-center text-center">
+                <span class="w-7 h-7 rounded-full bg-orange-50 flex items-center justify-center text-[#f19124] mb-1">
+                  <i class="fa-solid fa-file-arrow-up text-xs"></i>
+                </span>
+                <span class="text-xs font-semibold text-slate-600" id="fileBtnLabel">اختر مستنداً لرفعه...</span>
+                <span class="text-[10px] text-slate-400 mt-0.5" id="fileNameDisplay">لم يتم اختيار أي مستند</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- زر رفع الصور -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">زر رفع الصور (اختياري)</label>
+            <div class="relative border-2 border-dashed border-slate-200 hover:border-[#0e1d3e] rounded-xl bg-white/50 transition-colors duration-200">
+              <input
+                type="file"
+                id="imageFileInput"
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                accept="image/*"
+              />
+              <div class="p-2.5 flex flex-col items-center justify-center text-center">
+                <span class="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-[#0e1d3e] mb-1">
+                  <i class="fa-solid fa-image text-xs"></i>
+                </span>
+                <span class="text-xs font-semibold text-slate-600" id="imageBtnLabel">اختر صورة لرفعها...</span>
+                <span class="text-[10px] text-slate-400 mt-0.5" id="imageNameDisplay">يقبل الصور فقط</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ملاحظات -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="text-xs font-semibold text-slate-700">إضافة ملاحظات (اختياري)</label>
+              <span id="wordCounter1" class="text-[10px] text-slate-400 font-medium">0 / 10 كلمة</span>
+            </div>
+            <textarea
+              id="notes1"
+              rows="2"
+              placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
+              class="w-full p-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800 resize-none"
+            ></textarea>
+            <p id="notesError1" class="text-[10px] text-red-500 mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
+          </div>
+        </div>
+
+        <!-- PAGE 2: طباعة الكتب المدرسية -->
+        <div id="page2" class="space-y-4 hidden">
+          <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-100 text-xs font-semibold text-blue-800 mb-2">
+            📚 نموذج طلب طباعة الكتب المدرسية
+          </div>
+
+          <!-- الاسم الثلاثي -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              الاسم الثلاثي <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                <i class="fa-solid fa-user text-xs"></i>
+              </span>
+              <input
+                type="text"
+                id="fullName2"
+                placeholder="اكتب اسمك الثلاثي باللغة العربية"
+                class="w-full pl-3 pr-9 py-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800"
+              />
+            </div>
+            <p id="nameError2" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
+          </div>
+
+          <!-- اختر الكتب التي تريد طباعتها -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              اختر الكتب التي تريد طباعتها <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                <i class="fa-solid fa-book-open text-xs"></i>
+              </span>
+              <select
+                id="bookPrint"
+                class="w-full pl-3 pr-9 py-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800 appearance-none cursor-pointer"
+              >
+                <option value="">-- اختر الصف الدراسي والمادة المطلوب طباعتها --</option>
+                <option value="الصف الأول">الصف الأول</option>
+                <option value="الصف الثاني">الصف الثاني</option>
+                <option value="الصف الثالث">الصف الثالث</option>
+                <option value="الصف الرابع">الصف الرابع</option>
+                <option value="الصف الخامس">الصف الخامس</option>
+                <option value="الصف السادس">الصف السادس</option>
+                <option value="الصف السابع">الصف السابع</option>
+                <option value="الصف الثامن">الصف الثامن</option>
+                <option value="الصف التاسع">الصف التاسع</option>
+                <option value="الصف العاشر">الصف العاشر</option>
+                <option value="الصف الحادي عشر">الصف الحادي عشر</option>
+                <option value="البكالوريا">البكالوريا</option>
+              </select>
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                <i class="fa-solid fa-chevron-down text-[10px]"></i>
+              </span>
+            </div>
+            <p id="bookError" class="text-[10px] text-red-500 mt-1 hidden">الرجاء اختيار الصف/الكتب المراد طباعتها.</p>
+          </div>
+
+          <!-- عدد النسخ -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              عدد النسخ <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                <i class="fa-solid fa-copy text-xs"></i>
+              </span>
+              <input
+                type="number"
+                id="copiesCount2"
+                min="1"
+                placeholder="أدخل عدد النسخ المطلوبة"
+                class="w-full pl-3 pr-9 py-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800"
+              />
+            </div>
+            <p id="copiesError2" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال عدد نسخ صحيح (رقم أكبر من 0).</p>
+          </div>
+
+          <!-- ملاحظات -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="text-xs font-semibold text-slate-700">الملاحظات (اختياري)</label>
+              <span id="wordCounter2" class="text-[10px] text-slate-400 font-medium">0 / 10 كلمة</span>
+            </div>
+            <textarea
+              id="notes2"
+              rows="2"
+              placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
+              class="w-full p-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800 resize-none"
+            ></textarea>
+            <p id="notesError2" class="text-[10px] text-red-500 mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
+          </div>
+        </div>
+
+        <!-- PAGE 3: طباعة تيشرت او كوب -->
+        <div id="page3" class="space-y-4 hidden">
+          <div class="bg-purple-50/50 p-3 rounded-xl border border-purple-100 text-xs font-semibold text-purple-800 mb-2">
+            👕☕ نموذج طلب طباعة تيشرت أو كوب
+          </div>
+
+          <!-- الاسم الثلاثي -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              الاسم الثلاثي <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                <i class="fa-solid fa-user text-xs"></i>
+              </span>
+              <input
+                type="text"
+                id="fullName3"
+                placeholder="اكتب اسمك الثلاثي باللغة العربية"
+                class="w-full pl-3 pr-9 py-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800"
+              />
+            </div>
+            <p id="nameError3" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
+          </div>
+
+          <!-- زر تحميل الصورة للطباعة (صور فقط) -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              تحميل الصورة التي تريد طباعتها <span class="text-red-500">*</span>
+            </label>
+            <div class="relative border-2 border-dashed border-slate-200 hover:border-[#0e1d3e] rounded-xl bg-white/50 transition-colors duration-200">
+              <input
+                type="file"
+                id="tshirtInput"
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                accept="image/*"
+              />
+              <div class="p-2.5 flex flex-col items-center justify-center text-center">
+                <span class="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-[#0e1d3e] mb-1">
+                  <i class="fa-solid fa-image text-xs"></i>
+                </span>
+                <span class="text-xs font-semibold text-slate-600" id="tshirtBtnLabel">اختر صورة التصميم...</span>
+                <span class="text-[10px] text-slate-400 mt-0.5" id="tshirtNameDisplay">لا يقبل إلا الصور فقط</span>
+              </div>
+            </div>
+            <p id="tshirtError" class="text-[10px] text-red-500 mt-1 hidden">يرجى رفع صورة التصميم المطلوبة.</p>
+
+            <!-- معاينة الصورة -->
+            <div id="tshirtPreviewContainer" class="hidden mt-2 flex justify-center">
+              <div class="relative w-16 h-16 rounded-lg border border-slate-200 overflow-hidden bg-white shadow-sm">
+                <img id="tshirtPreview" class="w-full h-full object-cover" src="" alt="Preview" />
+                <button type="button" id="removeTshirtBtn" class="absolute top-0.5 left-0.5 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center hover:bg-red-600 transition-colors">
+                  <i class="fa-solid fa-xmark text-[8px]"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- الملاحظات -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="text-xs font-semibold text-slate-700">الملاحظات (اختياري)</label>
+              <span id="wordCounter3" class="text-[10px] text-slate-400 font-medium">0 / 10 كلمة</span>
+            </div>
+            <textarea
+              id="notes3"
+              rows="2"
+              placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
+              class="w-full p-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800 resize-none"
+            ></textarea>
+            <p id="notesError3" class="text-[10px] text-red-500 mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
+          </div>
+        </div>
+
+        <!-- Submission Feedback Message -->
+        <div id="statusMessage" class="hidden p-2.5 rounded-xl text-center text-xs font-bold transition-all duration-300"></div>
+
+        <!-- Form Action Buttons -->
+        <div class="flex items-center gap-2 pt-2">
           <button
-            id="pwaInstallBtn"
-            type="button"
-            class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
+            type="submit"
+            id="submitBtn"
+            class="flex-1 py-2.5 bg-gradient-to-r from-[#0e1d3e] to-[#f19124] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-lg shadow-orange-600/10 hover:shadow-orange-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
           >
-            <i class="fa-solid fa-mobile-screen-button text-sm"></i>
-            <span>تثبيت التطبيق على جهازك (دعم المشاركة المباشرة)</span>
+            <span id="submitText">إرسال البيانات</span>
+            <span id="spinner" class="hidden w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          </button>
+          <button
+            type="button"
+            id="cancelBtn"
+            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs rounded-xl active:scale-[0.98] transition-all"
+          >
+            إلغاء
           </button>
         </div>
 
-        <!-- اختيار نوع الخدمة (التبويبات الثلاثة) -->
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2.5 text-right">
-            اختر نوع الخدمة:
-          </label>
-          <div class="grid grid-cols-3 gap-2 sm:gap-3">
-            
-            <!-- Tab 1: طباعة ملفات -->
-            <button
-              type="button"
-              id="tabBtn1"
-              onclick="switchPage('page1')"
-              class="py-3 px-2 rounded-2xl font-bold text-xs transition-all duration-200 flex flex-col items-center justify-center gap-2 bg-[#f08a00] text-white shadow-lg shadow-amber-500/20 active:scale-95 border border-transparent"
-            >
-              <div id="tabIconBg1" class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-white text-base">
-                <i class="fa-solid fa-file-pdf"></i>
-              </div>
-              <span class="text-center font-extrabold text-[11px] sm:text-xs">طباعة ملفات</span>
-            </button>
-
-            <!-- Tab 2: كتب مدرسية -->
-            <button
-              type="button"
-              id="tabBtn2"
-              onclick="switchPage('page2')"
-              class="py-3 px-2 rounded-2xl font-bold text-xs transition-all duration-200 flex flex-col items-center justify-center gap-2 bg-white text-slate-700 border border-slate-200/90 shadow-sm hover:border-slate-300"
-            >
-              <div id="tabIconBg2" class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 text-base">
-                <i class="fa-solid fa-book-open"></i>
-              </div>
-              <span class="text-center font-extrabold text-[11px] sm:text-xs">كتب مدرسية</span>
-            </button>
-
-            <!-- Tab 3: تيشرت / كوب -->
-            <button
-              type="button"
-              id="tabBtn3"
-              onclick="switchPage('page3')"
-              class="py-3 px-2 rounded-2xl font-bold text-xs transition-all duration-200 flex flex-col items-center justify-center gap-2 bg-white text-slate-700 border border-slate-200/90 shadow-sm hover:border-slate-300"
-            >
-              <div id="tabIconBg3" class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 text-base">
-                <i class="fa-solid fa-shirt"></i>
-              </div>
-              <span class="text-center font-extrabold text-[11px] sm:text-xs">تيشرت / كوب</span>
-            </button>
-
-          </div>
-        </div>
-
-        <!-- Form Starts Here -->
-        <form id="dataForm" class="space-y-4" novalidate>
-          
-          <!-- PAGE 1: طباعة ملفات -->
-          <div id="page1" class="space-y-4">
-            
-            <!-- الاسم الثلاثي -->
-            <div>
-              <label class="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1">
-                الاسم الثلاثي (بالعربية فقط) <span class="text-red-500 font-bold">*</span>
-              </label>
-              <div class="relative">
-                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
-                  <i class="fa-solid fa-user text-sm"></i>
-                </span>
-                <input
-                  type="text"
-                  id="fullName1"
-                  placeholder="مثال: محمد أحمد علي"
-                  class="w-full pl-3 pr-10 py-3 bg-[#f8fafc] border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all text-xs text-slate-800 placeholder-slate-400 font-medium"
-                />
-              </div>
-              <p id="nameError1" class="text-[10px] text-red-500 font-bold mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
-            </div>
-
-            <!-- عدد النسخ -->
-            <div>
-              <label class="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1">
-                عدد النسخ <span class="text-red-500 font-bold">*</span>
-              </label>
-              <div class="relative">
-                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
-                  <i class="fa-solid fa-copy text-sm"></i>
-                </span>
-                <input
-                  type="number"
-                  id="copiesCount1"
-                  min="1"
-                  value="1"
-                  placeholder="1"
-                  class="w-full pl-3 pr-10 py-3 bg-[#f8fafc] border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all text-xs text-slate-800 font-semibold"
-                />
-              </div>
-              <p id="copiesError1" class="text-[10px] text-red-500 font-bold mt-1 hidden">الرجاء إدخال عدد نسخ صحيح (رقم أكبر من 0).</p>
-            </div>
-
-            <!-- رفع مستند (يقبل جميع الملفات دون أي قيود) -->
-            <div>
-              <label class="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1">
-                رفع مستند <span class="text-red-500 font-bold">*</span>
-              </label>
-              <div class="relative border-2 border-dashed border-amber-400/80 hover:border-amber-500 rounded-2xl bg-amber-50/20 transition-all duration-200 p-4">
-                <input
-                  type="file"
-                  id="fileInput"
-                  class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  accept="*"
-                />
-                <div class="flex flex-col items-center justify-center text-center">
-                  <div class="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center mb-2 shadow-md shadow-amber-500/20">
-                    <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
-                  </div>
-                  <span class="text-xs font-bold text-slate-700" id="fileBtnLabel">اختر مستنداً لرفعه...</span>
-                  <span class="text-[10px] text-slate-400 font-medium mt-0.5" id="fileNameDisplay">يقبل جميع أنواع الملفات</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- رفع صورة إضافية (اختياري) -->
-            <div>
-              <label class="block text-xs font-bold text-slate-800 mb-1.5">
-                رفع صورة إضافية (اختياري)
-              </label>
-              <div class="relative border-2 border-dashed border-slate-200 hover:border-slate-300 rounded-2xl bg-[#f8fafc] transition-all duration-200 p-4">
-                <input
-                  type="file"
-                  id="imageFileInput"
-                  class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  accept="image/*"
-                />
-                <div class="flex flex-col items-center justify-center text-center">
-                  <div class="w-10 h-10 rounded-2xl bg-slate-200/60 text-slate-500 flex items-center justify-center mb-1.5">
-                    <i class="fa-solid fa-image text-lg"></i>
-                  </div>
-                  <span class="text-xs font-bold text-slate-500" id="imageBtnLabel">اختر صورة (اختياري)</span>
-                  <span class="text-[10px] text-slate-400 font-medium mt-0.5 hidden" id="imageNameDisplay"></span>
-                </div>
-              </div>
-            </div>
-
-            <!-- إضافة ملاحظات (اختياري) - بحد أقصى 10 كلمات -->
-            <div>
-              <div class="flex justify-between items-center mb-1.5">
-                <label class="text-xs font-bold text-slate-800">إضافة ملاحظات (اختياري)</label>
-                <span id="wordCounter1" class="text-[10px] text-slate-400 font-bold">0 / 10 كلمة</span>
-              </div>
-              <textarea
-                id="notes1"
-                rows="2"
-                placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
-                class="w-full p-3 bg-[#f8fafc] border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all text-xs text-slate-800 placeholder-slate-400 resize-none font-medium"
-              ></textarea>
-              <p id="notesError1" class="text-[10px] text-red-500 font-bold mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
-            </div>
-
-          </div>
-
-          <!-- PAGE 2: كتب مدرسية -->
-          <div id="page2" class="space-y-4 hidden">
-            
-            <!-- الاسم الثلاثي -->
-            <div>
-              <label class="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1">
-                الاسم الثلاثي (بالعربية فقط) <span class="text-red-500 font-bold">*</span>
-              </label>
-              <div class="relative">
-                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
-                  <i class="fa-solid fa-user text-sm"></i>
-                </span>
-                <input
-                  type="text"
-                  id="fullName2"
-                  placeholder="مثال: محمد أحمد علي"
-                  class="w-full pl-3 pr-10 py-3 bg-[#f8fafc] border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all text-xs text-slate-800 placeholder-slate-400 font-medium"
-                />
-              </div>
-              <p id="nameError2" class="text-[10px] text-red-500 font-bold mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
-            </div>
-
-            <!-- اختر الكتب -->
-            <div>
-              <label class="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1">
-                اختر الصف الدراسي والكتب <span class="text-red-500 font-bold">*</span>
-              </label>
-              <div class="relative">
-                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
-                  <i class="fa-solid fa-book-open text-sm"></i>
-                </span>
-                <select
-                  id="bookPrint"
-                  class="w-full pl-3 pr-10 py-3 bg-[#f8fafc] border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all text-xs text-slate-800 font-semibold appearance-none cursor-pointer"
-                >
-                  <option value="">-- اختر الصف الدراسي والمادة المطلوبة --</option>
-                  <option value="الصف الأول">الصف الأول</option>
-                  <option value="الصف الثاني">الصف الثاني</option>
-                  <option value="الصف الثالث">الصف الثالث</option>
-                  <option value="الصف الرابع">الصف الرابع</option>
-                  <option value="الصف الخامس">الصف الخامس</option>
-                  <option value="الصف السادس">الصف السادس</option>
-                  <option value="الصف السابع">الصف السابع</option>
-                  <option value="الصف الثامن">الصف الثامن</option>
-                  <option value="الصف التاسع">الصف التاسع</option>
-                  <option value="الصف العاشر">الصف العاشر</option>
-                  <option value="الصف الحادي عشر">الصف الحادي عشر</option>
-                  <option value="البكالوريا">البكالوريا</option>
-                </select>
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
-                  <i class="fa-solid fa-chevron-down text-xs"></i>
-                </span>
-              </div>
-              <p id="bookError" class="text-[10px] text-red-500 font-bold mt-1 hidden">الرجاء اختيار الصف/الكتب المراد طباعتها.</p>
-            </div>
-
-            <!-- عدد النسخ -->
-            <div>
-              <label class="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1">
-                عدد النسخ <span class="text-red-500 font-bold">*</span>
-              </label>
-              <div class="relative">
-                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
-                  <i class="fa-solid fa-copy text-sm"></i>
-                </span>
-                <input
-                  type="number"
-                  id="copiesCount2"
-                  min="1"
-                  value="1"
-                  placeholder="1"
-                  class="w-full pl-3 pr-10 py-3 bg-[#f8fafc] border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all text-xs text-slate-800 font-semibold"
-                />
-              </div>
-              <p id="copiesError2" class="text-[10px] text-red-500 font-bold mt-1 hidden">الرجاء إدخال عدد نسخ صحيح (رقم أكبر من 0).</p>
-            </div>
-
-            <!-- ملاحظات -->
-            <div>
-              <div class="flex justify-between items-center mb-1.5">
-                <label class="text-xs font-bold text-slate-800">إضافة ملاحظات (اختياري)</label>
-                <span id="wordCounter2" class="text-[10px] text-slate-400 font-bold">0 / 10 كلمة</span>
-              </div>
-              <textarea
-                id="notes2"
-                rows="2"
-                placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
-                class="w-full p-3 bg-[#f8fafc] border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all text-xs text-slate-800 placeholder-slate-400 resize-none font-medium"
-              ></textarea>
-              <p id="notesError2" class="text-[10px] text-red-500 font-bold mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
-            </div>
-
-          </div>
-
-          <!-- PAGE 3: تيشرت / كوب -->
-          <div id="page3" class="space-y-4 hidden">
-            
-            <!-- الاسم الثلاثي -->
-            <div>
-              <label class="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1">
-                الاسم الثلاثي (بالعربية فقط) <span class="text-red-500 font-bold">*</span>
-              </label>
-              <div class="relative">
-                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
-                  <i class="fa-solid fa-user text-sm"></i>
-                </span>
-                <input
-                  type="text"
-                  id="fullName3"
-                  placeholder="مثال: محمد أحمد علي"
-                  class="w-full pl-3 pr-10 py-3 bg-[#f8fafc] border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all text-xs text-slate-800 placeholder-slate-400 font-medium"
-                />
-              </div>
-              <p id="nameError3" class="text-[10px] text-red-500 font-bold mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
-            </div>
-
-            <!-- رفع صورة التصميم للتيشرت/الكوب -->
-            <div>
-              <label class="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1">
-                صورة التصميم المطلوبة <span class="text-red-500 font-bold">*</span>
-              </label>
-              <div class="relative border-2 border-dashed border-amber-400/80 hover:border-amber-500 rounded-2xl bg-amber-50/20 transition-all duration-200 p-4">
-                <input
-                  type="file"
-                  id="tshirtInput"
-                  class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  accept="image/*"
-                />
-                <div class="flex flex-col items-center justify-center text-center">
-                  <div class="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center mb-2 shadow-md shadow-amber-500/20">
-                    <i class="fa-solid fa-image text-lg"></i>
-                  </div>
-                  <span class="text-xs font-bold text-slate-700" id="tshirtBtnLabel">اختر صورة التصميم...</span>
-                  <span class="text-[10px] text-slate-400 font-medium mt-0.5" id="tshirtNameDisplay">يقبل الصور فقط</span>
-                </div>
-              </div>
-              <p id="tshirtError" class="text-[10px] text-red-500 font-bold mt-1 hidden">يرجى رفع صورة التصميم المطلوبة.</p>
-
-              <!-- معاينة الصورة -->
-              <div id="tshirtPreviewContainer" class="hidden mt-2 flex justify-center">
-                <div class="relative w-20 h-20 rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm p-1">
-                  <img id="tshirtPreview" class="w-full h-full object-cover rounded-xl" src="" alt="Preview" />
-                  <button type="button" id="removeTshirtBtn" class="absolute top-1 left-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-600 transition-colors">
-                    <i class="fa-solid fa-xmark text-[10px]"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- ملاحظات -->
-            <div>
-              <div class="flex justify-between items-center mb-1.5">
-                <label class="text-xs font-bold text-slate-800">إضافة ملاحظات (اختياري)</label>
-                <span id="wordCounter3" class="text-[10px] text-slate-400 font-bold">0 / 10 كلمة</span>
-              </div>
-              <textarea
-                id="notes3"
-                rows="2"
-                placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
-                class="w-full p-3 bg-[#f8fafc] border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all text-xs text-slate-800 placeholder-slate-400 resize-none font-medium"
-              ></textarea>
-              <p id="notesError3" class="text-[10px] text-red-500 font-bold mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
-            </div>
-
-          </div>
-
-          <!-- Submission Feedback Message -->
-          <div id="statusMessage" class="hidden p-3 rounded-2xl text-center text-xs font-bold transition-all duration-300"></div>
-
-          <!-- أزرار العمليات -->
-          <div class="flex items-center gap-3 pt-2">
-            
-            <!-- زر إرسال البيانات -->
-            <button
-              type="submit"
-              id="submitBtn"
-              class="flex-1 py-3 px-4 bg-[#f08a00] hover:bg-[#d97c00] active:scale-[0.98] text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2"
-            >
-              <i class="fa-solid fa-paper-plane text-xs"></i>
-              <span id="submitText">إرسال البيانات</span>
-              <span id="spinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            </button>
-
-            <!-- زر إلغاء الجانبي -->
-            <button
-              type="button"
-              id="cancelBtn"
-              class="px-5 py-3 bg-[#f1f5f9] hover:bg-slate-200 text-slate-600 font-bold text-xs sm:text-sm rounded-2xl active:scale-[0.98] transition-all"
-            >
-              إلغاء
-            </button>
-
-          </div>
-
-        </form>
-      </div>
-
+      </form>
     </div>
 
-    <!-- Script JavaScript -->
     <script>
-      // 1. تسجيل الـ Service Worker للمشاركات المباشرة
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js').catch(err => {
-            console.error('فشل تسجيل Service Worker:', err);
-          });
-        });
-      }
-
-      // 2. قراءة الملف المشارك عند فتح التطبيق من زر المشاركة
-      window.addEventListener('load', async () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        if ((urlParams.get('shared') === 'true' || urlParams.has('shared')) && 'caches' in window) {
-          try {
-            const cache = await caches.open("shared-files-cache");
-            const response = await cache.match('/shared-file');
-            if (response) {
-              const blob = await response.blob();
-              let fileName = "ملف_تم_مشاركته";
-              const rawFileName = response.headers.get('x-filename');
-              if (rawFileName) {
-                try { fileName = decodeURIComponent(rawFileName); } catch(e) { fileName = rawFileName; }
-              }
-
-              const file = new File([blob], fileName, { type: blob.type || "application/octet-stream" });
-              
-              const dataTransfer = new DataTransfer();
-              dataTransfer.items.add(file);
-              const fileInputEl = document.getElementById("fileInput");
-              fileInputEl.files = dataTransfer.files;
-              fileInputEl.dispatchEvent(new Event('change'));
-              
-              switchPage('page1');
-              showNotification("تم استقبال الملف المشارك بنجاح!", "success");
-
-              await cache.delete('/shared-file');
-            }
-          } catch (e) {
-            console.error("خطأ أثناء قراءة الملف المشارك:", e);
-          }
-        }
-      });
-
       let currentPage = 'page1';
 
-      // مفاتيح Airtable و Google Script
-      const AIRTABLE_BASE_ID = "appvf5K46bOeaHCSi";
-      const AIRTABLE_PAT = "patUu1uQVpYg8D4WC.722278de7df9f267e84f7dba56f8004cbb0aa34e946cc2a4619fbd05245fa04c";
-      
-      // ضع رابط غوغل سكربت المباشر هنا
-      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2_c3ubwJ1VALZHRTr9QnxdxK5GJvpha-k5GxyyJX08a0Xf6VMQ-madmZ5SeVhH2XaOA/exec";
-
-      // دالة الإرسال إلى Airtable
-      async function sendToAirtable(fieldsData) {
-        const fields = {};
-        for (const [key, val] of Object.entries(fieldsData)) {
-          if (val !== null && val !== undefined) {
-            fields[key] = String(val);
-          }
-        }
-
-        const tablesToTry = ["الطلبات", "Table 1", "Table1", "Orders"];
-        let success = false;
-        let lastErr = null;
-
-        for (const tableName of tablesToTry) {
-          try {
-            const res = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(tableName)}`, {
-              method: "POST",
-              headers: {
-                "Authorization": `Bearer ${AIRTABLE_PAT}`,
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({ fields: fields })
-            });
-
-            if (res.ok) {
-              success = true;
-              break;
-            } else {
-              const errData = await res.json();
-              lastErr = errData.error?.message || res.statusText;
-            }
-          } catch (err) {
-            lastErr = err.message;
-          }
-        }
-
-        return { success, error: lastErr };
-      }
-
-      // التبديل بين التبويبات
+      // Page Switching Logic with sleek tab styling
       function switchPage(pageId) {
         currentPage = pageId;
         ['page1', 'page2', 'page3'].forEach(p => {
@@ -545,34 +426,20 @@
         });
         document.getElementById(pageId).classList.remove('hidden');
 
-        const tabBtn1 = document.getElementById('tabBtn1');
-        const tabBtn2 = document.getElementById('tabBtn2');
-        const tabBtn3 = document.getElementById('tabBtn3');
+        // Style tab buttons dynamically
+        const btn1 = document.getElementById('tabBtn1');
+        const btn2 = document.getElementById('tabBtn2');
+        const btn3 = document.getElementById('tabBtn3');
 
-        const tabIconBg1 = document.getElementById('tabIconBg1');
-        const tabIconBg2 = document.getElementById('tabIconBg2');
-        const tabIconBg3 = document.getElementById('tabIconBg3');
+        const inactiveStyle = "py-2.5 px-2 rounded-xl font-semibold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60 bg-transparent shadow-none";
+        const activeStyle = "py-2.5 px-2 rounded-xl font-bold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 bg-[#0e1d3e] text-white shadow-md active:scale-95";
 
-        const inactiveTabClass = "py-3 px-2 rounded-2xl font-bold text-xs transition-all duration-200 flex flex-col items-center justify-center gap-2 bg-white text-slate-700 border border-slate-200/90 shadow-sm hover:border-slate-300";
-        const activeTabClass = "py-3 px-2 rounded-2xl font-bold text-xs transition-all duration-200 flex flex-col items-center justify-center gap-2 bg-[#f08a00] text-white shadow-lg shadow-amber-500/20 active:scale-95 border border-transparent";
+        [btn1, btn2, btn3].forEach(btn => btn.className = inactiveStyle);
 
-        const inactiveIconBg = "w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 text-base";
-        const activeIconBg = "w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-white text-base";
-
-        [tabBtn1, tabBtn2, tabBtn3].forEach(btn => btn.className = inactiveTabClass);
-        [tabIconBg1, tabIconBg2, tabIconBg3].forEach(ic => ic.className = inactiveIconBg);
-
-        if (pageId === 'page1') {
-          tabBtn1.className = activeTabClass;
-          tabIconBg1.className = activeIconBg;
-        } else if (pageId === 'page2') {
-          tabBtn2.className = activeTabClass;
-          tabIconBg2.className = activeIconBg;
-        } else if (pageId === 'page3') {
-          tabBtn3.className = activeTabClass;
-          tabIconBg3.className = activeIconBg;
-        }
-        
+        if (pageId === 'page1') btn1.className = activeStyle;
+        else if (pageId === 'page2') btn2.className = activeStyle;
+        else if (pageId === 'page3') btn3.className = activeStyle;
+       
         resetUIFeedback();
       }
 
@@ -583,6 +450,7 @@
       const statusMessage = document.getElementById("statusMessage");
       const cancelBtn = document.getElementById("cancelBtn");
 
+      // File Inputs
       const fileInput = document.getElementById("fileInput");
       const fileNameDisplay = document.getElementById("fileNameDisplay");
       const fileBtnLabel = document.getElementById("fileBtnLabel");
@@ -598,13 +466,25 @@
       const tshirtPreview = document.getElementById("tshirtPreview");
       const removeTshirtBtn = document.getElementById("removeTshirtBtn");
 
+      // PWA Elements
       const installContainer = document.getElementById("installContainer");
       const pwaInstallBtn = document.getElementById("pwaInstallBtn");
       let deferredPrompt = null;
 
+      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2_c3ubwJ1VALZHRTr9QnxdxK5GJvpha-k5GxyyJX08a0Xf6VMQ-madmZ5SeVhH2XaOA/exec";
+
       let base64FileData = null;
       let base64ImageData = null;
       let base64TshirtData = null;
+
+      // Register PWA Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((reg) => console.log('Service Worker registered:', reg))
+            .catch((err) => console.error('Service Worker registration failed:', err));
+        });
+      }
 
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
@@ -613,16 +493,57 @@
       });
 
       pwaInstallBtn.addEventListener('click', async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          if (outcome === 'accepted') {
-            installContainer.classList.add('hidden');
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installContainer.classList.add('hidden');
+      });
+
+      window.addEventListener('appinstalled', () => {
+        installContainer.classList.add('hidden');
+        deferredPrompt = null;
+      });
+
+      // Handle Shared Files Incoming
+      window.addEventListener('DOMContentLoaded', async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('shared') && 'caches' in window) {
+          try {
+            const cache = await caches.open('shared-files-cache');
+            const response = await cache.match('/shared-file');
+            if (response) {
+              const blob = await response.blob();
+              const mimeType = blob.type || 'application/octet-stream';
+              const sharedFile = new File([blob], "shared_file_" + Date.now() + (mimeType.includes('/') ? '.' + mimeType.split('/')[1] : ''), { type: mimeType });
+             
+              // Switch automatically to Page 1
+              switchPage('page1');
+
+              if (mimeType.startsWith('image/')) {
+                // Route image to Image Upload Button on Page 1
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(sharedFile);
+                imageFileInput.files = dataTransfer.files;
+                imageFileInput.dispatchEvent(new Event('change'));
+              } else {
+                // Route document to Document Upload Button on Page 1
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(sharedFile);
+                fileInput.files = dataTransfer.files;
+                fileInput.dispatchEvent(new Event('change'));
+              }
+
+              await cache.delete('/shared-file');
+              window.history.replaceState({}, document.title, "/");
+            }
+          } catch (err) {
+            console.error("Failed to read shared file from cache:", err);
           }
-          deferredPrompt = null;
         }
       });
 
+      // Compress Images
       async function compressImage(file, maxWidth = 1200, quality = 0.75) {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
@@ -650,18 +571,19 @@
         });
       }
 
+      // Page 1: Document Upload Change
       fileInput.addEventListener("change", function () {
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
           fileNameDisplay.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-          fileBtnLabel.textContent = "تم اختيار المستند بنجاح";
-          
+          fileBtnLabel.textContent = "تم اختيار المستند";
+         
           const reader = new FileReader();
           reader.onload = function (e) {
             const splitData = e.target.result.split(",");
             base64FileData = {
               fileName: file.name,
-              mimeType: splitData[0].match(/:(\w.+);/)?.[1] || "application/octet-stream",
+              mimeType: splitData[0].match(/:(\w.+);/)[1],
               data: splitData[1]
             };
           };
@@ -671,17 +593,17 @@
         }
       });
 
+      // Page 1: Image Upload Change
       imageFileInput.addEventListener("change", async function () {
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
           if (!file.type.startsWith('image/')) {
-            showNotification('يرجى اختيار ملف صورة فقط للصورة الإضافية.', 'error');
+            alert('يرجى اختيار ملف صورة فقط.');
             resetImageState();
             return;
           }
-          imageNameDisplay.classList.remove("hidden");
           imageNameDisplay.textContent = `جاري معالجة الصورة...`;
-          imageBtnLabel.textContent = "جاري التحضير";
+          imageBtnLabel.textContent = "جاري المعالجة";
 
           try {
             const compressed = await compressImage(file, 1200, 0.75);
@@ -691,8 +613,8 @@
               mimeType: "image/jpeg",
               data: splitData[1]
             };
-            imageNameDisplay.textContent = `${file.name} (تمت الإضافة)`;
-            imageBtnLabel.textContent = "تم رفع الصورة الجانبية";
+            imageNameDisplay.textContent = `${file.name} (تم تحسين الحجم)`;
+            imageBtnLabel.textContent = "تم تجهيز الصورة";
           } catch (err) {
             resetImageState();
           }
@@ -701,11 +623,12 @@
         }
       });
 
+      // Page 3: T-Shirt/Cup Image Upload
       tshirtInput.addEventListener("change", async function () {
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
           if (!file.type.startsWith('image/')) {
-            showNotification('يرجى اختيار ملف صورة فقط لطباعة التيشرت أو الكوب.', 'error');
+            alert('يرجى اختيار ملف صورة فقط لطباعة التيشرت أو الكوب.');
             resetTshirtState();
             return;
           }
@@ -716,7 +639,7 @@
           try {
             const compressedDataUrl = await compressImage(file, 1200, 0.75);
             const splitData = compressedDataUrl.split(",");
-            
+           
             base64TshirtData = {
               fileName: file.name.replace(/\.[^/.]+$/, "") + ".jpg",
               mimeType: "image/jpeg",
@@ -742,28 +665,28 @@
 
       function resetFileState() {
         fileInput.value = "";
-        fileNameDisplay.textContent = "يقبل جميع أنواع الملفات";
+        fileNameDisplay.textContent = "لم يتم اختيار أي مستند";
         fileBtnLabel.textContent = "اختر مستنداً لرفعه...";
         base64FileData = null;
       }
 
       function resetImageState() {
         imageFileInput.value = "";
-        imageNameDisplay.classList.add("hidden");
-        imageNameDisplay.textContent = "";
-        imageBtnLabel.textContent = "اختر صورة (اختياري)";
+        imageNameDisplay.textContent = "يقبل الصور فقط";
+        imageBtnLabel.textContent = "اختر صورة لرفعها...";
         base64ImageData = null;
       }
 
       function resetTshirtState() {
         tshirtInput.value = "";
-        tshirtNameDisplay.textContent = "يقبل الصور فقط";
+        tshirtNameDisplay.textContent = "لا يقبل إلا الصور فقط";
         tshirtBtnLabel.textContent = "اختر صورة التصميم...";
         tshirtPreviewContainer.classList.add("hidden");
         tshirtPreview.src = "";
         base64TshirtData = null;
       }
 
+      // Word Counters & Arabic Checks
       ['1', '2', '3'].forEach(num => {
         const input = document.getElementById(`notes${num}`);
         const counter = document.getElementById(`wordCounter${num}`);
@@ -872,55 +795,27 @@
         statusMessage.classList.add("hidden");
 
         try {
-          let driveFileUrl = "";
+          const response = await fetch(GOOGLE_SCRIPT_URL, {
+            redirect: "follow",
+            method: "POST",
+            body: JSON.stringify(payload),
+            headers: {
+              "Content-Type": "text/plain;charset=utf-8",
+            },
+          });
 
-          // 1. رفع الملف إلى Google Apps Script
-          try {
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
-              redirect: "follow",
-              method: "POST",
-              body: JSON.stringify(payload),
-              headers: {
-                "Content-Type": "text/plain;charset=utf-8",
-              },
-            });
+          const result = await response.json();
 
-            const result = await response.json();
-            if (result && (result.fileUrl || result.url || result.driveUrl)) {
-              driveFileUrl = result.fileUrl || result.url || result.driveUrl;
-            }
-          } catch (gScriptErr) {
-            console.warn("Google Drive Upload Notice:", gScriptErr);
+          if (result.status === "success") {
+            showNotification(result.message || "تم إرسال البيانات بنجاح، شكراً لك!", "success");
+            form.reset();
+            resetFileState();
+            resetImageState();
+            resetTshirtState();
+            ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
+          } else {
+            throw new Error(result.message || "فشلت عملية الإرسال.");
           }
-
-          // 2. إعداد البيانات لـ Airtable
-          const airtableFields = {
-            "الخدمة": payload["الخدمة"] || "",
-            "الاسم الثلاثي": payload["الاسم الثلاثي"] || "",
-            "عدد النسخ": payload["عدد النسخ"] ? String(payload["عدد النسخ"]) : "",
-            "الملاحظات": payload["الملاحظات"] || ""
-          };
-
-          if (payload["طباعة كتب"]) {
-            airtableFields["طباعة كتب"] = payload["طباعة كتب"];
-          }
-
-          // حفظ رابط درايف الأزرق في Airtable
-          if (driveFileUrl) {
-            airtableFields["رابط المستند / الصورة"] = driveFileUrl;
-            airtableFields["الملف"] = driveFileUrl;
-          }
-
-          // 3. الإرسال إلى Airtable مباشرة
-          await sendToAirtable(airtableFields);
-
-          showNotification("تم إرسال البيانات بنجاح وحفظها، شكراً لك!", "success");
-          form.reset();
-          resetFileState();
-          resetImageState();
-          resetTshirtState();
-          ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
-
         } catch (error) {
           console.error("Submission error:", error);
           showNotification("حدث خطأ أثناء الإرسال: " + error.message, "error");
@@ -944,9 +839,9 @@
         statusMessage.textContent = msg;
         statusMessage.classList.remove("hidden");
         if (type === "success") {
-          statusMessage.className = "p-3 rounded-2xl text-center text-xs font-bold transition-all duration-300 bg-emerald-50 text-emerald-800 border border-emerald-200";
+          statusMessage.className = "p-2.5 rounded-xl text-center text-xs font-bold transition-all duration-300 bg-emerald-50 text-emerald-800 border border-emerald-200";
         } else {
-          statusMessage.className = "p-3 rounded-2xl text-center text-xs font-bold transition-all duration-300 bg-red-50 text-red-800 border border-red-200";
+          statusMessage.className = "p-2.5 rounded-xl text-center text-xs font-bold transition-all duration-300 bg-red-50 text-red-800 border border-red-200";
         }
       }
     </script>
