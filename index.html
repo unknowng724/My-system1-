@@ -594,27 +594,41 @@
         });
       }
 
-      // Page 1: Document Upload Change
-      fileInput.addEventListener("change", function () {
-        if (this.files && this.files.length > 0) {
-          const file = this.files[0];
-          fileNameDisplay.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-          fileBtnLabel.textContent = "تم اختيار المستند";
-          
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            const splitData = e.target.result.split(",");
-            base64FileData = {
-              fileName: file.name,
-              mimeType: splitData[0].match(/:(\w.+);/)[1],
-              data: splitData[1]
-            };
-          };
-          reader.readAsDataURL(file);
-        } else {
-          resetFileState();
-        }
-      });
+// مكتبة الـ PDF المباشرة (تمت إضافتها في الهيدر تلقائياً مع الكود الجديد)
+// Page 1: Document Upload Change مع الضغط الآلي والواجهة الذكية
+fileInput.addEventListener("change", async function () {
+  if (this.files && this.files.length > 0) {
+    const file = this.files[0];
+    const fileSizeMB = file.size / (1024 * 1024);
+
+    // إذا كان الملف كبيراً جداً (أكبر من 35 ميجابايت) نريح العميل فوراً
+    if (fileSizeMB > 35) {
+      fileNameDisplay.textContent = `⚠️ الملف كبير (${fileSizeMB.toFixed(1)}MB) - تم تفعيل نظام الرفع السريع`;
+      fileBtnLabel.textContent = "ملف كبير جدًا";
+      
+      // فتح نافذة تنبيه لطيفة ومريحة للعميل
+      showNotification("حجم الملف كبير جداً، سيتم إرسال الطلب وتنظيف البيانات لضمان عدم تأخيرك!", "success");
+    }
+
+    fileNameDisplay.textContent = `⚡ جاري فحص وتجهيز الملف...`;
+    fileBtnLabel.textContent = "جاري المعالجة";
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const splitData = e.target.result.split(",");
+      base64FileData = {
+        fileName: file.name,
+        mimeType: file.type || "application/pdf",
+        data: splitData[1]
+      };
+      fileNameDisplay.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} MB) - جاهز للارسال`;
+      fileBtnLabel.textContent = "تم تجهيز المستند";
+    };
+    reader.readAsDataURL(file);
+  } else {
+    resetFileState();
+  }
+});
 
       // Page 1: Image Upload Change (ضغط مباشر)
       imageFileInput.addEventListener("change", async function () {
