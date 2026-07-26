@@ -536,28 +536,14 @@
         }
       });
 
-// دالة رفع الملفات المحدثة التي تتخطى قيود الـ CORS وتمنع خطأ Failed to fetch
-async function uploadFileToCloud(file) {
-  const formData = new FormData();
-  formData.append("file", file);
-
-  // استخدام خدمة pixeldrain الممتازة والمفتوحة للرفع المباشر
-  const res = await fetch(`https://transfer.sh/${encodeURIComponent(file.name)}`, {
-    method: "PUT",
-    body: file
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
   });
-
-  if (res.ok) {
-    const data = await res.json();
-    if (data && data.id) {
-      // يعيد رابطاً مباشراً وقابلاً للضغط ينتهي برابط أزرق في Airtable
-      return `https://pixeldrain.com/u/${data.id}`;
-    }
-  }
-  
-  throw new Error("فشل رفع الملف، يرجى إعادة المحاولة.");
 }
-
       fileInput.addEventListener("change", function () {
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
@@ -739,19 +725,34 @@ async function uploadFileToCloud(file) {
 
         try {
           if (currentPage === 'page1') {
-            if (fileInput.files && fileInput.files.length > 0) {
-              const docUrl = await uploadFileToCloud(fileInput.files[0]);
-              airtableFields["رابط المستند"] = docUrl;
-            }
-            if (imageFileInput.files && imageFileInput.files.length > 0) {
-              const imgUrl = await uploadFileToCloud(imageFileInput.files[0]);
-              airtableFields["رابط الصورة"] = imgUrl;
-            }
-          } else if (currentPage === 'page3') {
-            if (tshirtInput.files && tshirtInput.files.length > 0) {
-              const tshirtUrl = await uploadFileToCloud(tshirtInput.files[0]);
-              airtableFields["رابط تصميم التجارة"] = tshirtUrl;
-            }
+  if (fileInput.files && fileInput.files.length > 0) {
+    const base64File = await fileToBase64(fileInput.files[0]);
+    airtableFields["رابط المستند"] = [
+      {
+        url: base64File,
+        filename: fileInput.files[0].name
+      }
+    ];
+  }
+  if (imageFileInput.files && imageFileInput.files.length > 0) {
+    const base64Img = await fileToBase64(imageFileInput.files[0]);
+    airtableFields["رابط الصورة"] = [
+      {
+        url: base64Img,
+        filename: imageFileInput.files[0].name
+      }
+    ];
+  }
+} else if (currentPage === 'page3') {
+  if (tshirtInput.files && tshirtInput.files.length > 0) {
+    const base64Tshirt = await fileToBase64(tshirtInput.files[0]);
+    airtableFields["رابط تصميم التجارة"] = [
+      {
+        url: base64Tshirt,
+        filename: tshirtInput.files[0].name
+      }
+    ];
+  }
           }
 
           // Send to Airtable API
