@@ -16,8 +16,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     
-    <!-- Dynamic Manifest Link for PWA & File Share Target -->
-    <link id="manifestLink" rel="manifest" />
+    <!-- Manifest Link for PWA & File Share Target -->
+    <link rel="manifest" href="./manifest.json" />
     <meta name="theme-color" content="#0e1d3e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -38,7 +38,7 @@
       .animate-marquee-right {
         display: inline-block;
         white-space: nowrap;
-        animation: marqueeRight 40s linear infinite;
+        animation: marqueeRight 35s linear infinite;
         will-change: transform;
       }
 
@@ -444,157 +444,18 @@
 
     </div>
 
-    <!-- نافذة تعليمات تثبيت الآيفون والأنظمة الأخرى -->
-    <div id="iosInstallModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-      <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl space-y-4 relative">
-        <button id="closeModalBtn" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600 text-lg w-8 h-8 rounded-full flex items-center justify-center">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-        <div class="w-14 h-14 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center mx-auto text-2xl">
-          <i class="fa-solid fa-mobile-screen-button"></i>
-        </div>
-        <h3 class="text-base font-bold text-slate-800">تثبيت التطبيق ومشاركة الملفات</h3>
-        <p class="text-xs text-slate-600 leading-relaxed text-right">
-          لتثبيت تطبيق <span class="font-bold text-[#0e1d3e]">مكتبة حنجيك</span> وإظهاره في قائمة مشاركة الملفات:
-        </p>
-        <ol class="text-xs text-slate-700 space-y-2.5 text-right bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-          <li class="flex items-center gap-2">
-            <span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">1</span>
-            <span>احرص على رفع الموقع على رابط <strong>HTTPS</strong> حقيقي (مثل Netlify).</span>
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">2</span>
-            <span>افتح القائمة أو اضغط <i class="fa-solid fa-ellipsis-vertical text-amber-600 mx-1"></i> ثم اختر <strong>"إضافة إلى الشاشة الرئيسية"</strong>.</span>
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">3</span>
-            <span>سيظهر التطبيق فوراً في خيارات مشاركة المستندات!</span>
-          </li>
-        </ol>
-        <button id="gotItBtn" class="w-full py-3 bg-amber-500 text-white text-xs font-bold rounded-2xl shadow-md hover:bg-amber-600 transition-all">
-          حسناً، فهمت
-        </button>
-      </div>
-    </div>
-
+    <!-- Script JavaScript -->
     <script>
-      // 1. Dynamic Web Manifest matching exact user configuration
-      const manifestData = {
-        "name": "مكتبة حنجيك",
-        "short_name": "مكتبة حنجيك",
-        "description": "استمارة لإرسال البيانات والملفات",
-        "start_url": "./",
-        "scope": "./",
-        "display": "standalone",
-        "orientation": "portrait",
-        "background_color": "#ffffff",
-        "theme_color": "#0e1d3e",
-        "dir": "rtl",
-        "lang": "ar",
-        "icons": [
-          {
-            "src": "https://cdn-icons-png.flaticon.com/512/3079/3079927.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "any maskable"
-          },
-          {
-            "src": "https://cdn-icons-png.flaticon.com/512/3079/3079927.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any maskable"
-          }
-        ],
-        "share_target": {
-          "action": "./share-target/",
-          "method": "POST",
-          "enctype": "multipart/form-data",
-          "params": {
-            "title": "title",
-            "text": "text",
-            "files": [
-              {
-                "name": "shared_file",
-                "accept": [
-                  "image/*",
-                  "application/pdf",
-                  "application/msword",
-                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                  "*/*"
-                ]
-              }
-            ]
-          }
-        }
-      };
-
-      try {
-        const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
-        const manifestURL = URL.createObjectURL(manifestBlob);
-        document.getElementById('manifestLink').setAttribute('href', manifestURL);
-      } catch (e) {
-        console.warn("Manifest dynamic injection notice:", e);
-      }
-
-      // 2. Service Worker matching exact user provided logic
+      // 1. تسجيل الـ Service Worker للمشاركات المباشرة
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          const swCode = `
-            const CACHE_NAME = "shared-files-cache";
-
-            self.addEventListener("install", (event) => {
-              self.skipWaiting();
-            });
-
-            self.addEventListener("activate", (event) => {
-              event.waitUntil(self.clients.claim());
-            });
-
-            self.addEventListener("fetch", (event) => {
-              const url = new URL(event.request.url);
-
-              if (event.request.method === "POST" && (url.pathname.includes("share-target") || url.pathname.endsWith("/share-target/"))) {
-                event.respondWith(handleShareTarget(event));
-              } else {
-                event.respondWith(fetch(event.request));
-              }
-            });
-
-            async function handleShareTarget(event) {
-              try {
-                const formData = await event.request.formData();
-                const file = formData.get("shared_file");
-
-                if (file && file.size > 0) {
-                  const cache = await caches.open(CACHE_NAME);
-                  await cache.put("/shared-file", new Response(file, {
-                    headers: { 
-                      "Content-Type": file.type || "application/octet-stream",
-                      "x-filename": encodeURIComponent(file.name || "ملف_مشارك")
-                    }
-                  }));
-                }
-              } catch (err) {
-                console.error("فشل التقاط الملف المشارك:", err);
-              }
-
-              return Response.redirect("./?shared=true", 303);
-            }
-          `;
-          
-          try {
-            // First try registering external sw.js if hosted, or fallback to dynamic Blob
-            navigator.serviceWorker.register('./sw.js').catch(() => {
-              const swBlob = new Blob([swCode], { type: 'application/javascript' });
-              navigator.serviceWorker.register(URL.createObjectURL(swBlob));
-            });
-          } catch(e) {
-            console.warn('SW registration fallback:', e);
-          }
+          navigator.serviceWorker.register('./sw.js').catch(err => {
+            console.error('فشل تسجيل Service Worker:', err);
+          });
         });
       }
 
-      // 3. Handle Auto-Loading Shared Files when Opened via Share Sheet (?shared=true)
+      // 2. قراءة الملف المشارك عند فتح التطبيق من زر المشاركة
       window.addEventListener('load', async () => {
         const urlParams = new URLSearchParams(window.location.search);
         if ((urlParams.get('shared') === 'true' || urlParams.has('shared')) && 'caches' in window) {
@@ -611,34 +472,33 @@
 
               const file = new File([blob], fileName, { type: blob.type || "application/octet-stream" });
               
-              // Set shared file into fileInput automatically
               const dataTransfer = new DataTransfer();
               dataTransfer.items.add(file);
               const fileInputEl = document.getElementById("fileInput");
               fileInputEl.files = dataTransfer.files;
               fileInputEl.dispatchEvent(new Event('change'));
               
-              // Switch to Page 1 (File Print)
               switchPage('page1');
               showNotification("تم استقبال الملف المشارك بنجاح!", "success");
 
-              // Clear cache
               await cache.delete('/shared-file');
             }
           } catch (e) {
-            console.error("Error reading shared file:", e);
+            console.error("خطأ أثناء قراءة الملف المشارك:", e);
           }
         }
       });
 
       let currentPage = 'page1';
 
-      // Credentials for Airtable & Google Script
+      // مفاتيح Airtable و Google Script
       const AIRTABLE_BASE_ID = "appvf5K46bOeaHCSi";
       const AIRTABLE_PAT = "patUu1uQVpYg8D4WC.722278de7df9f267e84f7dba56f8004cbb0aa34e946cc2a4619fbd05245fa04c";
+      
+      // ضع رابط غوغل سكربت المباشر هنا
       const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2_c3ubwJ1VALZHRTr9QnxdxK5GJvpha-k5GxyyJX08a0Xf6VMQ-madmZ5SeVhH2XaOA/exec";
 
-      // Function to post data directly to Airtable
+      // دالة الإرسال إلى Airtable
       async function sendToAirtable(fieldsData) {
         const fields = {};
         for (const [key, val] of Object.entries(fieldsData)) {
@@ -677,7 +537,7 @@
         return { success, error: lastErr };
       }
 
-      // Page Switching Logic
+      // التبديل بين التبويبات
       function switchPage(pageId) {
         currentPage = pageId;
         ['page1', 'page2', 'page3'].forEach(p => {
@@ -723,7 +583,6 @@
       const statusMessage = document.getElementById("statusMessage");
       const cancelBtn = document.getElementById("cancelBtn");
 
-      // File Inputs
       const fileInput = document.getElementById("fileInput");
       const fileNameDisplay = document.getElementById("fileNameDisplay");
       const fileBtnLabel = document.getElementById("fileBtnLabel");
@@ -739,22 +598,13 @@
       const tshirtPreview = document.getElementById("tshirtPreview");
       const removeTshirtBtn = document.getElementById("removeTshirtBtn");
 
-      // PWA & Installation Modal
       const installContainer = document.getElementById("installContainer");
       const pwaInstallBtn = document.getElementById("pwaInstallBtn");
-      const iosInstallModal = document.getElementById("iosInstallModal");
-      const closeModalBtn = document.getElementById("closeModalBtn");
-      const gotItBtn = document.getElementById("gotItBtn");
       let deferredPrompt = null;
 
       let base64FileData = null;
       let base64ImageData = null;
       let base64TshirtData = null;
-
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-      if (isStandalone) {
-        installContainer.classList.add('hidden');
-      }
 
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
@@ -770,13 +620,8 @@
             installContainer.classList.add('hidden');
           }
           deferredPrompt = null;
-        } else {
-          iosInstallModal.classList.remove('hidden');
         }
       });
-
-      closeModalBtn.addEventListener('click', () => iosInstallModal.classList.add('hidden'));
-      gotItBtn.addEventListener('click', () => iosInstallModal.classList.add('hidden'));
 
       async function compressImage(file, maxWidth = 1200, quality = 0.75) {
         return new Promise((resolve, reject) => {
@@ -1029,7 +874,7 @@
         try {
           let driveFileUrl = "";
 
-          // 1. Send file to Google Apps Script to upload to Google Drive
+          // 1. رفع الملف إلى Google Apps Script
           try {
             const response = await fetch(GOOGLE_SCRIPT_URL, {
               redirect: "follow",
@@ -1045,10 +890,10 @@
               driveFileUrl = result.fileUrl || result.url || result.driveUrl;
             }
           } catch (gScriptErr) {
-            console.warn("Google Drive upload notice:", gScriptErr);
+            console.warn("Google Drive Upload Notice:", gScriptErr);
           }
 
-          // 2. Prepare plain text fields for Airtable
+          // 2. إعداد البيانات لـ Airtable
           const airtableFields = {
             "الخدمة": payload["الخدمة"] || "",
             "الاسم الثلاثي": payload["الاسم الثلاثي"] || "",
@@ -1060,17 +905,13 @@
             airtableFields["طباعة كتب"] = payload["طباعة كتب"];
           }
 
-          // Save Google Drive Link into Airtable field as blue URL
+          // حفظ رابط درايف الأزرق في Airtable
           if (driveFileUrl) {
             airtableFields["رابط المستند / الصورة"] = driveFileUrl;
             airtableFields["الملف"] = driveFileUrl;
-          } else if (payload.fileData) {
-            airtableFields["اسم الملف"] = payload.fileData.fileName;
-          } else if (payload.tshirtFileData) {
-            airtableFields["اسم الملف"] = payload.tshirtFileData.fileName;
           }
 
-          // 3. Post directly to Airtable
+          // 3. الإرسال إلى Airtable مباشرة
           await sendToAirtable(airtableFields);
 
           showNotification("تم إرسال البيانات بنجاح وحفظها، شكراً لك!", "success");
