@@ -536,24 +536,25 @@
         }
       });
 
-      // دالة رفع المستندات/الصور واستخراج رابط أزرق مباشر
-      async function uploadFileToCloud(file) {
-        const formData = new FormData();
-        formData.append("file", file);
+      // دالة رفع الملفات والصور والحصول على رابط أزرق مباشر
+async function uploadFileToCloud(file) {
+  const formData = new FormData();
+  formData.append("reqtype", "fileupload");
+  formData.append("fileToUpload", file);
 
-        const res = await fetch("https://file.io", {
-          method: "POST",
-          body: formData
-        });
+  // استخدام خدمة Catbox المباشرة
+  const res = await fetch("https://catbox.moe/user/api.php", {
+    method: "POST",
+    body: formData
+  });
 
-        const data = await res.json();
-
-        if (data && data.success && data.link) {
-          return data.link;
-        } else {
-          throw new Error("فشل رفع الملف للحصول على الرابط.");
-        }
-      }
+  if (res.ok) {
+    const fileUrl = await res.text(); // يعيد الرابط المباشر للملف
+    return fileUrl.trim(); // يُحفظ كـ URL أزرق في Airtable
+  } else {
+    throw new Error("فشل رفع الملف، يرجى المحاولة لاحقاً.");
+  }
+}
 
       fileInput.addEventListener("change", function () {
         if (this.files && this.files.length > 0) {
