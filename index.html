@@ -4,11 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>مكتبتي - نموذج الطلبات</title>
-    <!-- Tailwind CSS -->
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
+    
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <!-- Google Font Cairo -->
+    
+    <!-- Google Font: Cairo -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -24,6 +27,7 @@
       body {
         font-family: 'Cairo', sans-serif;
         background-color: #f1f5f9;
+        -webkit-tap-highlight-color: transparent;
       }
       
       @keyframes marqueeRight {
@@ -34,7 +38,7 @@
       .animate-marquee-right {
         display: inline-block;
         white-space: nowrap;
-        animation: marqueeRight 45s linear infinite;
+        animation: marqueeRight 40s linear infinite;
         will-change: transform;
       }
 
@@ -46,8 +50,8 @@
   </head>
   <body class="min-h-screen bg-slate-200/60 flex flex-col items-center justify-start py-2 sm:py-6 px-2 sm:px-4">
     
-    <!-- شريط الصلاة على النبي (تصميم أبيض مريح للعين) -->
-    <div class="marquee-container w-full max-w-md bg-white text-slate-800 py-2.5 px-3 rounded-2xl shadow-sm mb-3 overflow-hidden border border-slate-200/80 flex items-center">
+    <!-- شريط الصلاة على النبي (تصميم أبيض ناصع ومريح للعين) -->
+    <div class="marquee-container w-full max-w-md bg-white text-slate-800 py-2.5 px-3 rounded-2xl shadow-sm mb-3 overflow-hidden border border-slate-200/90 flex items-center">
       <div class="w-full overflow-hidden relative flex items-center">
         <div class="animate-marquee-right font-bold text-xs tracking-wide flex items-center gap-6">
           <span class="text-slate-800">✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
@@ -60,7 +64,7 @@
     <!-- Main Card Container -->
     <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden mb-6">
       
-      <!-- الهيدر الداكن المطابق للصورة تماماً -->
+      <!-- الهيدر الكحلي الغامق المطابق للصورة تماماً -->
       <div class="bg-[#121d33] text-white px-6 py-7 text-center rounded-t-3xl relative">
         <div class="flex items-center justify-center gap-3 mb-1.5">
           <h1 class="text-2xl font-black tracking-tight text-white">مكتبتي - نموذج الطلبات</h1>
@@ -180,7 +184,7 @@
               <p id="copiesError1" class="text-[10px] text-red-500 font-bold mt-1 hidden">الرجاء إدخال عدد نسخ صحيح (رقم أكبر من 0).</p>
             </div>
 
-            <!-- رفع مستند (جميع أنواع الملفات) -->
+            <!-- رفع مستند (يقبل جميع الملفات دون أي قيود) -->
             <div>
               <label class="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1">
                 رفع مستند <span class="text-red-500 font-bold">*</span>
@@ -224,7 +228,7 @@
               </div>
             </div>
 
-            <!-- إضافة ملاحظات (اختياري) -->
+            <!-- إضافة ملاحظات (اختياري) - بحد أقصى 10 كلمات -->
             <div>
               <div class="flex justify-between items-center mb-1.5">
                 <label class="text-xs font-bold text-slate-800">إضافة ملاحظات (اختياري)</label>
@@ -451,20 +455,20 @@
         </div>
         <h3 class="text-base font-bold text-slate-800">تثبيت التطبيق ومشاركة الملفات</h3>
         <p class="text-xs text-slate-600 leading-relaxed text-right">
-          لتثبيت تطبيق <span class="font-bold text-[#121d33]">مكتبتي</span> للتمكن من إرسال الملفات إليه مباشرة عند ضغط (مشاركة/Share) من أي تطبيق:
+          لتثبيت تطبيق <span class="font-bold text-[#121d33]">مكتبتي</span> وإظهاره في قائمة مشاركة الملفات:
         </p>
         <ol class="text-xs text-slate-700 space-y-2.5 text-right bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
           <li class="flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">1</span>
-            <span>افتح القائمة أو اضغط زر المشاركة <i class="fa-solid fa-share-nodes text-amber-600 mx-1"></i> في متصفحك.</span>
+            <span>احرص على رفع الموقع على رابط <strong>HTTPS</strong> حقيقي (مثل Netlify).</span>
           </li>
           <li class="flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">2</span>
-            <span>اختر <span class="font-bold">"إضافة إلى الشاشة الرئيسية"</span> أو <span class="font-bold">"تثبيت التطبيق"</span>.</span>
+            <span>افتح القائمة أو اضغط <i class="fa-solid fa-ellipsis-vertical text-amber-600 mx-1"></i> ثم اختر <strong>"إضافة إلى الشاشة الرئيسية"</strong>.</span>
           </li>
           <li class="flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">3</span>
-            <span>سيصبح تطبيق مكتبتي متاحاً للتبادل والمشاركة المباشرة!</span>
+            <span>سيظهر التطبيق فوراً في خيارات مشاركة المستندات!</span>
           </li>
         </ol>
         <button id="gotItBtn" class="w-full py-3 bg-amber-500 text-white text-xs font-bold rounded-2xl shadow-md hover:bg-amber-600 transition-all">
@@ -505,11 +509,15 @@
         }
       };
 
-      const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
-      const manifestURL = URL.createObjectURL(manifestBlob);
-      document.getElementById('manifestLink').setAttribute('href', manifestURL);
+      try {
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        document.getElementById('manifestLink').setAttribute('href', manifestURL);
+      } catch (e) {
+        console.warn("Manifest dynamic injection notice:", e);
+      }
 
-      // 2. Service Worker for Offline & Handling Incoming Shared Files
+      // 2. Service Worker for Handling Incoming Shared Files
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           const swCode = `
@@ -535,8 +543,12 @@
               }
             });
           `;
-          const swBlob = new Blob([swCode], { type: 'application/javascript' });
-          navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(err => console.log(err));
+          try {
+            const swBlob = new Blob([swCode], { type: 'application/javascript' });
+            navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(err => console.log('SW Register:', err));
+          } catch(e) {
+            console.warn('SW Blob error:', e);
+          }
         });
       }
 
@@ -555,8 +567,9 @@
               // Set shared file into fileInput automatically
               const dataTransfer = new DataTransfer();
               dataTransfer.items.add(file);
-              fileInput.files = dataTransfer.files;
-              fileInput.dispatchEvent(new Event('change'));
+              const fileInputEl = document.getElementById("fileInput");
+              fileInputEl.files = dataTransfer.files;
+              fileInputEl.dispatchEvent(new Event('change'));
               
               // Switch to Page 1 (File Print)
               switchPage('page1');
@@ -578,7 +591,7 @@
       const AIRTABLE_PAT = "patUu1uQVpYg8D4WC.722278de7df9f267e84f7dba56f8004cbb0aa34e946cc2a4619fbd05245fa04c";
       const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2_c3ubwJ1VALZHRTr9QnxdxK5GJvpha-k5GxyyJX08a0Xf6VMQ-madmZ5SeVhH2XaOA/exec";
 
-      // Function to post data to Airtable
+      // Function to post data directly to Airtable
       async function sendToAirtable(fieldsData) {
         const fields = {};
         for (const [key, val] of Object.entries(fieldsData)) {
@@ -770,7 +783,7 @@
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
           if (!file.type.startsWith('image/')) {
-            alert('يرجى اختيار ملف صورة فقط.');
+            showNotification('يرجى اختيار ملف صورة فقط للصورة الإضافية.', 'error');
             resetImageState();
             return;
           }
@@ -800,7 +813,7 @@
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
           if (!file.type.startsWith('image/')) {
-            alert('يرجى اختيار ملف صورة فقط لطباعة التيشرت أو الكوب.');
+            showNotification('يرجى اختيار ملف صورة فقط لطباعة التيشرت أو الكوب.', 'error');
             resetTshirtState();
             return;
           }
@@ -1000,7 +1013,7 @@
             airtableFields["طباعة كتب"] = payload["طباعة كتب"];
           }
 
-          // Save Google Drive Link into Airtable field
+          // Save Google Drive Link into Airtable field as blue URL
           if (driveFileUrl) {
             airtableFields["رابط المستند / الصورة"] = driveFileUrl;
             airtableFields["الملف"] = driveFileUrl;
