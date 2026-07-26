@@ -22,7 +22,7 @@
      
       /* حركة الشريط من اليسار إلى اليمين بشكل بطيء وهادئ */
       @keyframes marqueeRight {
-        0% { transform: translateX(-100%); }
+        0% { transform: translateX(100%); }
         100% { transform: translateX(100%); }
       }
 
@@ -419,9 +419,9 @@
       let currentPage = 'page1';
 
       // Airtable Configurations
-      const AIRTABLE_PAT = "patUu1uQVpYg8D4WC.8d00055191e557ccc45087144d9d12fc60857c23d44a34b450bf1438ce5eb9e9";
+      const AIRTABLE_PAT = "patUu1uQVpYg8D4WC.a33a5904fbc46781df5b014f62d65042a4c9e60e7e7f7479005332e3383fd873";
       const AIRTABLE_BASE_ID = "appvf5K46bOeaHCSi";
-      const AIRTABLE_TABLE_NAME = "Table 1";
+      const AIRTABLE_TABLE_NAME = "طلبات الطباعة";
 
       // Page Switching Logic
       function switchPage(pageId) {
