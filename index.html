@@ -542,7 +542,7 @@ async function uploadFileToCloud(file) {
   formData.append("file", file);
 
   // استخدام خدمة pixeldrain الممتازة والمفتوحة للرفع المباشر
-  const res = await fetch(`https://pixeldrain.com/api/file/${encodeURIComponent(file.name)}`, {
+  const res = await fetch(`https://transfer.sh/${encodeURIComponent(file.name)}`, {
     method: "PUT",
     body: file
   });
