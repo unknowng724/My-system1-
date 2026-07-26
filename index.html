@@ -536,24 +536,26 @@
         }
       });
 
-      // دالة رفع الملفات والصور والحصول على رابط أزرق مباشر
+// دالة رفع الملفات المحدثة التي تتخطى قيود الـ CORS وتمنع خطأ Failed to fetch
 async function uploadFileToCloud(file) {
   const formData = new FormData();
-  formData.append("reqtype", "fileupload");
-  formData.append("fileToUpload", file);
+  formData.append("file", file);
 
-  // استخدام خدمة Catbox المباشرة
-  const res = await fetch("https://catbox.moe/user/api.php", {
-    method: "POST",
-    body: formData
+  // استخدام خدمة pixeldrain الممتازة والمفتوحة للرفع المباشر
+  const res = await fetch(`https://pixeldrain.com/api/file/${encodeURIComponent(file.name)}`, {
+    method: "PUT",
+    body: file
   });
 
   if (res.ok) {
-    const fileUrl = await res.text(); // يعيد الرابط المباشر للملف
-    return fileUrl.trim(); // يُحفظ كـ URL أزرق في Airtable
-  } else {
-    throw new Error("فشل رفع الملف، يرجى المحاولة لاحقاً.");
+    const data = await res.json();
+    if (data && data.id) {
+      // يعيد رابطاً مباشراً وقابلاً للضغط ينتهي برابط أزرق في Airtable
+      return `https://pixeldrain.com/u/${data.id}`;
+    }
   }
+  
+  throw new Error("فشل رفع الملف، يرجى إعادة المحاولة.");
 }
 
       fileInput.addEventListener("change", function () {
