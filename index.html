@@ -417,16 +417,87 @@
 
     <script>
       // ⚠️ ضع رابط Web App الخاص بـ Google Apps Script الذي أنشأته هنا
-      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw1yhCdW4Chdy2RU5L1mJ9AvxaB5BBWlvOSi2uWtELERPfplIpLNsYDa5IKrbkdhLtH/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw1yhCdW4Chdy2RU5L1mJ9AvxaB5BBWlvOSi2uWtELERPfplIpLNsYDa5IKrbkdhLtH/exec";
 
-      let currentPage = 'page1';
+// تحويل الملف إلى Base64
+function fileToRawBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = (error) => reject(error);
+  });
+}
 
-      // Switch Page Tabs Logic
-      function switchPage(pageId) {
-        currentPage = pageId;
-        ['page1', 'page2', 'page3'].forEach(p => {
-          document.getElementById(p).classList.add('hidden');
-        });
+form.addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  let airtableFields = {};
+  let selectedFile = null;
+
+  if (currentPage === 'page1') {
+    airtableFields = {
+      "النوع": "طباعة ملفات",
+      "الاسم": document.getElementById('fullName1').value.trim(),
+      "عدد النسخ": parseInt(document.getElementById('copiesCount1').value.trim()) || 1,
+      "الملاحظات": document.getElementById('notes1').value.trim()
+    };
+    if (fileInput.files.length > 0) selectedFile = fileInput.files[0];
+    else if (imageFileInput.files.length > 0) selectedFile = imageFileInput.files[0];
+  } else if (currentPage === 'page2') {
+    airtableFields = {
+      "النوع": "كتب مدرسية",
+      "الاسم": document.getElementById('fullName2').value.trim(),
+      "الكتاب/الصف": document.getElementById('bookPrint').value,
+      "عدد النسخ": parseInt(document.getElementById('copiesCount2').value.trim()) || 1,
+      "الملاحظات": document.getElementById('notes2').value.trim()
+    };
+  } else if (currentPage === 'page3') {
+    airtableFields = {
+      "النوع": "تيشرت / كوب",
+      "الاسم": document.getElementById('fullName3').value.trim(),
+      "الملاحظات": document.getElementById('notes3').value.trim()
+    };
+    if (tshirtInput.files.length > 0) selectedFile = tshirtInput.files[0];
+  }
+
+  submitBtn.disabled = true;
+  submitText.textContent = "جاري إرسال الطلب ورفع الملف...";
+  spinner.classList.remove("hidden");
+
+  try {
+    const formData = new FormData();
+    formData.append("fields", JSON.stringify(airtableFields));
+
+    if (selectedFile) {
+      const base64Data = await fileToRawBase64(selectedFile);
+      formData.append("fileData", base64Data);
+      formData.append("fileName", selectedFile.name);
+      formData.append("mimeType", selectedFile.type);
+    }
+
+    // إرسال البيانات بأسلوب no-cors لتجاوز حظر المتصفح نهائياً
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: formData
+    });
+
+    // بما أن mode هو no-cors يعتبر الطلب ناجحاً فوراً عند عدم حدوث انقطاع
+    statusMessage.className = "p-2.5 rounded-xl text-center text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 block";
+    statusMessage.textContent = "تم إرسال الطلب بنجاح!";
+    form.reset();
+
+  } catch (err) {
+    console.error(err);
+    statusMessage.className = "p-2.5 rounded-xl text-center text-xs font-bold bg-red-100 text-red-800 border border-red-200 block";
+    statusMessage.textContent = "حدث خطأ أثناء الإرسال، يرجى المحاولة لاحقاً.";
+  } finally {
+    submitBtn.disabled = false;
+    submitText.textContent = "إرسال البيانات";
+    spinner.classList.add("hidden");
+  }
+});
         document.getElementById(pageId).classList.remove('hidden');
 
         const btn1 = document.getElementById('tabBtn1');
