@@ -621,7 +621,7 @@ fileInput.addEventListener("change", async function () {
         mimeType: file.type || "application/pdf",
         data: splitData[1]
       };
-      fileNameDisplay.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} MB) - جاهز للارسال`;
+      fileNameDisplay.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} kB) - جاهز للارسال`;
       fileBtnLabel.textContent = "تم تجهيز المستند";
     };
     reader.readAsDataURL(file);
