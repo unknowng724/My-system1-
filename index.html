@@ -545,12 +545,11 @@
       async function compressImage(file, maxWidth = 1200, quality = 0.7) {
         if (!file || !file.type.startsWith('image/')) return null;
 
-        // محاولة استخدام مكتبة browser-image-compression أولاً لضغط فائق السرعة
         if (window.imageCompression) {
           try {
             const options = {
-              maxSizeMB: 0.3,          // أقصى حجم للصورة بعد الضغط (300 كيلوبايت فقط)
-              maxWidthOrHeight: maxWidth, // تصغير أبعاد الصورة
+              maxSizeMB: 0.3,
+              maxWidthOrHeight: maxWidth,
               useWebWorker: true,
               initialQuality: quality
             };
@@ -567,7 +566,6 @@
           }
         }
 
-        // في حال عدم توفر المكتبة، استخدام الـ Canvas كخيار احتياطي ممتاز
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.readAsDataURL(file);
@@ -594,35 +592,35 @@
         });
       }
 
-// Page 1: Document Upload Change مع فحص الحجم المباشر
-fileInput.addEventListener("change", function () {
-  if (this.files && this.files.length > 0) {
-    const file = this.files[0];
-    const maxSizeBytes = 25 * 1024 * 1024; // حد أقصى 25 ميجابايت لضمان عدم تجاوز سيرفرات جوجل
+      // Page 1: Document Upload Change
+      fileInput.addEventListener("change", function () {
+        if (this.files && this.files.length > 0) {
+          const file = this.files[0];
+          const maxSizeBytes = 25 * 1024 * 1024;
 
-    if (file.size > maxSizeBytes) {
-      alert("تنبيه: حجم الملف كبير جداً (" + (file.size / (1024 * 1024)).toFixed(1) + " ميجابايت).\nالحد الأقصى المسموح به للرفع المباشر هو 25 ميجابايت لضمان سرعة الإرسال بدون أخطاء.");
-      resetFileState();
-      return;
-    }
+          if (file.size > maxSizeBytes) {
+            alert("تنبيه: حجم الملف كبير جداً (" + (file.size / (1024 * 1024)).toFixed(1) + " ميجابايت).\nالحد الأقصى المسموح به للرفع المباشر هو 25 ميجابايت لضمان سرعة الإرسال بدون أخطاء.");
+            resetFileState();
+            return;
+          }
 
-    fileNameDisplay.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-    fileBtnLabel.textContent = "تم اختيار المستند";
+          fileNameDisplay.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+          fileBtnLabel.textContent = "تم اختيار المستند";
 
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const splitData = e.target.result.split(",");
-      base64FileData = {
-        fileName: file.name,
-        mimeType: splitData[0].match(/:(\w.+);/)[1],
-        data: splitData[1]
-      };
-    };
-    reader.readAsDataURL(file);
-  } else {
-    resetFileState();
-  }
-});
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const splitData = e.target.result.split(",");
+            base64FileData = {
+              fileName: file.name,
+              mimeType: splitData[0].match(/:(\w.+);/)[1],
+              data: splitData[1]
+            };
+          };
+          reader.readAsDataURL(file);
+        } else {
+          resetFileState();
+        }
+      });
 
       // Page 1: Image Upload Change (ضغط مباشر)
       imageFileInput.addEventListener("change", async function () {
@@ -762,108 +760,131 @@ fileInput.addEventListener("change", function () {
         statusMessage.textContent = "";
       }
 
-form.addEventListener("submit", async function (e) {
-  e.preventDefault();
+      // دالة رفع الملفات الكبيرة على أجزاء (Resumable Chunked Upload)
+      async function uploadFileInChunks(file, scriptUrl) {
+        const chunkSize = 2 * 1024 * 1024; // تقسيم إلى قطع بحجم 2 ميجابايت
+        const totalChunks = Math.ceil(file.size / chunkSize);
+        const fileId = "file_" + Date.now();
+        let finalUrl = "";
 
-  let isValid = true;
-  let payload = {};
+        for (let index = 0; index < totalChunks; index++) {
+          const start = index * chunkSize;
+          const end = Math.min(start + chunkSize, file.size);
+          const chunk = file.slice(start, end);
 
-  // 1. التحقق من المدخلات حسب التبويب النشط
-  if (currentPage === 'page1') {
-    const nameOk = validateField(document.getElementById('fullName1'), document.getElementById('nameError1'), val => val && isArabicOnly(val));
-    const copiesOk = validateField(document.getElementById('copiesCount1'), document.getElementById('copiesError1'), val => parseInt(val) > 0);
-    const notesOk = validateField(document.getElementById('notes1'), document.getElementById('notesError1'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
+          submitText.textContent = `جاري رفع المستند... (${Math.round(((index + 1) / totalChunks) * 100)}%)`;
 
-    if (!nameOk || !copiesOk || !notesOk) isValid = false;
+          const base64Data = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result.split(',')[1]);
+            reader.readAsDataURL(chunk);
+          });
 
-    payload = {
-      "الخدمة": "طباعة ملفات",
-      "الاسم الثلاثي": document.getElementById('fullName1').value.trim(),
-      "عدد النسخ": parseInt(document.getElementById('copiesCount1').value, 10),
-      "الملاحظات": document.getElementById('notes1').value.trim(),
-      imageData: base64ImageData
-    };
+          const payload = {
+            action: "uploadChunk",
+            fileId: fileId,
+            chunkIndex: index,
+            totalChunks: totalChunks,
+            fileName: file.name,
+            mimeType: file.type || "application/octet-stream",
+            data: base64Data
+          };
 
-  } else if (currentPage === 'page2') {
-    const nameOk = validateField(document.getElementById('fullName2'), document.getElementById('nameError2'), val => val && isArabicOnly(val));
-    const bookOk = validateField(document.getElementById('bookPrint'), document.getElementById('bookError'), val => val !== "");
-    const copiesOk = validateField(document.getElementById('copiesCount2'), document.getElementById('copiesError2'), val => parseInt(val) > 0);
-    const notesOk = validateField(document.getElementById('notes2'), document.getElementById('notesError2'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
+          const response = await fetch(scriptUrl, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+          });
 
-    if (!nameOk || !bookOk || !copiesOk || !notesOk) isValid = false;
+          const res = await response.json();
+          if (res.status === "completed") {
+            finalUrl = res.fileUrl;
+          }
+        }
 
-    payload = {
-      "الخدمة": "طباعة كتب مدرسية",
-      "الاسم الثلاثي": document.getElementById('fullName2').value.trim(),
-      "طباعة كتب": document.getElementById('bookPrint').value,
-      "عدد النسخ": parseInt(document.getElementById('copiesCount2').value, 10),
-      "الملاحظات": document.getElementById('notes2').value.trim()
-    };
+        return finalUrl;
+      }
 
-  } else if (currentPage === 'page3') {
-    const nameOk = validateField(document.getElementById('fullName3'), document.getElementById('nameError3'), val => val && isArabicOnly(val));
-    const tshirtOk = base64TshirtData !== null;
-    if (!tshirtOk) document.getElementById('tshirtError').classList.remove('hidden');
-    else document.getElementById('tshirtError').classList.add('hidden');
-    const notesOk = validateField(document.getElementById('notes3'), document.getElementById('notesError3'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-    if (!nameOk || !tshirtOk || !notesOk) isValid = false;
+        let isValid = true;
+        let payload = {};
 
-    payload = {
-      "الخدمة": "طباعة تيشرت او كوب",
-      "الاسم الثلاثي": document.getElementById('fullName3').value.trim(),
-      "الملاحظات": document.getElementById('notes3').value.trim(),
-      tshirtFileData: base64TshirtData
-    };
-  }
+        // 1. التحقق من المدخلات حسب التبويب النشط
+        if (currentPage === 'page1') {
+          const nameOk = validateField(document.getElementById('fullName1'), document.getElementById('nameError1'), val => val && isArabicOnly(val));
+          const copiesOk = validateField(document.getElementById('copiesCount1'), document.getElementById('copiesError1'), val => parseInt(val) > 0);
+          const notesOk = validateField(document.getElementById('notes1'), document.getElementById('notesError1'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
 
-  if (!isValid) {
-    showNotification("يرجى التأكد من استكمال كافة الحقول المطلوبة بشكل صحيح.", "error");
-    return;
-  }
+          if (!nameOk || !copiesOk || !notesOk) isValid = false;
 
-  submitBtn.disabled = true;
-  spinner.classList.remove("hidden");
-  submitText.textContent = "جاري الإرسال...";
-  statusMessage.classList.add("hidden");
+          payload = {
+            "الخدمة": "طباعة ملفات",
+            "الاسم الثلاثي": document.getElementById('fullName1').value.trim(),
+            "عدد النسخ": parseInt(document.getElementById('copiesCount1').value, 10),
+            "الملاحظات": document.getElementById('notes1').value.trim(),
+            imageData: base64ImageData
+          };
 
-  try {
-    // 2. إذا كان هناك مستند في الصفحة الأولى، يتم رفعه أولاً بتقنية الأجزاء (Chunk Upload)
-    if (currentPage === 'page1' && fileInput.files && fileInput.files.length > 0) {
-      const uploadedUrl = await uploadFileInChunks(fileInput.files[0], GOOGLE_SCRIPT_URL);
-      payload.fileUrl = uploadedUrl;
-    }
+        } else if (currentPage === 'page2') {
+          const nameOk = validateField(document.getElementById('fullName2'), document.getElementById('nameError2'), val => val && isArabicOnly(val));
+          const bookOk = validateField(document.getElementById('bookPrint'), document.getElementById('bookError'), val => val !== "");
+          const copiesOk = validateField(document.getElementById('copiesCount2'), document.getElementById('copiesError2'), val => parseInt(val) > 0);
+          const notesOk = validateField(document.getElementById('notes2'), document.getElementById('notesError2'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
 
-    // 3. إرسال باقي البيانات لجدول جوجل (Google Sheets)
-    submitText.textContent = "جاري حفظ البيانات...";
-    const response = await fetch(GOOGLE_SCRIPT_URL, {
-      redirect: "follow",
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
+          if (!nameOk || !bookOk || !copiesOk || !notesOk) isValid = false;
 
-    const result = await response.json();
+          payload = {
+            "الخدمة": "طباعة كتب مدرسية",
+            "الاسم الثلاثي": document.getElementById('fullName2').value.trim(),
+            "طباعة كتب": document.getElementById('bookPrint').value,
+            "عدد النسخ": parseInt(document.getElementById('copiesCount2').value, 10),
+            "الملاحظات": document.getElementById('notes2').value.trim()
+          };
 
-    if (result.status === "success") {
-      showNotification(result.message || "تم إرسال البيانات بنجاح، شكراً لك!", "success");
-      form.reset();
-      resetFileState();
-      resetImageState();
-      resetTshirtState();
-      ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
-    } else {
-      throw new Error(result.message || "فشلت عملية الإرسال.");
-    }
-  } catch (error) {
-    console.error("Submission error:", error);
-    showNotification("حدث خطأ أثناء الإرسال: " + error.message, "error");
-  } finally {
-    submitBtn.disabled = false;
-    spinner.classList.add("hidden");
-    submitText.textContent = "إرسال البيانات";
-  }
-});
+        } else if (currentPage === 'page3') {
+          const nameOk = validateField(document.getElementById('fullName3'), document.getElementById('nameError3'), val => val && isArabicOnly(val));
+          const tshirtOk = base64TshirtData !== null;
+          if (!tshirtOk) document.getElementById('tshirtError').classList.remove('hidden');
+          else document.getElementById('tshirtError').classList.add('hidden');
+          const notesOk = validateField(document.getElementById('notes3'), document.getElementById('notesError3'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
+
+          if (!nameOk || !tshirtOk || !notesOk) isValid = false;
+
+          payload = {
+            "الخدمة": "طباعة تيشرت او كوب",
+            "الاسم الثلاثي": document.getElementById('fullName3').value.trim(),
+            "الملاحظات": document.getElementById('notes3').value.trim(),
+            tshirtFileData: base64TshirtData
+          };
+        }
+
+        if (!isValid) {
+          showNotification("يرجى التأكد من استكمال كافة الحقول المطلوبة بشكل صحيح.", "error");
+          return;
+        }
+
+        submitBtn.disabled = true;
+        spinner.classList.remove("hidden");
+        submitText.textContent = "جاري الإرسال...";
+        statusMessage.classList.add("hidden");
+
+        try {
+          // 2. إذا كان هناك مستند في الصفحة الأولى، يتم رفعه أولاً بتقنية الأجزاء (Chunk Upload)
+          if (currentPage === 'page1' && fileInput.files && fileInput.files.length > 0) {
+            const uploadedUrl = await uploadFileInChunks(fileInput.files[0], GOOGLE_SCRIPT_URL);
+            payload.fileUrl = uploadedUrl;
+          }
+
+          // 3. إرسال باقي البيانات لجدول جوجل (Google Sheets)
+          submitText.textContent = "جاري حفظ البيانات...";
+          const response = await fetch(GOOGLE_SCRIPT_URL, {
+            redirect: "follow",
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+          });
 
           const result = await response.json();
 
