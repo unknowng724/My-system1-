@@ -729,42 +729,51 @@
         submitText.textContent = "جاري معالجة الطلب...";
         statusMessage.classList.add("hidden");
 
-        try {
-          // 1. رفع المستند (إذا وُجد)
-          if (currentPage === 'page1' && fileInput.files && fileInput.files.length > 0) {
-            submitText.textContent = "🚀 جاري رفع المستند...";
-            payload["رابط الملف"] = await uploadToCloudinary(fileInput.files[0]);
-          }
+try {
+      let finalFileUrl = "";
 
-          // 2. رفع الصورة في الصفحة الأولى (إذا وُجدت)
-          if (currentPage === 'page1' && imageFileInput.files && imageFileInput.files.length > 0) {
-            submitText.textContent = "🚀 جاري رفع الصورة...";
-            payload["رابط الصورة"] = await uploadToCloudinary(imageFileInput.files[0]);
-          }
+      // 1. رفع المستند (إذا وجد)
+      if (currentPage === 'page1' && fileInput.files && fileInput.files.length > 0) {
+        submitText.textContent = "🚀 جاري رفع المستند...";
+        finalFileUrl = await uploadToCloudinary(fileInput.files[0]);
+      }
 
-          // 3. رفع صورة التصميم في الصفحة الثالثة (التيشرت/الكوب)
-          if (currentPage === 'page3' && tshirtInput.files && tshirtInput.files.length > 0) {
-            submitText.textContent = "🚀 جاري رفع صورة التصميم...";
-            payload["رابط الصورة"] = await uploadToCloudinary(tshirtInput.files[0]);
-          }
+      // 2. رفع الصورة في الصفحة الأولى (إذا وجدت)
+      if (currentPage === 'page1' && imageFileInput.files && imageFileInput.files.length > 0) {
+        submitText.textContent = "🚀 جاري رفع الصورة...";
+        const imgUrl = await uploadToCloudinary(imageFileInput.files[0]);
+        // إذا كان هناك ملف وصورة معاً ندمجهما بفاصل، أو نضع رابط الصورة
+        finalFileUrl = finalFileUrl ? `${finalFileUrl} | ${imgUrl}` : imgUrl;
+      }
 
-          // 4. إرسال البيانات المكتملة إلى Google Sheets
-          submitText.textContent = "جاري حفظ البيانات...";
-          await fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
+      // 3. رفع صورة التصميم في الصفحة الثالثة (التيشرت / الكوب)
+      if (currentPage === 'page3' && tshirtInput.files && tshirtInput.files.length > 0) {
+        submitText.textContent = "🚀 جاري رفع التصميم...";
+        finalFileUrl = await uploadToCloudinary(tshirtInput.files[0]);
+      }
 
-          showNotification("تم إرسال البيانات ورفع الملفات والصور بنجاح! ⚡", "success");
-          form.reset();
-          resetFileState();
-          resetImageState();
-          resetTshirtState();
-          ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
+      // نرسل الرابط النهائي باسم fileUrl وباسم رابط الملف لضمان استقباله في الشيت
+      payload.fileUrl = finalFileUrl;
+      payload["رابط الملف"] = finalFileUrl;
+      payload["رابط الملف / المرفقات"] = finalFileUrl;
 
-        } catch (error) {
+      // 4. إرسال البيانات المكتملة إلى Google Sheets
+      submitText.textContent = "جاري حفظ البيانات...";
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      showNotification("تم إرسال البيانات ورفع الملفات والصور بنجاح! ⚡", "success");
+      form.reset();
+      resetFileState();
+      resetImageState();
+      resetTshirtState();
+      ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
+
+    } catch (error) {
           console.error("Submission error:", error);
           showNotification("حدث خطأ أثناء الإرسال: " + error.message, "error");
         } finally {
