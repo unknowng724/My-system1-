@@ -541,24 +541,50 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFU
       });
 
 // ⚠️ ضع مفتاح الـ API الخاص بك من موقع UploadThing هنا
-
 async function uploadToUploadThing(file) {
-  // الخطوة الأولى: طلب رابط رفع مؤقت Presigned URL من UploadThing
-  const prepareRes = await fetch("https://uploadthing.com/api/uploadFiles", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-uploadthing-api-key": UPLOADTHING_SECRET
-    },
-    body: JSON.stringify({
-      files: [{ name: file.name, size: file.size, type: file.type }]
-    })
-  });
+  try {
+    // 1. طلب رابط الرفع من UploadThing
+    const prepareRes = await fetch("https://uploadthing.com/api/uploadFiles", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-uploadthing-api-key": UPLOADTHING_SECRET
+      },
+      body: JSON.stringify({
+        files: [{ name: file.name, size: file.size, type: file.type }]
+      })
+    });
 
-  if (!prepareRes.ok) {
-    throw new Error("فشل التواصل مع UploadThing لجلب رابط الرفع");
+    if (!prepareRes.ok) {
+      throw new Error("فشل التواصل مع UploadThing لجلب رابط الرفع");
+    }
+
+    const prepareData = await prepareRes.json();
+    const fileData = prepareData.data[0];
+
+    // 2. رفع الملف مباشرة إلى السحابة
+    const formData = new FormData();
+    if (fileData.fields) {
+      Object.keys(fileData.fields).forEach(key => formData.append(key, fileData.fields[key]));
+    }
+    formData.append("file", file);
+
+    const uploadRes = await fetch(fileData.url, {
+      method: "POST",
+      body: formData
+    });
+
+    if (!uploadRes.ok) {
+      throw new Error("فشل رفع الملف إلى سيرفر UploadThing");
+    }
+
+    // إرجاع رابط الملف النهائي
+    return fileData.fileUrl || fileData.url;
+  } catch (err) {
+    console.error("Upload Error:", err);
+    throw err;
   }
-
+}
   const prepareData = await prepareRes.json();
   const fileData = prepareData.data[0];
   const uploadUrl = fileData.url; // رابط الرفع المباشر
