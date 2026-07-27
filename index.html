@@ -420,7 +420,7 @@
     <script>
       // ⚠️ استبدل القيم أدناه ببيانات حسابك ⚠️
       // ⚠️ إعدادات الربط مع patrins.com ⚠️
-const PATRINS_API_TOKEN = "patrins_786f6e0d84e50e9575cb23e027bfe3f46b7e6bd7a4a7483360c9f86e2254b36d"; // 👈 ضع API Token هنا
+const PATRINS_API_TOKEN = "UPLOADTHING_TOKEN='eyJhcGlLZXkiOiJza19saXZlXzg1YWQwMjg1Yzk2MjE4MWE4NGI2MzI3MWYxMjhiZjU2Yzc2NTE2OGIyOWM2ZWFiZWUxY2QwNjZkYWY5NWJjYTMiLCJhcHBJZCI6InF1NjNrM3lkajciLCJyZWdpb25zIjpbInNlYTEiXX0='"; // 👈 ضع API Token هنا
 const PATRINS_UPLOAD_URL = "https://patrins.com/api/v1/upload"; // 👈 رابط الـ API للرفع الخاص بـ patrins
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFUrfYvcEUTd9aEjinX8Ca4KDKOGWOvL6HwCaK4q71IR2VB2cEgnFkgtQ/exec";
 
@@ -539,7 +539,7 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFU
         }
       });
 
-async function uploadToPatrins(file) {
+async function uploadToUploadThing(file) {
   const formData = new FormData();
   formData.append("file", file); // أو الاسم الذي تتطلبه وثائق patrins للـ API
 
@@ -738,13 +738,13 @@ try {
       // 1. رفع المستند (إذا وجد)
       if (currentPage === 'page1' && fileInput.files && fileInput.files.length > 0) {
         submitText.textContent = "🚀 جاري رفع المستند...";
-        finalFileUrl = await uploadToPatrins(fileInput.files[0]);
+        finalFileUrl = await uploadToUploadThing(fileInput.files[0]);
       }
 
       // 2. رفع الصورة في الصفحة الأولى (إذا وجدت)
       if (currentPage === 'page1' && imageFileInput.files && imageFileInput.files.length > 0) {
         submitText.textContent = "🚀 جاري رفع الصورة...";
-        const imgUrl = await uploadToPatrins(imageFileInput.files[0]);
+        const imgUrl = await uploadToUploadThing(imageFileInput.files[0]);
         // إذا كان هناك ملف وصورة معاً ندمجهما بفاصل، أو نضع رابط الصورة
         finalFileUrl = finalFileUrl ? `${finalFileUrl} | ${imgUrl}` : imgUrl;
       }
@@ -752,7 +752,7 @@ try {
       // 3. رفع صورة التصميم في الصفحة الثالثة (التيشرت / الكوب)
       if (currentPage === 'page3' && tshirtInput.files && tshirtInput.files.length > 0) {
         submitText.textContent = "🚀 جاري رفع التصميم...";
-        finalFileUrl = await uploadToPatrins(tshirtInput.files[0]);
+        finalFileUrl = await uploadToUploadThing(tshirtInput.files[0]);
       }
 
       // نرسل الرابط النهائي باسم fileUrl وباسم رابط الملف لضمان استقباله في الشيت
