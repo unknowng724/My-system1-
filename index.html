@@ -420,10 +420,11 @@
     <script>
       // ⚠️ استبدل القيم أدناه ببيانات حسابك ⚠️
       // ⚠️ إعدادات الربط مع patrins.com ⚠️
-const PATRINS_API_TOKEN = "UPLOADTHING_TOKEN='eyJhcGlLZXkiOiJza19saXZlXzg1YWQwMjg1Yzk2MjE4MWE4NGI2MzI3MWYxMjhiZjU2Yzc2NTE2OGIyOWM2ZWFiZWUxY2QwNjZkYWY5NWJjYTMiLCJhcHBJZCI6InF1NjNrM3lkajciLCJyZWdpb25zIjpbInNlYTEiXX0='"; // 👈 ضع API Token هنا
-const PATRINS_UPLOAD_URL = "https://patrins.com/api/v1/upload"; // 👈 رابط الـ API للرفع الخاص بـ patrins
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFUrfYvcEUTd9aEjinX8Ca4KDKOGWOvL6HwCaK4q71IR2VB2cEgnFkgtQ/exec";
+// ⚠️ مفتاح الـ API الخاص بـ UploadThing بعد فك التشفير ⚠️
+const UPLOADTHING_SECRET = "sk_live_85ad0285c962181a84b63271f128bf56c765168b29c6eabee1cd066daf95bca3"; 
 
+// ⚠️ رابط Google Apps Script لحفظ البيانات في الشيت ⚠️
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFUrfYvcEUTd9aEjinX8Ca4KDKOGWOvL6HwCaK4q71IR2VB2cEgnFkgtQ/exec";
       let currentPage = 'page1';
 
       function switchPage(pageId) {
@@ -539,22 +540,49 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFU
         }
       });
 
-async function uploadToUploadThing(file) {
-  const formData = new FormData();
-  formData.append("file", file); // أو الاسم الذي تتطلبه وثائق patrins للـ API
+// ⚠️ ضع مفتاح الـ API الخاص بك من موقع UploadThing هنا
+const UPLOADTHING_SECRET = "sk_live_...ضع_المفتاح_هنا..."; 
 
-  const res = await fetch(PATRINS_UPLOAD_URL, {
+async function uploadToUploadThing(file) {
+  // الخطوة الأولى: طلب رابط رفع مؤقت Presigned URL من UploadThing
+  const prepareRes = await fetch("https://uploadthing.com/api/uploadFiles", {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${PATRINS_API_TOKEN}` // 👈 تمرير التوكن
+      "Content-Type": "application/json",
+      "x-uploadthing-api-key": UPLOADTHING_SECRET
     },
+    body: JSON.stringify({
+      files: [{ name: file.name, size: file.size, type: file.type }]
+    })
+  });
+
+  if (!prepareRes.ok) {
+    throw new Error("فشل التواصل مع UploadThing لجلب رابط الرفع");
+  }
+
+  const prepareData = await prepareRes.json();
+  const fileData = prepareData.data[0];
+  const uploadUrl = fileData.url; // رابط الرفع المباشر
+  const fields = fileData.fields; // البيانات المطلوبة للرفع
+  const fileUrl = fileData.fileUrl; // الرابط النهائي للملف الذي سيُحفظ
+
+  // الخطوة الثانية: رفع الملف مباشرة إلى السحابة بدون مشاكل CORS
+  const formData = new FormData();
+  Object.keys(fields).forEach(key => formData.append(key, fields[key]));
+  formData.append("file", file);
+
+  const uploadRes = await fetch(uploadUrl, {
+    method: "POST",
     body: formData
   });
 
-  if (!res.ok) {
-    const errData = await res.json().catch(() => ({}));
-    throw new Error(errData.message || "فشل الرفع إلى منصة patrins.com");
+  if (!uploadRes.ok) {
+    throw new Error("فشل رفع الملف إلى سيرفر UploadThing");
   }
+
+  // إعادة الرابط النهائي للملف لحفظه في شيت جوجل
+  return fileUrl; 
+}
 
   const data = await res.json();
   // إرجاع رابط الملف المرفوع حسب ما يعوده API منصة patrins (مثلاً: data.url أو data.link)
