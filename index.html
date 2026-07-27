@@ -419,9 +419,10 @@
 
     <script>
       // ⚠️ استبدل القيم أدناه ببيانات حسابك ⚠️
-      const CLOUD_NAME = "dl0dtuy8"; 
-      const UPLOAD_PRESET = "my_preset"; 
-      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFUrfYvcEUTd9aEjinX8Ca4KDKOGWOvL6HwCaK4q71IR2VB2cEgnFkgtQ/exec";
+      // ⚠️ إعدادات الربط مع patrins.com ⚠️
+const PATRINS_API_TOKEN = "ضع_التوكن_الخاص_بك_هنا"; // 👈 ضع API Token هنا
+const PATRINS_UPLOAD_URL = "https://patrins.com/api/v1/upload"; // 👈 رابط الـ API للرفع الخاص بـ patrins
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFUrfYvcEUTd9aEjinX8Ca4KDKOGWOvL6HwCaK4q71IR2VB2cEgnFkgtQ/exec";
 
       let currentPage = 'page1';
 
@@ -538,28 +539,27 @@
         }
       });
 
-async function uploadToCloudinary(file) {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", UPLOAD_PRESET);
+async function uploadToPatrins(file) {
+  const formData = new FormData();
+  formData.append("file", file); // أو الاسم الذي تتطلبه وثائق patrins للـ API
 
-    const isBig = file.size > 10 * 1024 * 1024;
-    const resourceType = file.type.startsWith('image/') ? 'image' : 'raw';
-    const endpoint = isBig ? 'upload_chunked' : 'upload';
+  const res = await fetch(PATRINS_UPLOAD_URL, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${PATRINS_API_TOKEN}` // 👈 تمرير التوكن
+    },
+    body: formData
+  });
 
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/${endpoint}`, {
-      method: "POST",
-      body: formData
-    });
-
-    if (!res.ok) {
-      const errData = await res.json();
-      throw new Error(errData.error?.message || "فشل الرفع إلى Cloudinary");
-    }
-    const data = await res.json();
-    return data.secure_url;
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || "فشل الرفع إلى منصة patrins.com");
   }
 
+  const data = await res.json();
+  // إرجاع رابط الملف المرفوع حسب ما يعوده API منصة patrins (مثلاً: data.url أو data.link)
+  return data.url || data.file_url || data.link; 
+        }
       // أحداث اختيار الملفات
       fileInput.addEventListener("change", function () {
         if (this.files && this.files.length > 0) {
