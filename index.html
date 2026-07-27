@@ -543,7 +543,7 @@ async function uploadToCloudinary(file) {
     formData.append("file", file);
     formData.append("upload_preset", UPLOAD_PRESET);
 
-    const isBig = file.size > 100 * 1024 * 1024;
+    const isBig = file.size > 10 * 1024 * 1024;
     const resourceType = file.type.startsWith('image/') ? 'image' : 'raw';
     const endpoint = isBig ? 'upload_chunked' : 'upload';
 
