@@ -32,11 +32,10 @@
       .animate-marquee-right {
         display: inline-block;
         white-space: nowrap;
-        animation: marqueeRight 50s linear infinite; /* سرعة هادئة ومنتظمة */
+        animation: marqueeRight 50s linear infinite;
         will-change: transform;
       }
 
-      /* إيقاف الحركة مؤقتاً عند التأشير أو اللمس */
       .marquee-container:hover .animate-marquee-right,
       .marquee-container:active .animate-marquee-right {
         animation-play-state: paused;
@@ -419,6 +418,11 @@
     </div>
 
     <script>
+      // ⚠️⚠️ استبدل هذه القيم ببيانات Cloudinary الخاصة بك ⚠️⚠️
+      const CLOUD_NAME = "dl0dtuy8"; 
+      const UPLOAD_PRESET = "my_preset"; 
+      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFUrfYvcEUTd9aEjinX8Ca4KDKOGWOvL6HwCaK4q71IR2VB2cEgnFkgtQ/exec";
+
       let currentPage = 'page1';
 
       function switchPage(pageId) {
@@ -472,11 +476,7 @@
       const pwaInstallBtn = document.getElementById("pwaInstallBtn");
       let deferredPrompt = null;
 
-      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFUrfYvcEUTd9aEjinX8Ca4KDKOGWOvL6HwCaK4q71IR2VB2cEgnFkgtQ/exec";
-
-      let base64FileData = null;
       let base64ImageData = null;
-      let base64TshirtData = null;
 
       // Register PWA Service Worker
       if ('serviceWorker' in navigator) {
@@ -541,7 +541,7 @@
         }
       });
 
-      // ⚡⚡ دالة ضغط الصور المباشرة المحدثة والمضمونة لتقليل الحجم بشكل مذهل ⚡⚡
+      // ⚡ دالة ضغط الصور ⚡
       async function compressImage(file, maxWidth = 1200, quality = 0.7) {
         if (!file || !file.type.startsWith('image/')) return null;
 
@@ -592,37 +592,34 @@
         });
       }
 
+      // ⚡🚀 دالة الرفع المباشر والسريع لـ Cloudinary 🚀⚡
+      async function uploadToCloudinary(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", UPLOAD_PRESET);
+
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, {
+          method: "POST",
+          body: formData
+        });
+
+        if (!res.ok) throw new Error("فشل الرفع السريع إلى Cloudinary");
+        const data = await res.json();
+        return data.secure_url; // رابط الملف المرفوع جاهزاً
+      }
+
       // Page 1: Document Upload Change
       fileInput.addEventListener("change", function () {
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
-          const maxSizeBytes = 25 * 1024 * 1024;
-
-          if (file.size > maxSizeBytes) {
-            alert("تنبيه: حجم الملف كبير جداً (" + (file.size / (1024 * 1024)).toFixed(1) + " ميجابايت).\nالحد الأقصى المسموح به للرفع المباشر هو 25 ميجابايت لضمان سرعة الإرسال بدون أخطاء.");
-            resetFileState();
-            return;
-          }
-
-          fileNameDisplay.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+          fileNameDisplay.textContent = `${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)`;
           fileBtnLabel.textContent = "تم اختيار المستند";
-
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            const splitData = e.target.result.split(",");
-            base64FileData = {
-              fileName: file.name,
-              mimeType: splitData[0].match(/:(\w.+);/)[1],
-              data: splitData[1]
-            };
-          };
-          reader.readAsDataURL(file);
         } else {
           resetFileState();
         }
       });
 
-      // Page 1: Image Upload Change (ضغط مباشر)
+      // Page 1: Image Upload Change
       imageFileInput.addEventListener("change", async function () {
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
@@ -642,7 +639,7 @@
               mimeType: "image/jpeg",
               data: splitData[1]
             };
-            imageNameDisplay.textContent = `${file.name} (تم تقليل الحجم بنجاح ⚡)`;
+            imageNameDisplay.textContent = `${file.name} (تم تجهيز الصورة ⚡)`;
             imageBtnLabel.textContent = "تم تجهيز الصورة";
           } catch (err) {
             console.error(err);
@@ -653,7 +650,7 @@
         }
       });
 
-      // Page 3: T-Shirt/Cup Image Upload (ضغط مباشر)
+      // Page 3: T-Shirt/Cup Image Upload
       tshirtInput.addEventListener("change", async function () {
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
@@ -668,14 +665,6 @@
 
           try {
             const compressedDataUrl = await compressImage(file, 1200, 0.7);
-            const splitData = compressedDataUrl.split(",");
-            
-            base64TshirtData = {
-              fileName: file.name.replace(/\.[^/.]+$/, "") + ".jpg",
-              mimeType: "image/jpeg",
-              data: splitData[1]
-            };
-
             tshirtPreview.src = compressedDataUrl;
             tshirtPreviewContainer.classList.remove("hidden");
             tshirtNameDisplay.textContent = `${file.name} (جاهز ومضغوط ⚡)`;
@@ -698,7 +687,6 @@
         fileInput.value = "";
         fileNameDisplay.textContent = "لم يتم اختيار أي مستند";
         fileBtnLabel.textContent = "اختر مستنداً لرفعه...";
-        base64FileData = null;
       }
 
       function resetImageState() {
@@ -714,7 +702,6 @@
         tshirtBtnLabel.textContent = "اختر صورة التصميم...";
         tshirtPreviewContainer.classList.add("hidden");
         tshirtPreview.src = "";
-        base64TshirtData = null;
       }
 
       // Word Counters & Arabic Checks
@@ -760,58 +747,14 @@
         statusMessage.textContent = "";
       }
 
-      // دالة رفع الملفات الكبيرة على أجزاء (Resumable Chunked Upload)
-      async function uploadFileInChunks(file, scriptUrl) {
-        const chunkSize = 2 * 1024 * 1024; // تقسيم إلى قطع بحجم 2 ميجابايت
-        const totalChunks = Math.ceil(file.size / chunkSize);
-        const fileId = "file_" + Date.now();
-        let finalUrl = "";
-
-        for (let index = 0; index < totalChunks; index++) {
-          const start = index * chunkSize;
-          const end = Math.min(start + chunkSize, file.size);
-          const chunk = file.slice(start, end);
-
-          submitText.textContent = `جاري رفع المستند... (${Math.round(((index + 1) / totalChunks) * 100)}%)`;
-
-          const base64Data = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (e) => resolve(e.target.result.split(',')[1]);
-            reader.readAsDataURL(chunk);
-          });
-
-          const payload = {
-            action: "uploadChunk",
-            fileId: fileId,
-            chunkIndex: index,
-            totalChunks: totalChunks,
-            fileName: file.name,
-            mimeType: file.type || "application/octet-stream",
-            data: base64Data
-          };
-
-          const response = await fetch(scriptUrl, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(payload)
-          });
-
-          const res = await response.json();
-          if (res.status === "completed") {
-            finalUrl = res.fileUrl;
-          }
-        }
-
-        return finalUrl;
-      }
-
+      // 📤 معالجة نموذج الإرسال المحدث 📤
       form.addEventListener("submit", async function (e) {
         e.preventDefault();
 
         let isValid = true;
         let payload = {};
 
-        // 1. التحقق من المدخلات حسب التبويب النشط
+        // 1. التحقق من المدخلات
         if (currentPage === 'page1') {
           const nameOk = validateField(document.getElementById('fullName1'), document.getElementById('nameError1'), val => val && isArabicOnly(val));
           const copiesOk = validateField(document.getElementById('copiesCount1'), document.getElementById('copiesError1'), val => parseInt(val) > 0);
@@ -845,7 +788,7 @@
 
         } else if (currentPage === 'page3') {
           const nameOk = validateField(document.getElementById('fullName3'), document.getElementById('nameError3'), val => val && isArabicOnly(val));
-          const tshirtOk = base64TshirtData !== null;
+          const tshirtOk = tshirtInput.files && tshirtInput.files.length > 0;
           if (!tshirtOk) document.getElementById('tshirtError').classList.remove('hidden');
           else document.getElementById('tshirtError').classList.add('hidden');
           const notesOk = validateField(document.getElementById('notes3'), document.getElementById('notesError3'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
@@ -855,8 +798,7 @@
           payload = {
             "الخدمة": "طباعة تيشرت او كوب",
             "الاسم الثلاثي": document.getElementById('fullName3').value.trim(),
-            "الملاحظات": document.getElementById('notes3').value.trim(),
-            tshirtFileData: base64TshirtData
+            "الملاحظات": document.getElementById('notes3').value.trim()
           };
         }
 
@@ -867,37 +809,40 @@
 
         submitBtn.disabled = true;
         spinner.classList.remove("hidden");
-        submitText.textContent = "جاري الإرسال...";
+        submitText.textContent = "جاري معالجة الطلب...";
         statusMessage.classList.add("hidden");
 
         try {
-          // 2. إذا كان هناك مستند في الصفحة الأولى، يتم رفعه أولاً بتقنية الأجزاء (Chunk Upload)
+          // 2. رفع المستند في الصفحة الأولى عبر Cloudinary فوراً ⚡
           if (currentPage === 'page1' && fileInput.files && fileInput.files.length > 0) {
-            const uploadedUrl = await uploadFileInChunks(fileInput.files[0], GOOGLE_SCRIPT_URL);
-            payload.fileUrl = uploadedUrl;
+            submitText.textContent = "🚀 جاري رفع المستند بسرعة فائقة...";
+            const fileUrl = await uploadToCloudinary(fileInput.files[0]);
+            payload.fileUrl = fileUrl;
           }
 
-          // 3. إرسال باقي البيانات لجدول جوجل (Google Sheets)
+          // 3. رفع صورة التصميم للتيشرت/الكوب عبر Cloudinary فوراً ⚡
+          if (currentPage === 'page3' && tshirtInput.files && tshirtInput.files.length > 0) {
+            submitText.textContent = "🚀 جاري رفع التصميم بسرعة فائقة...";
+            const tshirtUrl = await uploadToCloudinary(tshirtInput.files[0]);
+            payload.tshirtUrl = tshirtUrl;
+          }
+
+          // 4. إرسال باقي البيانات المباشرة والرابط لشيت جوجل (استجابة فورية)
           submitText.textContent = "جاري حفظ البيانات...";
-          const response = await fetch(GOOGLE_SCRIPT_URL, {
-            redirect: "follow",
+          await fetch(GOOGLE_SCRIPT_URL, {
             method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
           });
 
-          const result = await response.json();
+          showNotification("تم إرسال البيانات بنجاح وسرعة فائقة! ⚡", "success");
+          form.reset();
+          resetFileState();
+          resetImageState();
+          resetTshirtState();
+          ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
 
-          if (result.status === "success") {
-            showNotification(result.message || "تم إرسال البيانات بنجاح، شكراً لك!", "success");
-            form.reset();
-            resetFileState();
-            resetImageState();
-            resetTshirtState();
-            ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
-          } else {
-            throw new Error(result.message || "فشلت عملية الإرسال.");
-          }
         } catch (error) {
           console.error("Submission error:", error);
           showNotification("حدث خطأ أثناء الإرسال: " + error.message, "error");
