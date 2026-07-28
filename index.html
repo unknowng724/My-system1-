@@ -439,7 +439,7 @@
         const btn2 = document.getElementById('tabBtn2');
         const btn3 = document.getElementById('tabBtn3');
 
-        const inactiveStyle = "py-2.5 px-2 rounded-xl font-semibold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:text-[#0e1d3e] hover:bg-white/60 bg-transparent shadow-none";
+        const inactiveStyle = "py-2.5 px-2 rounded-xl font-semibold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60 bg-transparent shadow-none";
         const activeStyle = "py-2.5 px-2 rounded-xl font-bold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 bg-[#0e1d3e] text-white shadow-md active:scale-95";
 
         [btn1, btn2, btn3].forEach(btn => btn.className = inactiveStyle);
@@ -506,7 +506,7 @@
         deferredPrompt = null;
       });
 
-      // 📥 استقبال المشاركات الخارجية وضبطها في زر تحميل الملفات تلقائياً 📥
+      // Handle Shared Files Incoming
       window.addEventListener('DOMContentLoaded', async () => {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('shared') && 'caches' in window) {
@@ -536,7 +536,7 @@
               window.history.replaceState({}, document.title, "/");
             }
           } catch (err) {
-            console.error("فشل في قراءة الملف المشارك من الكاش:", err);
+            console.error("Failed to read shared file from cache:", err);
           }
         }
       });
