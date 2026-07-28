@@ -675,28 +675,27 @@
 
       // محاكاة شريط التقدم التفاعلي للانتظار
       function startProgressSimulation() {
-        progressBox.classList.remove("hidden");
-        progressBar.style.width = "5%";
-        progressPercent.textContent = "5%";
-        
-        let currentPercent = 5;
-        let secondsLeft = 45;
+  progressBox.classList.remove("hidden");
+  progressBar.style.width = "5%";
+  progressPercent.textContent = "5%";
+  
+  let currentPercent = 5;
+  let secondsLeft = 45;
 
-        progressTimer = setInterval(() => {
-          if (currentPercent < 90) {
-            currentPercent += Math.floor(Math.random() * 4) + 1;
-            if (currentPercent > 90) currentPercent = 90;
-            progressBar.style.width = `${currentPercent}%`;
-            progressPercent.textContent = `${currentPercent}%`;
-          }
+  progressTimer = setInterval(() => {
+    if (currentPercent < 90) {
+      currentPercent += Math.floor(Math.random() * 4) + 1;
+      if (currentPercent > 90) currentPercent = 90;
+      progressBar.style.width = `${currentPercent}%`;
+      progressPercent.textContent = `${currentPercent}%`;
+    }
 
-          if (secondsLeft > 3) {
-            secondsLeft -= 1;
-            timerText.textContent = `الزمان المتبقي: ~${secondsLeft}s`;
-          }
-        }, 1000);
+    if (secondsLeft > 3) {
+      secondsLeft -= 1;
+      timerText.textContent = `الزمان المتبقي: ~${secondsLeft}s`;
+    }
+  }, 1000);
       }
-
       function finishProgressSimulation() {
         if (progressTimer) clearInterval(progressTimer);
         progressBar.style.width = "100%";
