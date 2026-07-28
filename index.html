@@ -15,7 +15,7 @@
     <!-- Link to PWA Manifest for Web Share Target support -->
     <link rel="manifest" href="manifest.json" />
     
-    <!-- ⚡ مكتبة ضغط الصور الاحترافية فائقة السرعة من المتصفح ⚡ -->
+    <!-- مكتبة ضغط الصور الاحترافية فائقة السرعة من المتصفح -->
     <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
 
     <style>
@@ -23,7 +23,6 @@
         font-family: 'Cairo', sans-serif;
       }
       
-      /* حركة الشريط من اليسار إلى اليمين بشكل بطيء وهادئ */
       @keyframes marqueeRight {
         0% { transform: translateX(-100%); }
         100% { transform: translateX(100%); }
@@ -392,6 +391,24 @@
           </div>
         </div>
 
+        <!-- ⏳ شريط وشاشة التقدم الذكية عند الرفع ⏳ -->
+        <div id="progressBox" class="hidden p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
+          <div class="flex justify-between items-center text-xs font-bold text-amber-900">
+            <span id="progressText" class="flex items-center gap-1.5">
+              <i class="fa-solid fa-cloud-arrow-up animate-bounce text-[#f19124]"></i>
+              <span>جاري رفع الملف وحفظ الطلب...</span>
+            </span>
+            <span id="progressPercent" class="text-xs text-[#0e1d3e]">0%</span>
+          </div>
+          <div class="w-full bg-amber-200 h-2.5 rounded-full overflow-hidden">
+            <div id="progressBar" class="bg-gradient-to-r from-[#0e1d3e] to-[#f19124] h-full w-0 transition-all duration-300 rounded-full"></div>
+          </div>
+          <div class="flex justify-between text-[10px] text-amber-700 font-semibold pt-1">
+            <span>قد يستغرق الرفع حتى 60 ثانية حسب الحجم</span>
+            <span id="timerText">الزمان المتبقي: ~45s</span>
+          </div>
+        </div>
+
         <!-- Submission Feedback Message -->
         <div id="statusMessage" class="hidden p-2.5 rounded-xl text-center text-xs font-bold transition-all duration-300"></div>
 
@@ -418,10 +435,10 @@
     </div>
 
     <script>
-      // ⚠️ رابط Google Apps Script المباشر لحفظ الملفات والبيانات في Google Drive وشيت جوجل ⚠️
       const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFUrfYvcEUTd9aEjinX8Ca4KDKOGWOvL6HwCaK4q71IR2VB2cEgnFkgtQ/exec";
 
       let currentPage = 'page1';
+      let progressTimer = null;
 
       function switchPage(pageId) {
         currentPage = pageId;
@@ -468,12 +485,17 @@
       const tshirtPreview = document.getElementById("tshirtPreview");
       const removeTshirtBtn = document.getElementById("removeTshirtBtn");
 
+      const progressBox = document.getElementById("progressBox");
+      const progressBar = document.getElementById("progressBar");
+      const progressPercent = document.getElementById("progressPercent");
+      const progressText = document.getElementById("progressText");
+      const timerText = document.getElementById("timerText");
+
       // PWA Elements
       const installContainer = document.getElementById("installContainer");
       const pwaInstallBtn = document.getElementById("pwaInstallBtn");
       let deferredPrompt = null;
 
-      // Register PWA Service Worker
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
@@ -536,7 +558,6 @@
         }
       });
 
-      // ⚡ دالة تحويل الملف إلى Base64 ⚡
       function fileToBase64(file) {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
@@ -546,7 +567,6 @@
         });
       }
 
-      // أحداث اختيار الملفات
       fileInput.addEventListener("change", function () {
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
@@ -618,7 +638,6 @@
         tshirtPreview.src = "";
       }
 
-      // عداد الكلمات والتحقق
       ['1', '2', '3'].forEach(num => {
         const input = document.getElementById(`notes${num}`);
         const counter = document.getElementById(`wordCounter${num}`);
@@ -650,6 +669,42 @@
       function resetUIFeedback() {
         statusMessage.classList.add("hidden");
         statusMessage.textContent = "";
+        progressBox.classList.add("hidden");
+        if (progressTimer) clearInterval(progressTimer);
+      }
+
+      // محاكاة شريط التقدم التفاعلي للانتظار
+      function startProgressSimulation() {
+        progressBox.classList.remove("hidden");
+        progressBar.style.width = "5%";
+        progressPercent.textContent = "5%";
+        
+        let currentPercent = 5;
+        let secondsLeft = 45;
+
+        progressTimer = setInterval(() => {
+          if (currentPercent < 90) {
+            currentPercent += Math.floor(Math.random() * 4) + 1;
+            if (currentPercent > 90) currentPercent = 90;
+            progressBar.style.width = `${currentPercent}%`;
+            progressPercent.textContent = `${currentPercent}%`;
+          }
+
+          if (secondsLeft > 3) {
+            secondsLeft -= 1;
+            timerText.textContent = `الزمان المتبقي: ~${secondsLeft}s`;
+          }
+        }, 1000);
+      }
+
+      function finishProgressSimulation() {
+        if (progressTimer) clearInterval(progressTimer);
+        progressBar.style.width = "100%";
+        progressPercent.textContent = "100%";
+        timerText.textContent = "اكتمل الرفع!";
+        setTimeout(() => {
+          progressBox.classList.add("hidden");
+        }, 1200);
       }
 
       // 📤 إرسال البيانات المباشر إلى Google Apps Script 📤
@@ -658,7 +713,6 @@
 
         let isValid = true;
         let payload = {};
-
         let selectedFile = null;
 
         if (currentPage === 'page1') {
@@ -724,25 +778,40 @@
 
         submitBtn.disabled = true;
         spinner.classList.remove("hidden");
-        submitText.textContent = "جاري معالجة الطلب...";
+        submitText.textContent = "جاري المعالجة...";
         statusMessage.classList.add("hidden");
 
+        startProgressSimulation();
+
         try {
-          // تجهيز بيانات الملف إن وجد لرفعه مباشرة على Google Drive عبر السكربت
           if (selectedFile) {
-            submitText.textContent = "🚀 جاري معالجة المرفق...";
-            payload.fileData = await fileToBase64(selectedFile);
-            payload.fileName = selectedFile.name;
-            payload.fileType = selectedFile.type;
+            let fileToUpload = selectedFile;
+
+            // ضغط تلقائي إذا كانت صورة لتسريع العملية
+            if (selectedFile.type.startsWith('image/')) {
+              const options = {
+                maxSizeMB: 1.5,
+                maxWidthOrHeight: 2048,
+                useWebWorker: true
+              };
+              try {
+                fileToUpload = await imageCompression(selectedFile, options);
+              } catch (err) {
+                console.log("Image compression skipped:", err);
+              }
+            }
+
+            payload.fileData = await fileToBase64(fileToUpload);
+            payload.fileName = fileToUpload.name;
+            payload.fileType = fileToUpload.type;
           }
 
-          // 4. إرسال البيانات المكتملة إلى Google Script
-          submitText.textContent = "جاري حفظ البيانات...";
           await fetch(GOOGLE_SCRIPT_URL, {
             method: "POST",
             body: JSON.stringify(payload)
           });
 
+          finishProgressSimulation();
           showNotification("تم إرسال البيانات وحفظ الملف في Google Drive بنجاح! ⚡", "success");
           form.reset();
           resetFileState();
@@ -752,6 +821,8 @@
 
         } catch (error) {
           console.error("Submission error:", error);
+          if (progressTimer) clearInterval(progressTimer);
+          progressBox.classList.add("hidden");
           showNotification("حدث خطأ أثناء الإرسال: " + error.message, "error");
         } finally {
           submitBtn.disabled = false;
