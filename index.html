@@ -562,12 +562,9 @@
       throw new Error(data.detail || data.error || "المفتاح المرفق غير صحيح");
     }
 
-    // 👈 الرابط المباشر الصحيح والمضمون لفتح/تحميل الملف من شيت جوجل
+    // رابط مباشر بدون إضافة اسم الملف بآخره لتجنب خطأ Not Found
     return `https://ucarecdn.com/${data.file}/`;
   } catch (e) {
-    if (responseText.includes("UPLOADCARE") || responseText.includes("PUB_KEY")) {
-      throw new Error("مفتاح Uploadcare غير صحيح أو غير مفعل.");
-    }
     throw new Error("حدث خطأ أثناء الرفع: " + responseText);
   }
       }
