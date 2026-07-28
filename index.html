@@ -568,15 +568,49 @@
       }
 
       fileInput.addEventListener("change", function () {
-        if (this.files && this.files.length > 0) {
-          const file = this.files[0];
-          fileNameDisplay.textContent = `${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)`;
-          fileBtnLabel.textContent = "تم اختيار المستند";
-        } else {
-          resetFileState();
-        }
-      });
+  const compressBox = document.getElementById("pdfCompressAdvice");
+  
+  if (this.files && this.files.length > 0) {
+    const file = this.files[0];
+    const fileSizeMB = file.size / (1024 * 1024);
+    
+    fileNameDisplay.textContent = `${file.name} (${fileSizeMB.toFixed(1)} MB)`;
+    fileBtnLabel.textContent = "تم اختيار المستند";
 
+    // إذا كان الملف أكبر من أو يساوي 20 ميجابايت، نُظهر تنبيه وزر الضغط
+    if (fileSizeMB >= 20) {
+      if (!compressBox) {
+        // إنشاء كادر التنبيه والزر تلقائياً إذا لم يكن موجوداً
+        const adviceDiv = document.createElement("div");
+        adviceDiv.id = "pdfCompressAdvice";
+        adviceDiv.className = "mt-2 p-2.5 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-900 space-y-1.5 flex flex-col items-center text-center";
+        adviceDiv.innerHTML = `
+          <div class="font-bold text-amber-800">
+            ⚠️ تنبيه: حجم الملف كبير (${fileSizeMB.toFixed(1)} MB)
+          </div>
+          <p class="text-[11px] text-amber-700">
+            لضمان رفع الملف فوراً وبسرعة صاروخية، يُفضل ضغط حجمه مجاناً بنقرة واحدة:
+          </p>
+          <a href="https://www.ilovepdf.com/ar/compress_pdf" target="_blank" rel="noopener noreferrer" 
+             class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#f19124] hover:bg-orange-600 text-white font-bold text-[11px] rounded-lg shadow-sm transition-colors">
+            <i class="fa-solid fa-file-zipper"></i>
+            <span>اضغط هنا لضغط الملف أونلاين (iLovePDF)</span>
+          </a>
+        `;
+        fileInput.parentElement.parentElement.appendChild(adviceDiv);
+      } else {
+        compressBox.classList.remove("hidden");
+      }
+    } else {
+      // إخفاء التنبيه إذا كان الملف أصغر من 20 ميجابايت
+      if (compressBox) compressBox.classList.add("hidden");
+    }
+
+  } else {
+    resetFileState();
+    if (compressBox) compressBox.classList.add("hidden");
+  }
+});
       imageFileInput.addEventListener("change", function () {
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
