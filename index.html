@@ -18,6 +18,9 @@
     <!-- ⚡ مكتبة ضغط الصور الاحترافية فائقة السرعة من المتصفح ⚡ -->
     <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
 
+    <!-- ⚡ مكتبة Uploadcare للرفع السريع والمستقر ⚡ -->
+    <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
+
     <style>
       body {
         font-family: 'Cairo', sans-serif;
@@ -418,13 +421,12 @@
     </div>
 
     <script>
-      // ⚠️ استبدل القيم أدناه ببيانات حسابك ⚠️
-      // ⚠️ إعدادات الربط مع patrins.com ⚠️
-// ⚠️ مفتاح الـ API الخاص بـ UploadThing بعد فك التشفير ⚠️
-const UPLOADTHING_SECRET = "sk_live_85ad0285c962181a84b63271f128bf56c765168b29c6eabee1cd066daf95bca3"; 
+      // ⚠️ مفتاح الـ Public Key الخاص بـ Uploadcare ⚠️
+      const UPLOADCARE_PUBLIC_KEY = "ffe18d1f96aa7a0963d5";
 
-// ⚠️ رابط Google Apps Script لحفظ البيانات في الشيت ⚠️
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFUrfYvcEUTd9aEjinX8Ca4KDKOGWOvL6HwCaK4q71IR2VB2cEgnFkgtQ/exec";
+      // ⚠️ رابط Google Apps Script لحفظ البيانات في الشيت ⚠️
+      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFUrfYvcEUTd9aEjinX8Ca4KDKOGWOvL6HwCaK4q71IR2VB2cEgnFkgtQ/exec";
+
       let currentPage = 'page1';
 
       function switchPage(pageId) {
@@ -540,79 +542,16 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFU
         }
       });
 
-// ⚠️ ضع مفتاح الـ API الخاص بك من موقع UploadThing هنا
-async function uploadToUploadThing(file) {
-  try {
-    // 1. طلب رابط الرفع من UploadThing
-    const prepareRes = await fetch("https://uploadthing.com/api/uploadFiles", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-uploadthing-api-key": UPLOADTHING_SECRET
-      },
-      body: JSON.stringify({
-        files: [{ name: file.name, size: file.size, type: file.type }]
-      })
-    });
+      // ⚡ دالة الرفع باستعمال Uploadcare ⚡
+      async function uploadToUploadcare(file) {
+        const fileData = uploadcare.fileFrom('object', file, {
+          publicKey: UPLOADCARE_PUBLIC_KEY
+        });
 
-    if (!prepareRes.ok) {
-      throw new Error("فشل التواصل مع UploadThing لجلب رابط الرفع");
-    }
+        const info = await fileData.donePromise;
+        return info.cdnUrl; 
+      }
 
-    const prepareData = await prepareRes.json();
-    const fileData = prepareData.data[0];
-
-    // 2. رفع الملف مباشرة إلى السحابة
-    const formData = new FormData();
-    if (fileData.fields) {
-      Object.keys(fileData.fields).forEach(key => formData.append(key, fileData.fields[key]));
-    }
-    formData.append("file", file);
-
-    const uploadRes = await fetch(fileData.url, {
-      method: "POST",
-      body: formData
-    });
-
-    if (!uploadRes.ok) {
-      throw new Error("فشل رفع الملف إلى سيرفر UploadThing");
-    }
-
-    // إرجاع رابط الملف النهائي
-    return fileData.fileUrl || fileData.url;
-  } catch (err) {
-    console.error("Upload Error:", err);
-    throw err;
-  }
-}
-  const prepareData = await prepareRes.json();
-  const fileData = prepareData.data[0];
-  const uploadUrl = fileData.url; // رابط الرفع المباشر
-  const fields = fileData.fields; // البيانات المطلوبة للرفع
-  const fileUrl = fileData.fileUrl; // الرابط النهائي للملف الذي سيُحفظ
-
-  // الخطوة الثانية: رفع الملف مباشرة إلى السحابة بدون مشاكل CORS
-  const formData = new FormData();
-  Object.keys(fields).forEach(key => formData.append(key, fields[key]));
-  formData.append("file", file);
-
-  const uploadRes = await fetch(uploadUrl, {
-    method: "POST",
-    body: formData
-  });
-
-  if (!uploadRes.ok) {
-    throw new Error("فشل رفع الملف إلى سيرفر UploadThing");
-  }
-
-  // إعادة الرابط النهائي للملف لحفظه في شيت جوجل
-  return fileUrl; 
-}
-
-  const data = await res.json();
-  // إرجاع رابط الملف المرفوع حسب ما يعوده API منصة patrins (مثلاً: data.url أو data.link)
-  return data.url || data.file_url || data.link; 
-        }
       // أحداث اختيار الملفات
       fileInput.addEventListener("change", function () {
         if (this.files && this.files.length > 0) {
@@ -785,51 +724,50 @@ async function uploadToUploadThing(file) {
         submitText.textContent = "جاري معالجة الطلب...";
         statusMessage.classList.add("hidden");
 
-try {
-      let finalFileUrl = "";
+        try {
+          let finalFileUrl = "";
 
-      // 1. رفع المستند (إذا وجد)
-      if (currentPage === 'page1' && fileInput.files && fileInput.files.length > 0) {
-        submitText.textContent = "🚀 جاري رفع المستند...";
-        finalFileUrl = await uploadToUploadThing(fileInput.files[0]);
-      }
+          // 1. رفع المستند (إذا وجد)
+          if (currentPage === 'page1' && fileInput.files && fileInput.files.length > 0) {
+            submitText.textContent = "🚀 جاري رفع المستند...";
+            finalFileUrl = await uploadToUploadcare(fileInput.files[0]);
+          }
 
-      // 2. رفع الصورة في الصفحة الأولى (إذا وجدت)
-      if (currentPage === 'page1' && imageFileInput.files && imageFileInput.files.length > 0) {
-        submitText.textContent = "🚀 جاري رفع الصورة...";
-        const imgUrl = await uploadToUploadThing(imageFileInput.files[0]);
-        // إذا كان هناك ملف وصورة معاً ندمجهما بفاصل، أو نضع رابط الصورة
-        finalFileUrl = finalFileUrl ? `${finalFileUrl} | ${imgUrl}` : imgUrl;
-      }
+          // 2. رفع الصورة في الصفحة الأولى (إذا وجدت)
+          if (currentPage === 'page1' && imageFileInput.files && imageFileInput.files.length > 0) {
+            submitText.textContent = "🚀 جاري رفع الصورة...";
+            const imgUrl = await uploadToUploadcare(imageFileInput.files[0]);
+            finalFileUrl = finalFileUrl ? `${finalFileUrl} | ${imgUrl}` : imgUrl;
+          }
 
-      // 3. رفع صورة التصميم في الصفحة الثالثة (التيشرت / الكوب)
-      if (currentPage === 'page3' && tshirtInput.files && tshirtInput.files.length > 0) {
-        submitText.textContent = "🚀 جاري رفع التصميم...";
-        finalFileUrl = await uploadToUploadThing(tshirtInput.files[0]);
-      }
+          // 3. رفع صورة التصميم في الصفحة الثالثة (التيشرت / الكوب)
+          if (currentPage === 'page3' && tshirtInput.files && tshirtInput.files.length > 0) {
+            submitText.textContent = "🚀 جاري رفع التصميم...";
+            finalFileUrl = await uploadToUploadcare(tshirtInput.files[0]);
+          }
 
-      // نرسل الرابط النهائي باسم fileUrl وباسم رابط الملف لضمان استقباله في الشيت
-      payload.fileUrl = finalFileUrl;
-      payload["رابط الملف"] = finalFileUrl;
-      payload["رابط الملف / المرفقات"] = finalFileUrl;
+          // نرسل الرابط النهائي لحفظه في شيت جوجل
+          payload.fileUrl = finalFileUrl;
+          payload["رابط الملف"] = finalFileUrl;
+          payload["رابط الملف / المرفقات"] = finalFileUrl;
 
-      // 4. إرسال البيانات المكتملة إلى Google Sheets
-      submitText.textContent = "جاري حفظ البيانات...";
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+          // 4. إرسال البيانات المكتملة إلى Google Sheets
+          submitText.textContent = "جاري حفظ البيانات...";
+          await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
 
-      showNotification("تم إرسال البيانات ورفع الملفات والصور بنجاح! ⚡", "success");
-      form.reset();
-      resetFileState();
-      resetImageState();
-      resetTshirtState();
-      ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
+          showNotification("تم إرسال البيانات ورفع الملفات والصور بنجاح! ⚡", "success");
+          form.reset();
+          resetFileState();
+          resetImageState();
+          resetTshirtState();
+          ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
 
-    } catch (error) {
+        } catch (error) {
           console.error("Submission error:", error);
           showNotification("حدث خطأ أثناء الإرسال: " + error.message, "error");
         } finally {
