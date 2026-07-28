@@ -544,6 +544,7 @@
 
       // ⚡ دالة الرفع باستعمال Uploadcare ⚡
 
+
 async function uploadToUploadcare(file) {
   const formData = new FormData();
   formData.append("UPLOADCARE_PUB_KEY", UPLOADCARE_PUBLIC_KEY);
@@ -563,7 +564,6 @@ async function uploadToUploadcare(file) {
   // يرجع رابط الملف المباشر السريع
   return `https://ucarecdn.com/${data.file}/${encodeURIComponent(file.name)}`;
 }
-
       // أحداث اختيار الملفات
       fileInput.addEventListener("change", function () {
         if (this.files && this.files.length > 0) {
