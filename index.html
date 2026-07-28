@@ -674,28 +674,42 @@
       }
 
       // محاكاة شريط التقدم التفاعلي للانتظار
-      function startProgressSimulation() {
+function startProgressSimulation() {
   progressBox.classList.remove("hidden");
-  progressBar.style.width = "5%";
-  progressPercent.textContent = "5%";
+  progressBar.style.width = "2%";
+  progressPercent.textContent = "2%";
   
-  let currentPercent = 5;
-  let secondsLeft = 45;
+  let currentPercent = 2;
+  let secondsPassed = 0;
 
   progressTimer = setInterval(() => {
-    if (currentPercent < 90) {
-      currentPercent += Math.floor(Math.random() * 4) + 1;
-      if (currentPercent > 90) currentPercent = 90;
-      progressBar.style.width = `${currentPercent}%`;
-      progressPercent.textContent = `${currentPercent}%`;
+    secondsPassed++;
+
+    // زيادة النسبة تدريجياً وبطء الحركة كلما اقترب من النهاية ليتحرك بانتظام دون توقف
+    if (currentPercent < 70) {
+      currentPercent += 3; // حركة سريعة في البداية
+    } else if (currentPercent < 90) {
+      currentPercent += 1; // حركة متوسطة
+    } else if (currentPercent < 99) {
+      // بعد الـ 90% يتقدم خطوة بخطوة كل ثانيتين حتى لا يتوقف أبداً مهما كان الملف كبيراً
+      if (secondsPassed % 2 === 0) {
+        currentPercent += 1;
+      }
     }
 
-    if (secondsLeft > 3) {
-      secondsLeft -= 1;
-      timerText.textContent = `الزمان المتبقي: ~${secondsLeft}s`;
+    progressBar.style.width = `${currentPercent}%`;
+    progressPercent.textContent = `${currentPercent}%`;
+
+    // تحديث العداد الزمني بشكل تصاعدي واقعي
+    let estimatedLeft = Math.max(1, 60 - secondsPassed);
+    if (currentPercent >= 90) {
+      timerText.textContent = "جاري إنهاء الحفظ في Drive...";
+    } else {
+      timerText.textContent = `الزمان المتبقي: ~${estimatedLeft}s`;
     }
+
   }, 1000);
-      }
+}
       function finishProgressSimulation() {
         if (progressTimer) clearInterval(progressTimer);
         progressBar.style.width = "100%";
@@ -811,7 +825,7 @@
           });
 
           finishProgressSimulation();
-          showNotification("تم إرسال البيانات وحفظ الملف في Google Drive بنجاح! ⚡", "success");
+          showNotification("تم إرسال البيانات بنجاح! ⚡", "success");
           form.reset();
           resetFileState();
           resetImageState();
@@ -826,7 +840,7 @@
         } finally {
           submitBtn.disabled = false;
           spinner.classList.add("hidden");
-          submitText.textContent = "إرسال البيانات";
+          submitText.textContent = "إرسال مطبوعاتك";
         }
       });
 
