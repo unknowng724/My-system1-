@@ -81,40 +81,44 @@
       </div>
 
       <!-- أزرار التبويبات -->
-      <div class="grid grid-cols-3 gap-1.5 mb-6 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200/70 shadow-inner">
-        <button
-          type="button"
-          id="tabBtn1"
-          onclick="switchPage('page1')"
-          class="py-2.5 px-2 rounded-xl font-bold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 bg-[#cfa211] text-white shadow-md active:scale-95"
-        >
-          <i class="fa-solid fa-file-pdf text-sm"></i>
-          <span>طباعة ملفات</span>
-        </button>
+<!-- Tabs Container -->
+<div class="grid grid-cols-3 gap-3 mb-6">
+  <!-- التبويب الأول (النشط افتراضياً) -->
+  <button
+    type="button"
+    id="tabBtn1"
+    onclick="switchPage('page1', this)"
+    class="tab-btn relative py-3 px-2 rounded-2xl transition-all duration-300 ease-in-out flex flex-col items-center justify-center gap-2 active:scale-95 bg-[#cfa211] text-white shadow-lg shadow-[#cfa211]/40 scale-105 z-10 font-bold border-transparent"
+  >
+    <i class="fa-solid fa-file-pdf text-xl mb-1"></i>
+    <span>طباعة ملفات</span>
+  </button>
 
-        <button
-          type="button"
-          id="tabBtn2"
-          onclick="switchPage('page2')"
-          class="py-2.5 px-2 rounded-xl font-semibold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60 bg-transparent shadow-none"
-        >
-          <i class="fa-solid fa-book-open text-sm"></i>
-          <span>كتب مدرسية</span>
-        </button>
+  <!-- التبويب الثاني -->
+  <button
+    type="button"
+    id="tabBtn2"
+    onclick="switchPage('page2', this)"
+    class="tab-btn relative py-3 px-2 rounded-2xl transition-all duration-300 ease-in-out flex flex-col items-center justify-center gap-2 active:scale-95 bg-white text-slate-500 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 hover:text-[#cfa211] font-semibold"
+  >
+    <i class="fa-solid fa-book-open text-xl mb-1"></i>
+    <span>كتب مدرسية</span>
+  </button>
 
-        <button
-          type="button"
-          id="tabBtn3"
-          onclick="switchPage('page3')"
-          class="py-2.5 px-2 rounded-xl font-semibold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60 bg-transparent shadow-none"
-        >
-          <i class="fa-solid fa-shirt text-sm"></i>
-          <span>تيشرت / كوب</span>
-        </button>
-      </div>
+  <!-- التبويب الثالث -->
+  <button
+    type="button"
+    id="tabBtn3"
+    onclick="switchPage('page3', this)"
+    class="tab-btn relative py-3 px-2 rounded-2xl transition-all duration-300 ease-in-out flex flex-col items-center justify-center gap-2 active:scale-95 bg-white text-slate-500 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 hover:text-[#cfa211] font-semibold"
+  >
+    <i class="fa-solid fa-shirt text-xl mb-1"></i>
+    <span>تيشرت / كوب</span>
+  </button>
+</div>
 
-      <!-- Form Starts Here -->
-      <form id="dataForm" class="space-y-4" novalidate>
+<!-- Form Starts Here -->
+<form id="dataForm" class="space-y-4" novalidate>
         
         <!-- PAGE 1: طباعة ملفات -->
         <div id="page1" class="space-y-4">
