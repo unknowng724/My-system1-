@@ -449,10 +449,27 @@
       let currentPage = 'page1';
       let progressTimer = null;
 
-      function switchPage(pageId) {
-        currentPage = pageId;
-        ['page1', 'page2', 'page3'].forEach(p => {
-          document.getElementById(p).classList.add('hidden');
+
+  function switchPage(pageId, clickedBtn) {
+    // 1. إرجاع جميع الأزرار للشكل العادي (الكارت الأبيض غير المحدد)
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(btn => {
+      btn.className = "tab-btn relative py-3 px-2 rounded-2xl transition-all duration-300 ease-in-out flex flex-col items-center justify-center gap-2 active:scale-95 bg-white text-slate-500 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 hover:text-[#cfa211] font-semibold";
+    });
+    
+    // 2. إعطاء الزر المضغوط شكل التحديد (الكارت الذهبي البارز)
+    if (clickedBtn) {
+      clickedBtn.className = "tab-btn relative py-3 px-2 rounded-2xl transition-all duration-300 ease-in-out flex flex-col items-center justify-center gap-2 active:scale-95 bg-[#cfa211] text-white shadow-lg shadow-[#cfa211]/40 scale-105 z-10 font-bold border-transparent";
+    }
+
+    // 3. إخفاء جميع الصفحات
+    document.getElementById('page1').classList.add('hidden');
+    document.getElementById('page2').classList.add('hidden');
+    document.getElementById('page3').classList.add('hidden');
+    
+    // 4. إظهار الصفحة المطلوبة فقط
+    document.getElementById(pageId).classList.remove('hidden');
+  }
         });
         document.getElementById(pageId).classList.remove('hidden');
 
