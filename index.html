@@ -80,18 +80,46 @@
       </div>
 
       <!-- أزرار التبويبات --><!-- التبويبات -->
-<!-- حاوية التبويبات (الشكل 6) -->
-                    <div class="flex justify-center gap-4 mb-6">
-                        <button type="button" onclick="switchTab6(0, this, 'page1')" class="tab-btn-6 py-3 px-6 rounded-full flex items-center gap-2 transition-all duration-300 border bg-transparent text-slate-500 shadow-none border-transparent font-semibold">
-                            <i class="fa-solid fa-file-pdf"></i><span>ملفات</span>
-                        </button>
-                        <button type="button" onclick="switchTab6(1, this, 'page2')" class="tab-btn-6 py-3 px-6 rounded-full flex items-center gap-2 transition-all duration-300 border hover:bg-white/60 hover:shadow-sm bg-transparent text-slate-500 shadow-none border-transparent font-semibold">
-                            <i class="fa-solid fa-book-open"></i><span>كتب</span>
-                        </button>
-                        <button type="button" onclick="switchTab6(2, this, 'page3')" class="tab-btn-6 py-3 px-6 rounded-full flex items-center gap-2 transition-all duration-300 border hover:bg-white/60 hover:shadow-sm bg-white text-[#cfa211] shadow-md border-[#cfa211]/30 font-bold scale-105">
-                            <i class="fa-solid fa-shirt"></i><span>هدايا</span>
-                        </button>
-                    </div>
+
+<!-- Tabs Container -->
+<div class="grid grid-cols-3 gap-3 mb-6">
+  <!-- التبويب الأول (النشط افتراضياً) -->
+  <button
+    type="button"
+    id="tabBtn1"
+    onclick="switchPage('page1', this)"
+    class="tab-btn relative py-3 px-2 rounded-2xl transition-all duration-300 ease-in-out flex flex-col items-center justify-center gap-2 active:scale-95 bg-[#cfa211] text-white shadow-lg shadow-[#cfa211]/40 scale-105 z-10 font-bold border-transparent"
+  >
+    <i class="fa-solid fa-file-pdf text-xl mb-1"></i>
+    <span>طباعة ملفات</span>
+  </button>
+
+  <!-- التبويب الثاني -->
+  <button
+    type="button"
+    id="tabBtn2"
+    onclick="switchPage('page2', this)"
+    class="tab-btn relative py-3 px-2 rounded-2xl transition-all duration-300 ease-in-out flex flex-col items-center justify-center gap-2 active:scale-95 bg-white text-slate-500 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 hover:text-[#cfa211] font-semibold"
+  >
+    <i class="fa-solid fa-book-open text-xl mb-1"></i>
+    <span>كتب مدرسية</span>
+  </button>
+
+  <!-- التبويب الثالث -->
+  <button
+    type="button"
+    id="tabBtn3"
+    onclick="switchPage('page3', this)"
+    class="tab-btn relative py-3 px-2 rounded-2xl transition-all duration-300 ease-in-out flex flex-col items-center justify-center gap-2 active:scale-95 bg-white text-slate-500 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 hover:text-[#cfa211] font-semibold"
+  >
+    <i class="fa-solid fa-shirt text-xl mb-1"></i>
+    <span>تيشرت / كوب</span>
+  </button>
+</div>
+
+<!-- Form Starts Here -->
+<form id="dataForm" class="bg-slate-50 border border-slate-200 shadow-xl shadow-blue-100 rounded-3xl p-6 space-y-5" novalidate>
+  <!-- محتوى النموذج -->
         
         <!-- PAGE 1: طباعة ملفات -->
         <div id="page1" class="space-y-4">
@@ -408,28 +436,28 @@
 
 
 
-function switchTab6(index, btn, pageId) {
-                    const btns = document.querySelectorAll('.tab-btn-6');
-                    const activeClasses = ['bg-white', 'text-[#cfa211]', 'shadow-md', 'border-[#cfa211]/30', 'font-bold', 'scale-105'];
-                    const inactiveClasses = ['bg-transparent', 'text-slate-500', 'shadow-none', 'border-transparent', 'font-semibold'];
+function switchPage(pageId) {
+        currentPage = pageId;
+        ['page1', 'page2', 'page3'].forEach(p => {
+          document.getElementById(p).classList.add('hidden');   
+        });
+        document.getElementById(pageId).classList.remove('hidden');
 
-                    btns.forEach(b => {
-                        b.classList.remove(...activeClasses);
-                        b.classList.add(...inactiveClasses);
-                    });
+        const btn1 = document.getElementById('tabBtn1');
+        const btn2 = document.getElementById('tabBtn2');
+        const btn3 = document.getElementById('tabBtn3');
 
-                    btn.classList.remove(...inactiveClasses);
-                    btn.classList.add(...activeClasses);
-                    
-                    if(typeof currentPage !== 'undefined') currentPage = pageId;
-                    ['page1', 'page2', 'page3'].forEach(p => {
-                        const el = document.getElementById(p);
-                        if(el) el.classList.add('hidden');
-                    });
-                    const targetPage = document.getElementById(pageId);
-                    if(targetPage) targetPage.classList.remove('hidden');
-                    if(typeof resetUIFeedback === 'function') resetUIFeedback();
-                }
+        const inactiveStyle = "py-2.5 px-2 rounded-xl font-semibold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60 bg-transparent shadow-none";
+        const activeStyle = "py-2.5 px-2 rounded-xl font-bold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 bg-[#0e1d3e] text-white shadow-md active:scale-95";
+
+        [btn1, btn2, btn3].forEach(btn => btn.className = inactiveStyle);
+
+        if (pageId === 'page1') btn1.className = activeStyle;
+        else if (pageId === 'page2') btn2.className = activeStyle;
+        else if (pageId === 'page3') btn3.className = activeStyle;
+        
+        resetUIFeedback();
+      }
       const form = document.getElementById("dataForm");
       const submitBtn = document.getElementById("submitBtn");
       const submitText = document.getElementById("submitText");
