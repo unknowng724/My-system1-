@@ -109,15 +109,14 @@
       </div>
 
       <!-- أزرار التبويبات --><!-- التبويبات -->
-
 <!-- Tabs Container -->
-<div class="grid grid-cols-3 gap-3 mb-6">
+<div class="grid grid-cols-3 gap-4 mb-6">
   <!-- التبويب الأول (النشط افتراضياً) -->
   <button
     type="button"
     id="tabBtn1"
-    onclick="switchPage('page1', this)"
-    class="tab-btn relative py-3 px-2 rounded-2xl transition-all duration-300 ease-in-out flex flex-col items-center justify-center gap-2 active:scale-95 bg-[#f49e0b] text-white shadow-lg shadow-[#cfa211]/40 scale-105 z-10 font-bold border-transparent"
+    onclick="switchPage('page1')"
+    class="p-4 rounded-3xl bg-white border-2 border-[#f49e0b] text-[#f49e0b] flex flex-col items-center justify-center gap-3 transition-all duration-300 shadow-xl shadow-[#f49e0b]/20 font-bold scale-105 z-10"
   >
     <i class="fa-solid fa-file-pdf text-xl mb-1"></i>
     <span>طباعة ملفات</span>
@@ -127,8 +126,8 @@
   <button
     type="button"
     id="tabBtn2"
-    onclick="switchPage('page2', this)"
-    class="tab-btn relative py-3 px-2 rounded-2xl transition-all duration-300 ease-in-out flex flex-col items-center justify-center gap-2 active:scale-95 bg-[#f49e0b] text-slate-500 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 hover:text-[#cfa211] font-semibold"
+    onclick="switchPage('page2')"
+    class="p-4 rounded-3xl bg-slate-50 border border-slate-200 text-slate-400 flex flex-col items-center justify-center gap-3 transition-all duration-300 hover:bg-white hover:shadow-md hover:text-[#f49e0b] font-medium"
   >
     <i class="fa-solid fa-book-open text-xl mb-1"></i>
     <span>كتب مدرسية</span>
@@ -138,8 +137,8 @@
   <button
     type="button"
     id="tabBtn3"
-    onclick="switchPage('page3', this)"
-    class="tab-btn relative py-3 px-2 rounded-2xl transition-all duration-300 ease-in-out flex flex-col items-center justify-center gap-2 active:scale-95 bg-[#f49e0b] text-slate-500 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 hover:text-[#cfa211] font-semibold"
+    onclick="switchPage('page3')"
+    class="p-4 rounded-3xl bg-slate-50 border border-slate-200 text-slate-400 flex flex-col items-center justify-center gap-3 transition-all duration-300 hover:bg-white hover:shadow-md hover:text-[#f49e0b] font-medium"
   >
     <i class="fa-solid fa-shirt text-xl mb-1"></i>
     <span>تيشرت / كوب</span>
@@ -147,8 +146,9 @@
 </div>
 
 <!-- Form Starts Here -->
-<form id="dataForm" class="bg-slate-25 border border-slate-200 shadow-xl shadow-blue-100 rounded-3xl p-6 space-y-5" novalidate>
+<form id="dataForm" class="bg-slate-50 border border-slate-200 shadow-xl shadow-blue-100 rounded-3xl p-6 space-y-5" novalidate>
   <!-- محتوى النموذج -->
+
         
         <!-- PAGE 1: طباعة ملفات -->
         <div id="page1" class="space-y-4">
@@ -464,29 +464,43 @@
       let progressTimer = null;
 
 
+let currentPage = 'page1'; // لضمان تعريف المتغير إذا لم يكن معرفاً مسبقاً
 
 function switchPage(pageId) {
-        currentPage = pageId;
-        ['page1', 'page2', 'page3'].forEach(p => {
-          document.getElementById(p).classList.add('hidden');   
-        });
-        document.getElementById(pageId).classList.remove('hidden');
+    currentPage = pageId;
+    
+    // إخفاء كل الصفحات
+    ['page1', 'page2', 'page3'].forEach(p => {
+        const pageElement = document.getElementById(p);
+        if(pageElement) pageElement.classList.add('hidden');   
+    });
+    
+    // إظهار الصفحة المطلوبة
+    const activePage = document.getElementById(pageId);
+    if(activePage) activePage.classList.remove('hidden');
 
-        const btn1 = document.getElementById('tabBtn1');
-        const btn2 = document.getElementById('tabBtn2');
-        const btn3 = document.getElementById('tabBtn3');
+    const btn1 = document.getElementById('tabBtn1');
+    const btn2 = document.getElementById('tabBtn2');
+    const btn3 = document.getElementById('tabBtn3');
 
-        const inactiveStyle = "py-2.5 px-2 rounded-xl font-semibold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60 bg-transparent shadow-none";
-        const activeStyle = "py-2.5 px-2 rounded-xl font-bold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 bg-[#f49e0b] text-white shadow-md active:scale-95";
+    // 👇 هنا وضعنا تصميم الأزرار للنمط الجديد 👇
+    const inactiveStyle = "p-4 rounded-3xl bg-slate-50 border border-slate-200 text-slate-400 flex flex-col items-center justify-center gap-3 transition-all duration-300 hover:bg-white hover:shadow-md hover:text-[#f49e0b] font-medium";
+    const activeStyle = "p-4 rounded-3xl bg-white border-2 border-[#f49e0b] text-[#f49e0b] flex flex-col items-center justify-center gap-3 transition-all duration-300 shadow-xl shadow-[#f49e0b]/20 font-bold scale-105 z-10";
+    // 👆 =================================== 👆
 
-        [btn1, btn2, btn3].forEach(btn => btn.className = inactiveStyle);
+    // إرجاع كل الأزرار للشكل العادي
+    [btn1, btn2, btn3].forEach(btn => btn.className = inactiveStyle);
 
-        if (pageId === 'page1') btn1.className = activeStyle;
-        else if (pageId === 'page2') btn2.className = activeStyle;
-        else if (pageId === 'page3') btn3.className = activeStyle;
-        
-        resetUIFeedback();
-      }
+    // تلوين الزر المضغوط بالشكل النشط
+    if (pageId === 'page1') btn1.className = activeStyle;
+    else if (pageId === 'page2') btn2.className = activeStyle;
+    else if (pageId === 'page3') btn3.className = activeStyle;
+    
+    // استدعاء دالة التحديث إذا كانت موجودة
+    if (typeof resetUIFeedback === 'function') {
+        resetUIFeedback();
+    }
+}
       const form = document.getElementById("dataForm");
       const submitBtn = document.getElementById("submitBtn");
       const submitText = document.getElementById("submitText");
