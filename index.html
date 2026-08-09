@@ -412,21 +412,52 @@
       let progressTimer = null;
 
 
- function switchTab4(index, btn) {
-                    const btns = document.querySelectorAll('.tab-btn-4');
-                    const activeClasses = ['bg-purple-50', 'text-purple-600', 'border-purple-500', 'shadow-[0_0_15px_rgba(168,85,247,0.3)]', 'font-bold'];
-                    const inactiveClasses = ['bg-white', 'text-slate-400', 'border-transparent', 'shadow-sm', 'font-semibold'];
+function switchPage(pageId) {
+    currentPage = pageId;
 
-                    btns.forEach(b => {
-                        b.classList.remove(...activeClasses);
-                        b.classList.add(...inactiveClasses);
-                    });
+    // إخفاء جميع الصفحات
+    ['page1', 'page2', 'page3'].forEach(p => {
+        document.getElementById(p).classList.add('hidden');
+    });
 
-                    btn.classList.remove(...inactiveClasses);
-                    btn.classList.add(...activeClasses);
-                    
-                    // -- أضف كود إظهار الفورم هنا --
- }
+    // إظهار الصفحة المطلوبة
+    document.getElementById(pageId).classList.remove('hidden');
+
+    const btn1 = document.getElementById('tabBtn1');
+    const btn2 = document.getElementById('tabBtn2');
+    const btn3 = document.getElementById('tabBtn3');
+
+    const activeClasses = [
+        'bg-purple-50',
+        'text-purple-600',
+        'border-purple-500',
+        'shadow-[0_0_15px_rgba(168,85,247,0.3)]',
+        'font-bold'
+    ];
+
+    const inactiveClasses = [
+        'bg-white',
+        'text-slate-400',
+        'border-transparent',
+        'shadow-sm',
+        'font-semibold'
+    ];
+
+    [btn1, btn2, btn3].forEach(btn => {
+        btn.classList.remove(...activeClasses);
+        btn.classList.add(...inactiveClasses);
+    });
+
+    const activeBtn =
+        pageId === 'page1' ? btn1 :
+        pageId === 'page2' ? btn2 :
+        btn3;
+
+    activeBtn.classList.remove(...inactiveClasses);
+    activeBtn.classList.add(...activeClasses);
+
+    resetUIFeedback();
+}
 
       const form = document.getElementById("dataForm");
       const submitBtn = document.getElementById("submitBtn");
