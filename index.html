@@ -80,45 +80,22 @@
       </div>
 
       <!-- أزرار التبويبات -->
-<!-- Tabs Container -->
-<div class="grid grid-cols-3 gap-3 mb-6">
-  <!-- التبويب الأول (النشط افتراضياً) -->
-  <button
-    type="button"
-    id="tabBtn1"
-    onclick="switchPage('page1', this)"
-    class="tab-btn relative py-3 px-2 rounded-2xl transition-all duration-300 ease-in-out flex flex-col items-center justify-center gap-2 active:scale-95 bg-[#cfa211] text-white shadow-lg shadow-[#cfa211]/40 scale-105 z-10 font-bold border-transparent"
-  >
-    <i class="fa-solid fa-file-pdf text-xl mb-1"></i>
-    <span>طباعة ملفات</span>
-  </button>
-
-  <!-- التبويب الثاني -->
-  <button
-    type="button"
-    id="tabBtn2"
-    onclick="switchPage('page2', this)"
-    class="tab-btn relative py-3 px-2 rounded-2xl transition-all duration-300 ease-in-out flex flex-col items-center justify-center gap-2 active:scale-95 bg-white text-slate-500 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 hover:text-[#cfa211] font-semibold"
-  >
-    <i class="fa-solid fa-book-open text-xl mb-1"></i>
-    <span>كتب مدرسية</span>
-  </button>
-
-  <!-- التبويب الثالث -->
-  <button
-    type="button"
-    id="tabBtn3"
-    onclick="switchPage('page3', this)"
-    class="tab-btn relative py-3 px-2 rounded-2xl transition-all duration-300 ease-in-out flex flex-col items-center justify-center gap-2 active:scale-95 bg-white text-slate-500 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 hover:text-[#cfa211] font-semibold"
-  >
-    <i class="fa-solid fa-shirt text-xl mb-1"></i>
-    <span>تيشرت / كوب</span>
-  </button>
-</div>
-
-<!-- Form Starts Here -->
-<form id="dataForm" class="bg-slate-50 border border-slate-200 shadow-xl shadow-blue-100 rounded-3xl p-6 space-y-5" novalidate>
-  <!-- محتوى النموذج -->
+                    <div class="grid grid-cols-3 gap-3 md:gap-5">
+                        <button type="button" onclick="switchTab4(0, this)" class="tab-btn-4 py-4 md:py-5 rounded-2xl flex flex-col items-center gap-2 transition-all duration-300 border-2 bg-purple-50 text-purple-600 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.3)] font-bold">
+                            <i class="fa-solid fa-file-pdf text-2xl mb-1"></i>
+                            <span class="text-sm md:text-base">طباعة ملفات</span>
+                        </button>
+                        
+                        <button type="button" onclick="switchTab4(1, this)" class="tab-btn-4 py-4 md:py-5 rounded-2xl flex flex-col items-center gap-2 transition-all duration-300 border-2 hover:border-slate-200 bg-white text-slate-400 border-transparent shadow-sm font-semibold">
+                            <i class="fa-solid fa-book-open text-2xl mb-1"></i>
+                            <span class="text-sm md:text-base">كتب مدرسية</span>
+                        </button>
+                        
+                        <button type="button" onclick="switchTab4(2, this)" class="tab-btn-4 py-4 md:py-5 rounded-2xl flex flex-col items-center gap-2 transition-all duration-300 border-2 hover:border-slate-200 bg-white text-slate-400 border-transparent shadow-sm font-semibold">
+                            <i class="fa-solid fa-shirt text-2xl mb-1"></i>
+                            <span class="text-sm md:text-base">تيشرت / كوب</span>
+                        </button>
+                    </div>
 
         
         <!-- PAGE 1: طباعة ملفات -->
@@ -435,28 +412,21 @@
       let progressTimer = null;
 
 
- function switchPage(pageId) {
-        currentPage = pageId;
-        ['page1', 'page2', 'page3'].forEach(p => {
-          document.getElementById(p).classList.add('hidden');   
-        });
-        document.getElementById(pageId).classList.remove('hidden');
+ function switchTab4(index, btn) {
+                    const btns = document.querySelectorAll('.tab-btn-4');
+                    const activeClasses = ['bg-purple-50', 'text-purple-600', 'border-purple-500', 'shadow-[0_0_15px_rgba(168,85,247,0.3)]', 'font-bold'];
+                    const inactiveClasses = ['bg-white', 'text-slate-400', 'border-transparent', 'shadow-sm', 'font-semibold'];
 
-        const btn1 = document.getElementById('tabBtn1');
-        const btn2 = document.getElementById('tabBtn2');
-        const btn3 = document.getElementById('tabBtn3');
+                    btns.forEach(b => {
+                        b.classList.remove(...activeClasses);
+                        b.classList.add(...inactiveClasses);
+                    });
 
-        const inactiveStyle = "py-2.5 px-2 rounded-xl font-semibold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60 bg-transparent shadow-none";
-        const activeStyle = "py-2.5 px-2 rounded-xl font-bold text-xs transition-all duration-300 flex flex-col items-center justify-center gap-1.5 bg-[#0e1d3e] text-white shadow-md active:scale-95";
-
-        [btn1, btn2, btn3].forEach(btn => btn.className = inactiveStyle);
-
-        if (pageId === 'page1') btn1.className = activeStyle;
-        else if (pageId === 'page2') btn2.className = activeStyle;
-        else if (pageId === 'page3') btn3.className = activeStyle;
-        
-        resetUIFeedback();
-      }
+                    btn.classList.remove(...inactiveClasses);
+                    btn.classList.add(...activeClasses);
+                    
+                    // -- أضف كود إظهار الفورم هنا --
+ }
 
       const form = document.getElementById("dataForm");
       const submitBtn = document.getElementById("submitBtn");
