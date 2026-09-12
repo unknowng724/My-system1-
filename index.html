@@ -11,7 +11,7 @@
     <!-- Google Font (Cairo) for premium Arabic typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <!-- Link to PWA Manifest for Web Share Target support -->
     <link rel="manifest" href="manifest.json" />
     
@@ -21,6 +21,7 @@
     <style>
       body {
         font-family: 'Cairo', sans-serif;
+        background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);
       }
       
       @keyframes marqueeRight {
@@ -31,7 +32,7 @@
       .animate-marquee-right {
         display: inline-block;
         white-space: nowrap;
-        animation: marqueeRight 50s linear infinite;
+        animation: marqueeRight 45s linear infinite;
         will-change: transform;
       }
 
@@ -39,906 +40,925 @@
       .marquee-container:active .animate-marquee-right {
         animation-play-state: paused;
       }
+
+      @keyframes softGlow {
+        0%, 100% { opacity: 0.4; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.05); }
+      }
+      .glow-orb {
+        animation: softGlow 8s ease-in-out infinite;
+      }
+
+      /* Glassmorphism subtle effects */
+      .glass-card {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(16px);
+      }
+      
+      .glass-header {
+        background: linear-gradient(135deg, #0f3d2e 0%, #0a2e22 50%, #134e3a 100%);
+      }
+
+      /* Custom scrollbar for textareas */
+      textarea::-webkit-scrollbar {
+        width: 6px;
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
     </style>
   </head>
-<body class="min-h-screen bg-[#f6f7f9] flex flex-col items-center justify-start p-0 md:p-0">
-  <!-- 1. شريط الصلاة على النبي -->
-  <div class="marquee-container fixed top-0.1 left-0 w-screen z-50 bg-[#0f172a] text-[#ffffff] py-2 px-0 shadow-none border-0 overflow-hidden flex items-center">
+<body class="min-h-screen bg-[#0f172a] text-slate-800 flex flex-col items-center justify-start p-3 sm:p-4 md:p-6 relative overflow-x-hidden pt-14 md:pt-16">
+
+  <!-- Ambient Glow Background Orbs -->
+  <div class="fixed top-[-100px] right-[-100px] w-96 h-96 bg-emerald-600/20 rounded-full blur-3xl pointer-events-none glow-orb"></div>
+  <div class="fixed bottom-[-100px] left-[-100px] w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none glow-orb" style="animation-delay: -4s;"></div>
+
+  <!-- 1. شريط الصلاة على النبي (Ticker Bar) -->
+  <div class="marquee-container fixed top-0 left-0 w-full z-50 bg-[#09111e]/90 backdrop-blur-md text-amber-300/90 py-2.5 border-b border-amber-500/20 shadow-lg flex items-center">
     <div class="w-full overflow-hidden relative flex items-center">
-      <div class="animate-marquee-right font-medium text-xs md:text-sm tracking-wide flex items-center gap-6 whitespace-nowrap">
-      <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
-      <span class="text-amber-400">✦</span>
-      <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
-      <span class="text-amber-400">✦</span>
-      <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
-        <span class="text-amber-400">✦</span>
-      <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
-        <span class="text-amber-400">✦</span>
-      <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
-        <span class="text-amber-400">✦</span>
-      <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
-        <span class="text-amber-400">✦</span>
-      <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
-        <span class="text-amber-400">✦</span>
-      <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+      <div class="animate-marquee-right font-semibold text-xs md:text-sm tracking-wide flex items-center gap-6 whitespace-nowrap">
+        <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+        <span class="text-amber-400/60">✦</span>
+        <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+        <span class="text-amber-400/60">✦</span>
+        <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+        <span class="text-amber-400/60">✦</span>
+        <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+        <span class="text-amber-400/60">✦</span>
+        <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+        <span class="text-amber-400/60">✦</span>
+        <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
+      </div>
     </div>
   </div>
-</div>
 
+  <!-- Main Card Container -->
+  <div class="w-full max-w-md glass-card rounded-[2.25rem] shadow-2xl shadow-black/40 border border-white/20 p-5 md:p-6 transition-all duration-300 relative z-10 my-auto">      
+    
+    <!-- Header Section -->
+    <div class="flex flex-col items-center mb-6">
+      <div class="w-full glass-header rounded-[1.75rem] p-5 text-center shadow-xl shadow-emerald-950/20 relative overflow-hidden border border-emerald-500/20">
+        <!-- Subtle Glow Highlight -->
+        <div class="absolute -top-12 -right-12 w-32 h-32 bg-amber-400/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-emerald-400/15 rounded-full blur-2xl pointer-events-none"></div>
 
+        <!-- Header Content -->
+        <div class="flex items-center justify-center gap-3 mb-2 relative z-10">
+          <span class="w-10 h-10 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-inner group">
+            <i class="fa-solid fa-print text-amber-400 text-lg group-hover:scale-110 transition-transform"></i>
+          </span>
+          <h2 class="text-white text-xl md:text-2xl font-black tracking-wide drop-shadow-sm">
+            مكتبتي - نموذج الطلبات
+          </h2>
+        </div>
 
-<!-- Main card container -->
+        <p class="text-emerald-100/80 text-xs md:text-sm font-medium relative z-10">
+          أرسل طلبك بسهولة وسنقوم بالطباعة فوراً ⚡
+        </p>
+      </div>
 
-   <div class="w-full max-w-md bg-white rounded-[2rem] shadow-xl border border-[#0fbd0f] p-4 md:p-5 transition-all duration-300">      
-      <div class="flex flex-col items-center mb-5">
+      <div class="text-center mt-4">
+        <h1 class="text-base font-extrabold text-slate-800 tracking-tight">خدمات الطباعة الإلكترونية</h1>
+        <p class="text-xs text-slate-500 font-medium mt-0.5">اختر نوع الخدمة التي ترغب بها للبدء</p>
+      </div>
+    </div>
 
-<!-- ترويسة النموذج (Header) -->
+    <!-- زر تثبيت التطبيق -->
+    <div id="installContainer" class="hidden mb-5">
+      <button
+        id="pwaInstallBtn"
+        type="button"
+        class="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-2xl shadow-lg shadow-emerald-600/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 border border-emerald-400/30 animate-pulse"
+      >
+        <i class="fa-solid fa-download text-sm"></i>
+        <span>تثبيت التطبيق على جهازك لمشاهدة أسرع</span>
+      </button>
+    </div>
 
-<div class="bg-[#0f3d2e] rounded-t-[2rem] p-6 md:p-1 text-center shadow-lg relative overflow-hidden dir-rtl">
+    <!-- التبويبات (Navigation Tabs) -->
+    <div class="space-y-2.5 mb-6">
+      
+      <div id="tabBtn1" onclick="switchPage('page1')"
+        class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-slate-800 border border-slate-800 cursor-pointer transition-all duration-300 active:scale-[.98] shadow-md shadow-slate-900/10 hover:shadow-lg">
+        <div class="flex items-center gap-3">
+          <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center bg-[#fac30c] text-white text-base shadow-sm transition-all duration-300">
+            <i class="fa-solid fa-file-pdf"></i>
+          </div>
+          <span class="row-label font-bold text-sm text-white transition-colors duration-300">طباعة ملفات</span>
+        </div>
+        <i class="row-chev fa-solid fa-chevron-left text-xs text-[#f49e0b] transition-all duration-300"></i>
+      </div>
 
-    <!-- تأثير إضاءة خفيف في الخلفية ليعطي لمسة احترافية (مثل الصورة) -->
+      <div id="tabBtn2" onclick="switchPage('page2')"
+        class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-white border border-[#ece9e2] cursor-pointer transition-all duration-300 active:scale-[.98] shadow-sm hover:shadow-md hover:border-slate-300">
+        <div class="flex items-center gap-3">
+          <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center bg-[#f4f2ec] text-[#8a90a2] text-base shadow-sm transition-all duration-300">
+            <i class="fa-solid fa-book-open"></i>
+          </div>
+          <span class="row-label font-bold text-sm text-slate-800 transition-colors duration-300">كتب مدرسية</span>
+        </div>
+        <i class="row-chev fa-solid fa-chevron-left text-xs text-[#8a90a2] transition-all duration-300"></i>
+      </div>
 
-    <div class="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+      <div id="tabBtn3" onclick="switchPage('page3')"
+        class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-white border border-[#ece9e2] cursor-pointer transition-all duration-300 active:scale-[.98] shadow-sm hover:shadow-md hover:border-slate-300">
+        <div class="flex items-center gap-3">
+          <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center bg-[#f4f2ec] text-[#8a90a2] text-base shadow-sm transition-all duration-300">
+            <i class="fa-solid fa-shirt"></i>
+          </div>
+          <span class="row-label font-bold text-sm text-slate-800 transition-colors duration-300">تيشرت / كوب</span>
+        </div>
+        <i class="row-chev fa-solid fa-chevron-left text-xs text-[#8a90a2] transition-all duration-300"></i>
+      </div>
 
-    <!-- حاوية العنوان والأيقونة -->
+    </div>
 
-    <div class="flex items-center justify-center gap-3 mb-2 md:mb-3 relative z-10">
-        <h2 class="text-[#e8dcc8] text-1xl md:text-1xl font-bold tracking-wide">
-         مكتبتي - نموذج الطلبات
-        </h2>
-        <i class="fa-solid fa-print text-[#f49e0b] text-2xl md:text-3xl drop-shadow-md"></i>
-    </div>
+    <!-- MAIN FORM -->
+    <form id="dataForm" novalidate>
 
-    <!-- النص الفرعي -->
+      <!-- PAGE 1: طباعة ملفات -->
+      <div id="page1" class="space-y-4">
 
-    <p class="text-[#e8dcc8] text-sm md:text-base font-medium relative z-10">
+        <!-- الاسم الثلاثي -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1">
+            <span>الاسم الثلاثي</span>
+            <span class="text-amber-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+              <i class="fa-solid fa-user text-xs"></i>
+            </span>
+            <input
+              type="text"
+              id="fullName1"
+              placeholder="مثال: محمود خالد"
+              class="w-full pl-3 pr-10 py-3.5 bg-slate-50/80 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-600 focus:bg-white transition-all shadow-sm text-xs font-semibold text-slate-800 placeholder:text-slate-400"
+            />
+          </div>
+          <p id="nameError1" class="text-[11px] font-semibold text-rose-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
+        </div>
 
-        أرسل طلبك بسهولة وسنقوم بالطباعة فوراً
+        <!-- عدد النسخ -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1">
+            <span>عدد النسخ</span>
+            <span class="text-amber-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+              <i class="fa-solid fa-copy text-xs"></i>
+            </span>
+            <input
+              type="number"
+              id="copiesCount1"
+              min="1"
+              placeholder="أدخل عدد النسخ المطلوبة"
+              class="w-full pl-3 pr-10 py-3.5 bg-slate-50/80 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-600 focus:bg-white transition-all shadow-sm text-xs font-semibold text-slate-800 placeholder:text-slate-400"
+            />
+          </div>
+          <p id="copiesError1" class="text-[11px] font-semibold text-rose-500 mt-1 hidden">الرجاء إدخال عدد نسخ صحيح (رقم أكبر من 0).</p>
+        </div>
 
-    </p>
+        <!-- زر تحميل مستند -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">تحميل ملفك (اختياري)</label>
+          <div class="relative border-2 border-dashed border-slate-200 hover:border-emerald-500 rounded-2xl bg-slate-50/60 hover:bg-emerald-50/30 transition-all duration-200 group">
+            <input
+              type="file"
+              id="fileInput"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+              accept="*/*"
+            />
+            <div class="p-3.5 flex flex-col items-center justify-center text-center">
+              <span class="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-1.5 shadow-sm group-hover:scale-110 transition-transform">
+                <i class="fa-solid fa-file-arrow-up text-sm"></i>
+              </span>
+              <span class="text-xs font-bold text-slate-700" id="fileBtnLabel">اختر ملفك (يمكنك مشاركته من الوتساب نفسه)...</span>
+              <span class="text-[11px] font-medium text-slate-400 mt-0.5" id="fileNameDisplay">لم يتم اختيار أي مستند</span>
+            </div>
+          </div>
+        </div>
 
-    
+        <!-- زر رفع الصور -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">رفع صورة (اختياري)</label>
+          <div class="relative border-2 border-dashed border-slate-200 hover:border-emerald-500 rounded-2xl bg-slate-50/60 hover:bg-emerald-50/30 transition-all duration-200 group">
+            <input
+              type="file"
+              id="imageFileInput"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+              accept="image/*"
+            />
+            <div class="p-3.5 flex flex-col items-center justify-center text-center">
+              <span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-1.5 shadow-sm group-hover:scale-110 transition-transform">
+                <i class="fa-solid fa-image text-sm"></i>
+              </span>
+              <span class="text-xs font-bold text-slate-700" id="imageBtnLabel">اختر صورة لرفعها...</span>
+              <span class="text-[11px] font-medium text-slate-400 mt-0.5" id="imageNameDisplay">يقبل الصور فقط</span>
+            </div>
+          </div>
+        </div>
 
-</div>
-
-        <h1 class="text-xl font-bold text-[#0a4d48] tracking-tight text-center">خدمات الطباعة الإلكترونية</h1>
-
-        <p class="text-xs text-[#0a4d48] mt-1">اختر نوع الخدمة التي ترغب بها</p>
+        <!-- ملاحظات -->
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label class="text-xs font-bold text-slate-700">إضافة ملاحظات (اختياري)</label>
+            <span id="wordCounter1" class="text-[10px] font-bold text-slate-400">0 / 10 كلمة</span>
+          </div>
+          <textarea
+            id="notes1"
+            rows="2"
+            placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
+            class="w-full p-3 bg-slate-50/80 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-600 focus:bg-white transition-all shadow-sm text-xs font-medium text-slate-800 placeholder:text-slate-400 resize-none"
+          ></textarea>
+          <p id="notesError1" class="text-[11px] font-semibold text-rose-500 mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
+        </div>
 
       </div>
-      <!-- زر تثبيت التطبيق -->
-      <div id="installContainer" class="hidden mb-4">
+
+      <!-- PAGE 2: طباعة الكتب المدرسية -->
+      <div id="page2" class="space-y-4 hidden">
+
+        <!-- الاسم الثلاثي -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1">
+            <span>الاسم الثلاثي</span>
+            <span class="text-amber-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+              <i class="fa-solid fa-user text-xs"></i>
+            </span>
+            <input
+              type="text"
+              id="fullName2"
+              placeholder="اكتب اسمك الثلاثي باللغة العربية"
+              class="w-full pl-3 pr-10 py-3.5 bg-slate-50/80 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-600 focus:bg-white transition-all shadow-sm text-xs font-semibold text-slate-800 placeholder:text-slate-400"
+            />
+          </div>
+          <p id="nameError2" class="text-[11px] font-semibold text-rose-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
+        </div>
+
+        <!-- اختر الكتب التي تريد طباعتها -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1">
+            <span>اختر الكتب التي تريد طباعتها</span>
+            <span class="text-amber-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+              <i class="fa-solid fa-book-open text-xs"></i>
+            </span>
+            <select
+              id="bookPrint"
+              class="w-full pl-3 pr-10 py-3.5 bg-slate-50/80 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-600 focus:bg-white transition-all shadow-sm text-xs font-semibold text-slate-800 appearance-none cursor-pointer"
+            >
+              <option value="">-- اختر الصف الدراسي والمادة المطلوب طباعتها --</option>
+              <option value="الصف الأول">الصف الأول</option>
+              <option value="الصف الثاني">الصف الثاني</option>
+              <option value="الصف الثالث">الصف الثالث</option>
+              <option value="الصف الرابع">الصف الرابع</option>
+              <option value="الصف الخامس">الصف الخامس</option>
+              <option value="الصف السادس">الصف السادس</option>
+              <option value="الصف السابع">الصف السابع</option>
+              <option value="الصف الثامن">الصف الثامن</option>
+              <option value="الصف التاسع">الصف التاسع</option>
+              <option value="الصف العاشر">الصف العاشر</option>
+              <option value="الصف الحادي عشر">الصف الحادي عشر</option>
+              <option value="البكالوريا">البكالوريا</option>
+            </select>
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+              <i class="fa-solid fa-chevron-down text-[10px]"></i>
+            </span>
+          </div>
+          <p id="bookError" class="text-[11px] font-semibold text-rose-500 mt-1 hidden">الرجاء اختيار الصف/الكتب المراد طباعتها.</p>
+        </div>
+
+        <!-- عدد النسخ -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1">
+            <span>عدد النسخ</span>
+            <span class="text-amber-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+              <i class="fa-solid fa-copy text-xs"></i>
+            </span>
+            <input
+              type="number"
+              id="copiesCount2"
+              min="1"
+              placeholder="أدخل عدد النسخ المطلوبة"
+              class="w-full pl-3 pr-10 py-3.5 bg-slate-50/80 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-600 focus:bg-white transition-all shadow-sm text-xs font-semibold text-slate-800 placeholder:text-slate-400"
+            />
+          </div>
+          <p id="copiesError2" class="text-[11px] font-semibold text-rose-500 mt-1 hidden">الرجاء إدخال عدد نسخ صحيح (رقم أكبر من 0).</p>
+        </div>
+
+        <!-- ملاحظات -->
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label class="text-xs font-bold text-slate-700">الملاحظات (اختياري)</label>
+            <span id="wordCounter2" class="text-[10px] font-bold text-slate-400">0 / 10 كلمة</span>
+          </div>
+          <textarea
+            id="notes2"
+            rows="2"
+            placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
+            class="w-full p-3 bg-slate-50/80 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-600 focus:bg-white transition-all shadow-sm text-xs font-medium text-slate-800 placeholder:text-slate-400 resize-none"
+          ></textarea>
+          <p id="notesError2" class="text-[11px] font-semibold text-rose-500 mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
+        </div>
+
+      </div>
+
+      <!-- PAGE 3: طباعة تيشرت او كوب -->
+      <div id="page3" class="space-y-4 hidden">
+
+        <!-- الاسم الثلاثي -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1">
+            <span>الاسم الثلاثي</span>
+            <span class="text-amber-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+              <i class="fa-solid fa-user text-xs"></i>
+            </span>
+            <input
+              type="text"
+              id="fullName3"
+              placeholder="اكتب اسمك الثلاثي باللغة العربية"
+              class="w-full pl-3 pr-10 py-3.5 bg-slate-50/80 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-600 focus:bg-white transition-all shadow-sm text-xs font-semibold text-slate-800 placeholder:text-slate-400"
+            />
+          </div>
+          <p id="nameError3" class="text-[11px] font-semibold text-rose-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
+        </div>
+
+        <!-- زر تحميل الصورة للطباعة -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1">
+            <span>تحميل الصورة التي تريد طباعتها</span>
+            <span class="text-amber-500">*</span>
+          </label>
+          <div class="relative border-2 border-dashed border-slate-200 hover:border-emerald-500 rounded-2xl bg-slate-50/60 hover:bg-emerald-50/30 transition-all duration-200 group">
+            <input
+              type="file"
+              id="tshirtInput"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+              accept="image/*"
+            />
+            <div class="p-3.5 flex flex-col items-center justify-center text-center">
+              <span class="w-9 h-9 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center mb-1.5 shadow-sm group-hover:scale-110 transition-transform">
+                <i class="fa-solid fa-image text-sm"></i>
+              </span>
+              <span class="text-xs font-bold text-slate-700" id="tshirtBtnLabel">اختر صورة التصميم...</span>
+              <span class="text-[11px] font-medium text-slate-400 mt-0.5" id="tshirtNameDisplay">لا يقبل إلا الصور فقط</span>
+            </div>
+          </div>
+          <p id="tshirtError" class="text-[11px] font-semibold text-rose-500 mt-1 hidden">يرجى رفع صورة التصميم المطلوبة.</p>
+
+          <!-- معاينة الصورة -->
+          <div id="tshirtPreviewContainer" class="hidden mt-3 flex justify-center">
+            <div class="relative w-20 h-20 rounded-2xl border-2 border-slate-200 overflow-hidden bg-white shadow-md p-1">
+              <img id="tshirtPreview" class="w-full h-full object-cover rounded-xl" src="" alt="Preview" />
+              <button type="button" id="removeTshirtBtn" class="absolute top-1.5 left-1.5 bg-rose-500 text-white rounded-full w-5 h-5 flex items-center justify-center hover:bg-rose-600 transition-colors shadow">
+                <i class="fa-solid fa-xmark text-[10px]"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- الملاحظات -->
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label class="text-xs font-bold text-slate-700">الملاحظات (اختياري)</label>
+            <span id="wordCounter3" class="text-[10px] font-bold text-slate-400">0 / 10 كلمة</span>
+          </div>
+          <textarea
+            id="notes3"
+            rows="2"
+            placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
+            class="w-full p-3 bg-slate-50/80 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-600 focus:bg-white transition-all shadow-sm text-xs font-medium text-slate-800 placeholder:text-slate-400 resize-none"
+          ></textarea>
+          <p id="notesError3" class="text-[11px] font-semibold text-rose-500 mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
+        </div>
+
+      </div>
+
+      <!-- ⏳ شريط وشاشة التقدم الذكية عند الرفع ⏳ -->
+      <div id="progressBox" class="hidden my-4 p-4 bg-gradient-to-br from-amber-50 to-emerald-50 rounded-2xl border border-amber-200/80 shadow-md space-y-2.5">
+        <div class="flex justify-between items-center text-xs font-bold text-slate-800">
+          <span id="progressText" class="flex items-center gap-2">
+            <i class="fa-solid fa-cloud-arrow-up animate-bounce text-amber-500 text-sm"></i>
+            <span>جاري رفع الملف وحفظ الطلب...</span>
+          </span>
+          <span id="progressPercent" class="text-xs font-extrabold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-lg">0%</span>
+        </div>
+        <div class="w-full bg-slate-200/80 h-3 rounded-full overflow-hidden shadow-inner p-0.5">
+          <div id="progressBar" class="bg-gradient-to-r from-emerald-600 via-teal-500 to-amber-500 h-full w-0 transition-all duration-300 rounded-full"></div>
+        </div>
+        <div class="flex justify-between text-[10px] text-slate-600 font-bold pt-0.5">
+          <span>قد يستغرق الرفع حتى 60 ثانية حسب الحجم</span>
+          <span id="timerText" class="text-emerald-700">الزمان المتبقي: ~45s</span>
+        </div>
+      </div>
+
+      <!-- Submission Feedback Message -->
+      <div id="statusMessage" class="hidden my-3 p-3 rounded-2xl text-center text-xs font-extrabold transition-all duration-300"></div>
+
+      <!-- Form Action Buttons -->
+      <div class="flex items-center gap-3 pt-3">
         <button
-          id="pwaInstallBtn"
-          type="button"
-          class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-[#05443c]-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-emerald-500 animate-pulse"
+          type="submit"
+          id="submitBtn"
+          class="flex-1 py-3.5 px-4 bg-gradient-to-r from-[#0f3d2e] via-[#14523e] to-[#0f3d2e] hover:from-[#134d3a] hover:to-[#175c46] text-white font-extrabold text-xs rounded-2xl shadow-xl shadow-emerald-950/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-emerald-400/20 group"
         >
-          <i class="fa-solid fa-download text-sm"></i>
-          <span>تثبيت التطبيق على جهازك</span>
+          <span id="submitText">إرسال البيانات</span>
+          <span id="spinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+        </button>
+        <button
+          type="button"
+          id="cancelBtn"
+          class="px-5 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-2xl active:scale-[0.98] transition-all border border-slate-200/80"
+        >
+          إلغاء
         </button>
       </div>
 
-      <!-- أزرار التبويبات --><!-- التبويبات -->
-<div class="space-y-2.5 mb-6">
-
-  <div id="tabBtn1" onclick="switchPage('page1')"
-    class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-slate-800 border border-slate-800 cursor-pointer transition-all duration-300 active:scale-[.98]">
-    <div class="flex items-center gap-3">
-      <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center bg-[#fac30c] text-white text-base transition-all duration-300">
-        <i class="fa-solid fa-file-pdf"></i>
-      </div>
-      <span class="row-label font-bold text-sm text-white transition-colors duration-300">طباعة ملفات</span>
-    </div>
-    <i class="row-chev fa-solid fa-chevron-left text-xs text-[#f49e0b] transition-all duration-300"></i>
+    </form>
   </div>
 
-  <div id="tabBtn2" onclick="switchPage('page2')"
-    class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-white border border-[#ece9e2] cursor-pointer transition-all duration-300 active:scale-[.98]">
-    <div class="flex items-center gap-3">
-      <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center bg-[#fac30c] text-[#8a90a2] text-base transition-all duration-300">
-        <i class="fa-solid fa-book-open"></i>
-      </div>
-      <span class="row-label font-bold text-sm text-slate-800 transition-colors duration-300">كتب مدرسية</span>
-    </div>
-    <i class="row-chev fa-solid fa-chevron-left text-xs text-[#8a90a2] transition-all duration-300"></i>
-  </div>
+  <script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFUrfYvcEUTd9aEjinX8Ca4KDKOGWOvL6HwCaK4q71IR2VB2cEgnFkgtQ/exec";
+    let currentPage = 'page1';
+    let progressTimer = null;
 
-  <div id="tabBtn3" onclick="switchPage('page3')"
-    class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-white border border-[#ece9e2] cursor-pointer transition-all duration-300 active:scale-[.98]">
-    <div class="flex items-center gap-3">
-      <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center bg-[#fac30c] text-[#8a90a2] text-base transition-all duration-300">
-        <i class="fa-solid fa-shirt"></i>
-      </div>
-      <span class="row-label font-bold text-sm text-slate-800 transition-colors duration-300">تيشرت / كوب</span>
-    </div>
-    <i class="row-chev fa-solid fa-chevron-left text-xs text-[#8a90a2] transition-all duration-300"></i>
-  </div>
-<form id="dataForm" novalidate>
-</div>
-        <!-- PAGE 1: طباعة ملفات -->
-        <div id="page1" class="space-y-4">
+    function switchPage(pageId) {
+      currentPage = pageId;
 
+      ['page1', 'page2', 'page3'].forEach(p => {
+        document.getElementById(p).classList.add('hidden');
+      });
+      document.getElementById(pageId).classList.remove('hidden');
 
-          <!-- الاسم الثلاثي -->
-          <div>
-            <label class="block text-xs font-semibold text-[#1b0066] mb-1 flex items-center gap-1">
-              الاسم الثلاثي <span class="text-[#f49e0b]">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-                <i class="fa-solid fa-user text-xs"></i>
-              </span>
-              <input
-                type="text"
-                id="fullName1"
-                placeholder="مثال:محمود خالد"
-                class="w-full pl-8 pr-9 py-4 bg-[#f9fafc]/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-[#f49e0b]"
-              />
-            </div>
-            <p id="nameError1" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
-          </div>
+      const btn1 = document.getElementById('tabBtn1');
+      const btn2 = document.getElementById('tabBtn2');
+      const btn3 = document.getElementById('tabBtn3');
 
-          <!-- عدد النسخ -->
-          <div>
-            <label class="block text-xs font-semibold text-[#f49e0b] mb-1 flex items-center gap-1">
-              عدد النسخ <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-                <i class="fa-solid fa-copy text-xs"></i>
-              </span>
-              <input
-                type="number"
-                id="copiesCount1"
-                min="1"
-                placeholder="أدخل عدد النسخ المطلوبة"
-                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc]/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800"
-              />
-            </div>
-            <p id="copiesError1" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال عدد نسخ صحيح (رقم أكبر من 0).</p>
-          </div>
-
-          <!-- زر تحميل مستند -->
-          <div>
-            <label class="block text-xs font-semibold text-[#f49e0b] mb-1"> تحميل ملفك (اختياري)</label>
-            <div class="relative border-2 border-dashed border-slate-200 hover:border-[#f19124] rounded-xl bg-white/50 transition-colors duration-200">
-              <input
-                type="file"
-                id="fileInput"
-                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                accept="*/*"
-              />
-              <div class="p-2.5 flex flex-col items-center justify-center text-center">
-                <span class="w-7 h-7 rounded-full bg-orange-50 flex items-center justify-center text-[#f19124] mb-1">
-                  <i class="fa-solid fa-file-arrow-up text-xs"></i>
-                </span>
-                <span class="text-xs font-semibold text-slate-600" id="fileBtnLabel">اختر ملفك (يمكنك مشاركته من الوتساب نفسه)...</span>
-                <span class="text-[10px] text-slate-400 mt-0.5" id="fileNameDisplay">لم يتم اختيار أي مستند</span>
-              </div>
-            </div>
-          </div>
-              <!-- زر رفع الصور -->
-          <div>
-            <label class="block text-xs font-semibold text-[#f49e0b] mb-1">زر رفع الصور (اختياري)</label>
-            <div class="relative border-2 border-dashed border-slate-200 hover:border-[#0e1d3e] rounded-xl bg-white/50 transition-colors duration-200">
-              <input
-                type="file"
-                id="imageFileInput"
-                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                accept="image/*"
-              />
-              <div class="p-2.5 flex flex-col items-center justify-center text-center">
-                <span class="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-[#0e1d3e] mb-1">
-                  <i class="fa-solid fa-image text-xs"></i>
-                </span>
-                <span class="text-xs font-semibold text-slate-600" id="imageBtnLabel">اختر صورة لرفعها...</span>
-                <span class="text-[10px] text-slate-400 mt-0.5" id="imageNameDisplay">يقبل الصور فقط</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- ملاحظات -->
-          <div>
-            <div class="flex justify-between items-center mb-1">
-              <label class="text-xs font-semibold text-[#f49e0b]">إضافة ملاحظات (اختياري)</label>
-              <span id="wordCounter1" class="text-[10px] text-slate-400 font-medium">0 / 10 كلمة</span>
-            </div>
-            <textarea
-              id="notes1"
-              rows="2"
-              placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
-              class="w-full p-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800 resize-none"
-            ></textarea>
-            <p id="notesError1" class="text-[10px] text-red-500 mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
-        </div>
-        </div>
-    <!-- الخدمات الرئيسية -->
-
-    <!-- الخدمات الإضافية -->
-    
-    <!-- شريط التنقل السفلي --
-        <!-- PAGE 2: طباعة الكتب المدرسية -->
-        <div id="page2" class="space-y-4 hidden">
-
-
-          <!-- الاسم الثلاثي -->
-          <div>
-            <label class="block text-xs font-semibold text-[#f49e0b] mb-1 flex items-center gap-1">
-              الاسم الثلاثي <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-                <i class="fa-solid fa-user text-xs"></i>
-              </span>
-              <input
-                type="text"
-                id="fullName2"
-                placeholder="اكتب اسمك الثلاثي باللغة العربية"
-                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc] border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800"
-              />
-            </div>
-            <p id="nameError2" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
-          </div>
-
-          <!-- اختر الكتب التي تريد طباعتها -->
-          <div>
-            <label class="block text-xs font-semibold text-[#f49e0b] mb-1 flex items-center gap-1">
-              اختر الكتب التي تريد طباعتها <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-                <i class="fa-solid fa-book-open text-xs"></i>
-              </span>
-              <select
-                id="bookPrint"
-                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc] border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800 appearance-none cursor-pointer"
-              >
-                <option value="">-- اختر الصف الدراسي والمادة المطلوب طباعتها --</option>
-                <option value="الصف الأول">الصف الأول</option>
-                <option value="الصف الثاني">الصف الثاني</option>
-                <option value="الصف الثالث">الصف الثالث</option>
-                <option value="الصف الرابع">الصف الرابع</option>
-                <option value="الصف الخامس">الصف الخامس</option>
-                <option value="الصف السادس">الصف السادس</option>
-                <option value="الصف السابع">الصف السابع</option>
-                <option value="الصف الثامن">الصف الثامن</option>
-                <option value="الصف التاسع">الصف التاسع</option>
-                <option value="الصف العاشر">الصف العاشر</option>
-                <option value="الصف الحادي عشر">الصف الحادي عشر</option>
-                <option value="البكالوريا">البكالوريا</option>
-              </select>
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-                <i class="fa-solid fa-chevron-down text-[10px]"></i>
-              </span>
-            </div>
-            <p id="bookError" class="text-[10px] text-red-500 mt-1 hidden">الرجاء اختيار الصف/الكتب المراد طباعتها.</p>
-          </div>
-
-          <!-- عدد النسخ -->
-          <div>
-            <label class="block text-xs font-semibold text-[#f49e0b] mb-1 flex items-center gap-1">
-              عدد النسخ <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-                <i class="fa-solid fa-copy text-xs"></i>
-              </span>
-              <input
-                type="number"
-                id="copiesCount2"
-                min="1"
-                placeholder="أدخل عدد النسخ المطلوبة"
-                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc] border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800"
-              />
-            </div>
-            <p id="copiesError2" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال عدد نسخ صحيح (رقم أكبر من 0).</p>
-          </div>
-
-          <!-- ملاحظات -->
-          <div>
-            <div class="flex justify-between items-center mb-1">
-              <label class="text-xs font-semibold text-[#f49e0b]">الملاحظات (اختياري)</label>
-              <span id="wordCounter2" class="text-[10px] text-slate-400 font-medium">0 / 10 كلمة</span>
-            </div>
-            <textarea
-              id="notes2"
-              rows="2"
-              placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
-              class="w-full p-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800 resize-none"
-            ></textarea>
-            <p id="notesError2" class="text-[10px] text-red-500 mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
-          </div>
-        </div>
-
-        <!-- PAGE 3: طباعة تيشرت او كوب -->
-        <div id="page3" class="space-y-4 hidden">
-          
-
-          <!-- الاسم الثلاثي -->
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
-              الاسم الثلاثي <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-                <i class="fa-solid fa-user text-xs"></i>
-              </span>
-              <input
-                type="text"
-                id="fullName3"
-                placeholder="اكتب اسمك الثلاثي باللغة العربية"
-                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc] border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800"
-              />
-            </div>
-            <p id="nameError3" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
-          </div>
-
-          <!-- زر تحميل الصورة للطباعة -->
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
-              تحميل الصورة التي تريد طباعتها <span class="text-red-500">*</span>
-            </label>
-            <div class="relative border-2 border-dashed border-slate-200 hover:border-[#0e1d3e] rounded-xl bg-white/50 transition-colors duration-200">
-              <input
-                type="file"
-                id="tshirtInput"
-                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                accept="image/*"
-              />
-              <div class="p-2.5 flex flex-col items-center justify-center text-center">
-                <span class="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-[#0e1d3e] mb-1">
-                  <i class="fa-solid fa-image text-xs"></i>
-                </span>
-                <span class="text-xs font-semibold text-slate-600" id="tshirtBtnLabel">اختر صورة التصميم...</span>
-                <span class="text-[10px] text-slate-400 mt-0.5" id="tshirtNameDisplay">لا يقبل إلا الصور فقط</span>
-              </div>
-            </div>
-            <p id="tshirtError" class="text-[10px] text-red-500 mt-1 hidden">يرجى رفع صورة التصميم المطلوبة.</p>
-
-            <!-- معاينة الصورة -->
-            <div id="tshirtPreviewContainer" class="hidden mt-2 flex justify-center">
-              <div class="relative w-16 h-16 rounded-lg border border-slate-200 overflow-hidden bg-white shadow-sm">
-                <img id="tshirtPreview" class="w-full h-full object-cover" src="" alt="Preview" />
-                <button type="button" id="removeTshirtBtn" class="absolute top-0.5 left-0.5 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center hover:bg-red-600 transition-colors">
-                  <i class="fa-solid fa-xmark text-[8px]"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- الملاحظات -->
-          <div>
-            <div class="flex justify-between items-center mb-1">
-              <label class="text-xs font-semibold text-slate-700">الملاحظات (اختياري)</label>
-              <span id="wordCounter3" class="text-[10px] text-slate-400 font-medium">0 / 10 كلمة</span>
-            </div>
-            <textarea
-              id="notes3"
-              rows="2"
-              placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
-              class="w-full p-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800 resize-none"
-            ></textarea>
-            <p id="notesError3" class="text-[10px] text-red-500 mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
-          </div>
-        </div>
-
-        <!-- ⏳ شريط وشاشة التقدم الذكية عند الرفع ⏳ -->
-        <div id="progressBox" class="hidden p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
-          <div class="flex justify-between items-center text-xs font-bold text-amber-900">
-            <span id="progressText" class="flex items-center gap-1.5">
-              <i class="fa-solid fa-cloud-arrow-up animate-bounce text-[#f19124]"></i>
-              <span>جاري رفع الملف وحفظ الطلب...</span>
-            </span>
-            <span id="progressPercent" class="text-xs text-[#0e1d3e]">0%</span>
-          </div>
-          <div class="w-full bg-amber-200 h-2.5 rounded-full overflow-hidden">
-            <div id="progressBar" class="bg-gradient-to-r from-[#0e1d3e] to-[#f19124] h-full w-0 transition-all duration-300 rounded-full"></div>
-          </div>
-          <div class="flex justify-between text-[10px] text-amber-700 font-semibold pt-1">
-            <span>قد يستغرق الرفع حتى 60 ثانية حسب الحجم</span>
-            <span id="timerText">الزمان المتبقي: ~45s</span>
-          </div>
-        </div>
-
-        <!-- Submission Feedback Message -->
-        <div id="statusMessage" class="hidden p-2.5 rounded-xl text-center text-xs font-bold transition-all duration-300"></div>
-
-        <!-- Form Action Buttons -->
-        <div class="flex items-center gap-2 pt-2">
-          <button
-            type="submit"
-            id="submitBtn"
-            class="flex-1 py-2.5 bg-[#cfa211] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-lg shadow-orange-600/10 hover:shadow-orange-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-          >
-            <span id="submitText">إرسال البيانات</span>
-            <span id="spinner" class="hidden w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-          </button>
-          <button
-            type="button"
-            id="cancelBtn"
-            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs rounded-xl active:scale-[0.98] transition-all"
-          >
-            إلغاء
-          </button>
-        </div>
-
-      </form>
-    </div>
-
-    <script>
-      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFUrfYvcEUTd9aEjinX8Ca4KDKOGWOvL6HwCaK4q71IR2VB2cEgnFkgtQ/exec";
-  let currentPage = 'page1';
-let progressTimer = null;
-
-function switchPage(pageId) {
-  currentPage = pageId;
-
-  ['page1', 'page2', 'page3'].forEach(p => {
-    document.getElementById(p).classList.add('hidden');
-  });
-  document.getElementById(pageId).classList.remove('hidden');
-
-  const btn1 = document.getElementById('tabBtn1');
-  const btn2 = document.getElementById('tabBtn2');
-  const btn3 = document.getElementById('tabBtn3');
-
-  // إعادة كل الأزرار للحالة غير النشطة
-  [btn1, btn2, btn3].forEach(btn => {
-    btn.classList.remove('bg-slate-800', 'border-slate-800', 'text-white');
-    btn.classList.add('bg-white', 'border-[#ece9e2]');
-    btn.querySelector('.row-icon').classList.remove('bg-[#f49e0b]', 'text-white');
-    btn.querySelector('.row-icon').classList.add('bg-[#f4f2ec]', 'text-[#8a90a2]');
-    btn.querySelector('.row-label').classList.remove('text-white');
-    btn.querySelector('.row-label').classList.add('text-slate-800');
-    btn.querySelector('.row-chev').classList.remove('text-[#f49e0b]');
-    btn.querySelector('.row-chev').classList.add('text-[#8a90a2]');
-  });
-
-  // تفعيل الزر المختار
-  const active = pageId === 'page1' ? btn1 : pageId === 'page2' ? btn2 : btn3;
-  active.classList.add('bg-slate-800', 'border-slate-800');
-  active.classList.remove('bg-white', 'border-[#ece9e2]');
-  active.querySelector('.row-icon').classList.add('bg-[#f49e0b]', 'text-white');
-  active.querySelector('.row-icon').classList.remove('bg-[#f4f2ec]', 'text-[#8a90a2]');
-  active.querySelector('.row-label').classList.add('text-white');
-  active.querySelector('.row-label').classList.remove('text-slate-800');
-  active.querySelector('.row-chev').classList.add('text-[#f49e0b]');
-  active.querySelector('.row-chev').classList.remove('text-[#8a90a2]');
-
-  resetUIFeedback();
-}
-
-      const form = document.getElementById("dataForm");
-      const submitBtn = document.getElementById("submitBtn");
-      const submitText = document.getElementById("submitText");
-      const spinner = document.getElementById("spinner");
-      const statusMessage = document.getElementById("statusMessage");
-      const cancelBtn = document.getElementById("cancelBtn");
-
-      const fileInput = document.getElementById("fileInput");
-      const fileNameDisplay = document.getElementById("fileNameDisplay");
-      const fileBtnLabel = document.getElementById("fileBtnLabel");
-
-      const imageFileInput = document.getElementById("imageFileInput");
-      const imageNameDisplay = document.getElementById("imageNameDisplay");
-      const imageBtnLabel = document.getElementById("imageBtnLabel");
-
-      const tshirtInput = document.getElementById("tshirtInput");
-      const tshirtNameDisplay = document.getElementById("tshirtNameDisplay");
-      const tshirtBtnLabel = document.getElementById("tshirtBtnLabel");
-      const tshirtPreviewContainer = document.getElementById("tshirtPreviewContainer");
-      const tshirtPreview = document.getElementById("tshirtPreview");
-      const removeTshirtBtn = document.getElementById("removeTshirtBtn");
-
-      const progressBox = document.getElementById("progressBox");
-      const progressBar = document.getElementById("progressBar");
-      const progressPercent = document.getElementById("progressPercent");
-      const progressText = document.getElementById("progressText");
-      const timerText = document.getElementById("timerText");
-
-      // PWA Elements
-      const installContainer = document.getElementById("installContainer");
-      const pwaInstallBtn = document.getElementById("pwaInstallBtn");
-      let deferredPrompt = null;
-
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((reg) => console.log('Service Worker registered:', reg))
-            .catch((err) => console.error('Service Worker registration failed:', err));
-        });
-      }
-
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installContainer.classList.remove('hidden');
+      // إعادة كل الأزرار للحالة غير النشطة
+      [btn1, btn2, btn3].forEach(btn => {
+        btn.classList.remove('bg-slate-800', 'border-slate-800', 'text-white');
+        btn.classList.add('bg-white', 'border-[#ece9e2]');
+        btn.querySelector('.row-icon').classList.remove('bg-[#f49e0b]', 'text-white');
+        btn.querySelector('.row-icon').classList.add('bg-[#f4f2ec]', 'text-[#8a90a2]');
+        btn.querySelector('.row-label').classList.remove('text-white');
+        btn.querySelector('.row-label').classList.add('text-slate-800');
+        btn.querySelector('.row-chev').classList.remove('text-[#f49e0b]');
+        btn.querySelector('.row-chev').classList.add('text-[#8a90a2]');
       });
 
-      pwaInstallBtn.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        installContainer.classList.add('hidden');
+      // تفعيل الزر المختار
+      const active = pageId === 'page1' ? btn1 : pageId === 'page2' ? btn2 : btn3;
+      active.classList.add('bg-slate-800', 'border-slate-800');
+      active.classList.remove('bg-white', 'border-[#ece9e2]');
+      active.querySelector('.row-icon').classList.add('bg-[#f49e0b]', 'text-white');
+      active.querySelector('.row-icon').classList.remove('bg-[#f4f2ec]', 'text-[#8a90a2]');
+      active.querySelector('.row-label').classList.add('text-white');
+      active.querySelector('.row-label').classList.remove('text-slate-800');
+      active.querySelector('.row-chev').classList.add('text-[#f49e0b]');
+      active.querySelector('.row-chev').classList.remove('text-[#8a90a2]');
+
+      resetUIFeedback();
+    }
+
+    const form = document.getElementById("dataForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const submitText = document.getElementById("submitText");
+    const spinner = document.getElementById("spinner");
+    const statusMessage = document.getElementById("statusMessage");
+    const cancelBtn = document.getElementById("cancelBtn");
+
+    const fileInput = document.getElementById("fileInput");
+    const fileNameDisplay = document.getElementById("fileNameDisplay");
+    const fileBtnLabel = document.getElementById("fileBtnLabel");
+
+    const imageFileInput = document.getElementById("imageFileInput");
+    const imageNameDisplay = document.getElementById("imageNameDisplay");
+    const imageBtnLabel = document.getElementById("imageBtnLabel");
+
+    const tshirtInput = document.getElementById("tshirtInput");
+    const tshirtNameDisplay = document.getElementById("tshirtNameDisplay");
+    const tshirtBtnLabel = document.getElementById("tshirtBtnLabel");
+    const tshirtPreviewContainer = document.getElementById("tshirtPreviewContainer");
+    const tshirtPreview = document.getElementById("tshirtPreview");
+    const removeTshirtBtn = document.getElementById("removeTshirtBtn");
+
+    const progressBox = document.getElementById("progressBox");
+    const progressBar = document.getElementById("progressBar");
+    const progressPercent = document.getElementById("progressPercent");
+    const progressText = document.getElementById("progressText");
+    const timerText = document.getElementById("timerText");
+
+    // PWA Elements
+    const installContainer = document.getElementById("installContainer");
+    const pwaInstallBtn = document.getElementById("pwaInstallBtn");
+    let deferredPrompt = null;
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((reg) => console.log('Service Worker registered:', reg))
+          .catch((err) => console.error('Service Worker registration failed:', err));
       });
+    }
 
-      window.addEventListener('appinstalled', () => {
-        installContainer.classList.add('hidden');
-        deferredPrompt = null;
-      });
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installContainer.classList.remove('hidden');
+    });
 
-      // Handle Shared Files Incoming
-      window.addEventListener('DOMContentLoaded', async () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('shared') && 'caches' in window) {
-          try {
-            const cache = await caches.open('shared-files-cache');
-            const response = await cache.match('/shared-file');
-            if (response) {
-              const blob = await response.blob();
-              const mimeType = blob.type || 'application/octet-stream';
-              const sharedFile = new File([blob], "shared_file_" + Date.now() + (mimeType.includes('/') ? '.' + mimeType.split('/')[1] : ''), { type: mimeType });
-              
-              switchPage('page1');
+    pwaInstallBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installContainer.classList.add('hidden');
+    });
 
-              if (mimeType.startsWith('image/')) {
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(sharedFile);
-                imageFileInput.files = dataTransfer.files;
-                imageFileInput.dispatchEvent(new Event('change'));
-              } else {
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(sharedFile);
-                fileInput.files = dataTransfer.files;
-                fileInput.dispatchEvent(new Event('change'));
-              }
+    window.addEventListener('appinstalled', () => {
+      installContainer.classList.add('hidden');
+      deferredPrompt = null;
+    });
 
-              await cache.delete('/shared-file');
-              window.history.replaceState({}, document.title, "/");
+    // Handle Shared Files Incoming
+    window.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('shared') && 'caches' in window) {
+        try {
+          const cache = await caches.open('shared-files-cache');
+          const response = await cache.match('/shared-file');
+          if (response) {
+            const blob = await response.blob();
+            const mimeType = blob.type || 'application/octet-stream';
+            const sharedFile = new File([blob], "shared_file_" + Date.now() + (mimeType.includes('/') ? '.' + mimeType.split('/')[1] : ''), { type: mimeType });
+            
+            switchPage('page1');
+
+            if (mimeType.startsWith('image/')) {
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(sharedFile);
+              imageFileInput.files = dataTransfer.files;
+              imageFileInput.dispatchEvent(new Event('change'));
+            } else {
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(sharedFile);
+              fileInput.files = dataTransfer.files;
+              fileInput.dispatchEvent(new Event('change'));
             }
-          } catch (err) {
-            console.error("Failed to read shared file from cache:", err);
+
+            await cache.delete('/shared-file');
+            window.history.replaceState({}, document.title, "/");
           }
+        } catch (err) {
+          console.error("Failed to read shared file from cache:", err);
         }
-      });
-
-      function fileToBase64(file) {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(file);
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = error => reject(error);
-        });
       }
+    });
 
-      fileInput.addEventListener("change", function () {
-  const compressBox = document.getElementById("pdfCompressAdvice");
-  
-  if (this.files && this.files.length > 0) {
-    const file = this.files[0];
-    const fileSizeMB = file.size / (1024 * 1024);
-    
-    fileNameDisplay.textContent = `${file.name} (${fileSizeMB.toFixed(1)} MB)`;
-    fileBtnLabel.textContent = "تم اختيار المستند";
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+    }
 
-    // إذا كان الملف أكبر من أو يساوي 20 ميجابايت، نُظهر تنبيه وزر الضغط
-    if (fileSizeMB >= 20) {
-      if (!compressBox) {
-        // إنشاء كادر التنبيه والزر تلقائياً إذا لم يكن موجوداً
-        const adviceDiv = document.createElement("div");
-        adviceDiv.id = "pdfCompressAdvice";
-        adviceDiv.className = "mt-2 p-2.5 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-900 space-y-1.5 flex flex-col items-center text-center";
-        adviceDiv.innerHTML = `
-          <div class="font-bold text-amber-800">
-            ⚠️ تنبيه: حجم الملف كبير (${fileSizeMB.toFixed(1)} MB)
-          </div>
-          <p class="text-[11px] text-amber-700">
-            لضمان رفع الملف فوراً وبسرعة صاروخية، يُفضل ضغط حجمه مجاناً بنقرة واحدة:
-          </p>
-          <a href="https://www.ilovepdf.com/ar/compress_pdf" target="_blank" rel="noopener noreferrer" 
-             class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#f19124] hover:bg-orange-600 text-white font-bold text-[11px] rounded-lg shadow-sm transition-colors">
-            <i class="fa-solid fa-file-zipper"></i>
-            <span>اضغط هنا لضغط الملف أونلاين (iLovePDF)</span>
-          </a>
-        `;
-        fileInput.parentElement.parentElement.appendChild(adviceDiv);
+    fileInput.addEventListener("change", function () {
+      const compressBox = document.getElementById("pdfCompressAdvice");
+      
+      if (this.files && this.files.length > 0) {
+        const file = this.files[0];
+        const fileSizeMB = file.size / (1024 * 1024);
+        
+        fileNameDisplay.textContent = `${file.name} (${fileSizeMB.toFixed(1)} MB)`;
+        fileBtnLabel.textContent = "تم اختيار المستند";
+
+        if (fileSizeMB >= 20) {
+          if (!compressBox) {
+            const adviceDiv = document.createElement("div");
+            adviceDiv.id = "pdfCompressAdvice";
+            adviceDiv.className = "mt-2.5 p-3 bg-amber-50 border border-amber-300 rounded-2xl shadow-sm text-xs text-amber-900 space-y-1.5 flex flex-col items-center text-center";
+            adviceDiv.innerHTML = `
+              <div class="font-bold text-amber-800">
+                ⚠️ تنبيه: حجم الملف كبير (${fileSizeMB.toFixed(1)} MB)
+              </div>
+              <p class="text-[11px] font-medium text-amber-700">
+                لضمان رفع الملف فوراً وبسرعة صاروخية، يُفضل ضغط حجمه مجاناً بنقرة واحدة:
+              </p>
+              <a href="https://www.ilovepdf.com/ar/compress_pdf" target="_blank" rel="noopener noreferrer" 
+                 class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-l from-[#f19124] to-[#f49e0b] hover:from-orange-600 hover:to-orange-500 text-white font-bold text-[11px] rounded-xl shadow-sm hover:shadow-md transition-all">
+                <i class="fa-solid fa-file-zipper"></i>
+                <span>اضغط هنا لضغط الملف أونلاين (iLovePDF)</span>
+              </a>
+            `;
+            fileInput.parentElement.parentElement.appendChild(adviceDiv);
+          } else {
+            compressBox.classList.remove("hidden");
+          }
+        } else {
+          if (compressBox) compressBox.classList.add("hidden");
+        }
+
       } else {
-        compressBox.classList.remove("hidden");
+        resetFileState();
+        if (compressBox) compressBox.classList.add("hidden");
       }
-    } else {
-      // إخفاء التنبيه إذا كان الملف أصغر من 20 ميجابايت
-      if (compressBox) compressBox.classList.add("hidden");
-    }
+    });
 
-  } else {
-    resetFileState();
-    if (compressBox) compressBox.classList.add("hidden");
-  }
-});
-      imageFileInput.addEventListener("change", function () {
-        if (this.files && this.files.length > 0) {
-          const file = this.files[0];
-          if (!file.type.startsWith('image/')) {
-            alert('يرجى اختيار ملف صورة فقط.');
-            resetImageState();
-            return;
-          }
-          imageNameDisplay.textContent = `${file.name} (جاهز للرفع ⚡)`;
-          imageBtnLabel.textContent = "تم اختيار الصورة";
-        } else {
+    imageFileInput.addEventListener("change", function () {
+      if (this.files && this.files.length > 0) {
+        const file = this.files[0];
+        if (!file.type.startsWith('image/')) {
+          alert('يرجى اختيار ملف صورة فقط.');
           resetImageState();
-        }
-      });
-
-      tshirtInput.addEventListener("change", function () {
-        if (this.files && this.files.length > 0) {
-          const file = this.files[0];
-          if (!file.type.startsWith('image/')) {
-            alert('يرجى اختيار ملف صورة فقط.');
-            resetTshirtState();
-            return;
-          }
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            tshirtPreview.src = e.target.result;
-            tshirtPreviewContainer.classList.remove("hidden");
-          };
-          reader.readAsDataURL(file);
-          tshirtNameDisplay.textContent = `${file.name} (جاهز للرفع ⚡)`;
-          tshirtBtnLabel.textContent = "تم اختيار التصميم";
-        } else {
-          resetTshirtState();
-        }
-      });
-
-      removeTshirtBtn.addEventListener("click", function (e) {
-        e.preventDefault();
-        resetTshirtState();
-      });
-
-      function resetFileState() {
-        fileInput.value = "";
-        fileNameDisplay.textContent = "لم يتم اختيار أي مستند";
-        fileBtnLabel.textContent = "اختر مستنداً لرفعه...";
-      }
-
-      function resetImageState() {
-        imageFileInput.value = "";
-        imageNameDisplay.textContent = "يقبل الصور فقط";
-        imageBtnLabel.textContent = "اختر صورة لرفعها...";
-      }
-
-      function resetTshirtState() {
-        tshirtInput.value = "";
-        tshirtNameDisplay.textContent = "لا يقبل إلا الصور فقط";
-        tshirtBtnLabel.textContent = "اختر صورة التصميم...";
-        tshirtPreviewContainer.classList.add("hidden");
-        tshirtPreview.src = "";
-      }
-
-      ['1', '2', '3'].forEach(num => {
-        const input = document.getElementById(`notes${num}`);
-        const counter = document.getElementById(`wordCounter${num}`);
-        input.addEventListener("input", function () {
-          const text = this.value.trim();
-          const words = text ? text.split(/\s+/) : [];
-          counter.textContent = `${words.length} / 10 كلمة`;
-          if (words.length > 10) counter.classList.add("text-red-500");
-          else counter.classList.remove("text-red-500");
-        });
-      });
-
-      function isArabicOnly(text) { return /^[\u0600-\u06FF\s]+$/.test(text); }
-      function isArabicNotesOnly(text) { return !text || /^[\u0600-\u06FF\s\.,،؛\?\!\(\)\[\]"'\-\_]+$/.test(text); }
-
-      function validateField(inputEl, errorEl, checkFn) {
-        const val = inputEl.value.trim();
-        if (!checkFn(val)) {
-          errorEl.classList.remove("hidden");
-          inputEl.classList.add("border-red-400");
-          return false;
-        } else {
-          errorEl.classList.add("hidden");
-          inputEl.classList.remove("border-red-400");
-          return true;
-        }
-      }
-
-      function resetUIFeedback() {
-        statusMessage.classList.add("hidden");
-        statusMessage.textContent = "";
-        progressBox.classList.add("hidden");
-        if (progressTimer) clearInterval(progressTimer);
-      }
-
-      // محاكاة شريط التقدم التفاعلي للانتظار
-function startProgressSimulation() {
-  progressBox.classList.remove("hidden");
-  progressBar.style.width = "2%";
-  progressPercent.textContent = "2%";
-  
-  let currentPercent = 2;
-  let secondsPassed = 0;
-
-  progressTimer = setInterval(() => {
-    secondsPassed++;
-
-    // زيادة النسبة تدريجياً وبطء الحركة كلما اقترب من النهاية ليتحرك بانتظام دون توقف
-    if (currentPercent < 70) {
-      currentPercent += 3; // حركة سريعة في البداية
-    } else if (currentPercent < 90) {
-      currentPercent += 1; // حركة متوسطة
-    } else if (currentPercent < 99) {
-      // بعد الـ 90% يتقدم خطوة بخطوة كل ثانيتين حتى لا يتوقف أبداً مهما كان الملف كبيراً
-      if (secondsPassed % 2 === 0) {
-        currentPercent += 1;
-      }
-    }
-
-    progressBar.style.width = `${currentPercent}%`;
-    progressPercent.textContent = `${currentPercent}%`;
-
-    // تحديث العداد الزمني بشكل تصاعدي واقعي
-    let estimatedLeft = Math.max(1, 60 - secondsPassed);
-    if (currentPercent >= 90) {
-      timerText.textContent = "جاري إنهاء الحفظ في ...";
-    } else {
-      timerText.textContent = `الزمان المتبقي: ~${estimatedLeft}s`;
-    }
-
-  }, 1000);
-}
-      function finishProgressSimulation() {
-        if (progressTimer) clearInterval(progressTimer);
-        progressBar.style.width = "100%";
-        progressPercent.textContent = "100%";
-        timerText.textContent = "اكتمل الرفع!";
-        setTimeout(() => {
-          progressBox.classList.add("hidden");
-        }, 1200);
-      }
-
-      // 📤 إرسال البيانات المباشر إلى Google Apps Script 📤
-      form.addEventListener("submit", async function (e) {
-        e.preventDefault();
-
-        let isValid = true;
-        let payload = {};
-        let selectedFile = null;
-
-        if (currentPage === 'page1') {
-          const nameOk = validateField(document.getElementById('fullName1'), document.getElementById('nameError1'), val => val && isArabicOnly(val));
-          const copiesOk = validateField(document.getElementById('copiesCount1'), document.getElementById('copiesError1'), val => parseInt(val) > 0);
-          const notesOk = validateField(document.getElementById('notes1'), document.getElementById('notesError1'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
-
-          if (!nameOk || !copiesOk || !notesOk) isValid = false;
-
-          if (fileInput.files && fileInput.files.length > 0) {
-            selectedFile = fileInput.files[0];
-          } else if (imageFileInput.files && imageFileInput.files.length > 0) {
-            selectedFile = imageFileInput.files[0];
-          }
-
-          payload = {
-            "الخدمة": "طباعة ملفات",
-            "الاسم الثلاثي": document.getElementById('fullName1').value.trim(),
-            "عدد النسخ": parseInt(document.getElementById('copiesCount1').value, 10),
-            "الملاحظات": document.getElementById('notes1').value.trim()
-          };
-
-        } else if (currentPage === 'page2') {
-          const nameOk = validateField(document.getElementById('fullName2'), document.getElementById('nameError2'), val => val && isArabicOnly(val));
-          const bookOk = validateField(document.getElementById('bookPrint'), document.getElementById('bookError'), val => val !== "");
-          const copiesOk = validateField(document.getElementById('copiesCount2'), document.getElementById('copiesError2'), val => parseInt(val) > 0);
-          const notesOk = validateField(document.getElementById('notes2'), document.getElementById('notesError2'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
-
-          if (!nameOk || !bookOk || !copiesOk || !notesOk) isValid = false;
-
-          payload = {
-            "الخدمة": "طباعة كتب مدرسية",
-            "الاسم الثلاثي": document.getElementById('fullName2').value.trim(),
-            "طباعة كتب": document.getElementById('bookPrint').value,
-            "عدد النسخ": parseInt(document.getElementById('copiesCount2').value, 10),
-            "الملاحظات": document.getElementById('notes2').value.trim()
-          };
-
-        } else if (currentPage === 'page3') {
-          const nameOk = validateField(document.getElementById('fullName3'), document.getElementById('nameError3'), val => val && isArabicOnly(val));
-          const tshirtOk = tshirtInput.files && tshirtInput.files.length > 0;
-          if (!tshirtOk) document.getElementById('tshirtError').classList.remove('hidden');
-          else document.getElementById('tshirtError').classList.add('hidden');
-          const notesOk = validateField(document.getElementById('notes3'), document.getElementById('notesError3'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
-
-          if (!nameOk || !tshirtOk || !notesOk) isValid = false;
-
-          if (tshirtInput.files && tshirtInput.files.length > 0) {
-            selectedFile = tshirtInput.files[0];
-          }
-
-          payload = {
-            "الخدمة": "طباعة تيشرت او كوب",
-            "الاسم الثلاثي": document.getElementById('fullName3').value.trim(),
-            "الملاحظات": document.getElementById('notes3').value.trim()
-          };
-        }
-
-        if (!isValid) {
-          showNotification("يرجى التأكد من استكمال كافة الحقول المطلوبة بشكل صحيح.", "error");
           return;
         }
+        imageNameDisplay.textContent = `${file.name} (جاهز للرفع ⚡)`;
+        imageBtnLabel.textContent = "تم اختيار الصورة";
+      } else {
+        resetImageState();
+      }
+    });
 
-        submitBtn.disabled = true;
-        spinner.classList.remove("hidden");
-        submitText.textContent = "جاري المعالجة...";
-        statusMessage.classList.add("hidden");
+    tshirtInput.addEventListener("change", function () {
+      if (this.files && this.files.length > 0) {
+        const file = this.files[0];
+        if (!file.type.startsWith('image/')) {
+          alert('يرجى اختيار ملف صورة فقط.');
+          resetTshirtState();
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          tshirtPreview.src = e.target.result;
+          tshirtPreviewContainer.classList.remove("hidden");
+        };
+        reader.readAsDataURL(file);
+        tshirtNameDisplay.textContent = `${file.name} (جاهز للرفع ⚡)`;
+        tshirtBtnLabel.textContent = "تم اختيار التصميم";
+      } else {
+        resetTshirtState();
+      }
+    });
 
-        startProgressSimulation();
+    removeTshirtBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      resetTshirtState();
+    });
 
-        try {
-          if (selectedFile) {
-            let fileToUpload = selectedFile;
+    function resetFileState() {
+      fileInput.value = "";
+      fileNameDisplay.textContent = "لم يتم اختيار أي مستند";
+      fileBtnLabel.textContent = "اختر مستنداً لرفعه...";
+    }
 
-            // ضغط تلقائي إذا كانت صورة لتسريع العملية
-            if (selectedFile.type.startsWith('image/')) {
-              const options = {
-                maxSizeMB: 1.5,
-                maxWidthOrHeight: 2048,
-                useWebWorker: true
-              };
-              try {
-                fileToUpload = await imageCompression(selectedFile, options);
-              } catch (err) {
-                console.log("Image compression skipped:", err);
-              }
+    function resetImageState() {
+      imageFileInput.value = "";
+      imageNameDisplay.textContent = "يقبل الصور فقط";
+      imageBtnLabel.textContent = "اختر صورة لرفعها...";
+    }
+
+    function resetTshirtState() {
+      tshirtInput.value = "";
+      tshirtNameDisplay.textContent = "لا يقبل إلا الصور فقط";
+      tshirtBtnLabel.textContent = "اختر صورة التصميم...";
+      tshirtPreviewContainer.classList.add("hidden");
+      tshirtPreview.src = "";
+    }
+
+    ['1', '2', '3'].forEach(num => {
+      const input = document.getElementById(`notes${num}`);
+      const counter = document.getElementById(`wordCounter${num}`);
+      input.addEventListener("input", function () {
+        const text = this.value.trim();
+        const words = text ? text.split(/\s+/) : [];
+        counter.textContent = `${words.length} / 10 كلمة`;
+        if (words.length > 10) counter.classList.add("text-rose-500");
+        else counter.classList.remove("text-rose-500");
+      });
+    });
+
+    function isArabicOnly(text) { return /^[\u0600-\u06FF\s]+$/.test(text); }
+    function isArabicNotesOnly(text) { return !text || /^[\u0600-\u06FF\s\.,،؛\?\!\(\)\[\]"'\-\_]+$/.test(text); }
+
+    function validateField(inputEl, errorEl, checkFn) {
+      const val = inputEl.value.trim();
+      if (!checkFn(val)) {
+        errorEl.classList.remove("hidden");
+        inputEl.classList.add("border-rose-400", "ring-2", "ring-rose-400/20");
+        return false;
+      } else {
+        errorEl.classList.add("hidden");
+        inputEl.classList.remove("border-rose-400", "ring-2", "ring-rose-400/20");
+        return true;
+      }
+    }
+
+    function resetUIFeedback() {
+      statusMessage.classList.add("hidden");
+      statusMessage.textContent = "";
+      progressBox.classList.add("hidden");
+      if (progressTimer) clearInterval(progressTimer);
+    }
+
+    function startProgressSimulation() {
+      progressBox.classList.remove("hidden");
+      progressBar.style.width = "2%";
+      progressPercent.textContent = "2%";
+      
+      let currentPercent = 2;
+      let secondsPassed = 0;
+
+      progressTimer = setInterval(() => {
+        secondsPassed++;
+
+        if (currentPercent < 70) {
+          currentPercent += 3;
+        } else if (currentPercent < 90) {
+          currentPercent += 1;
+        } else if (currentPercent < 99) {
+          if (secondsPassed % 2 === 0) {
+            currentPercent += 1;
+          }
+        }
+
+        progressBar.style.width = `${currentPercent}%`;
+        progressPercent.textContent = `${currentPercent}%`;
+
+        let estimatedLeft = Math.max(1, 60 - secondsPassed);
+        if (currentPercent >= 90) {
+          timerText.textContent = "جاري إنهاء الحفظ في ...";
+        } else {
+          timerText.textContent = `الزمان المتبقي: ~${estimatedLeft}s`;
+        }
+
+      }, 1000);
+    }
+
+    function finishProgressSimulation() {
+      if (progressTimer) clearInterval(progressTimer);
+      progressBar.style.width = "100%";
+      progressPercent.textContent = "100%";
+      timerText.textContent = "اكتمل الرفع!";
+      setTimeout(() => {
+        progressBox.classList.add("hidden");
+      }, 1200);
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      let isValid = true;
+      let payload = {};
+      let selectedFile = null;
+
+      if (currentPage === 'page1') {
+        const nameOk = validateField(document.getElementById('fullName1'), document.getElementById('nameError1'), val => val && isArabicOnly(val));
+        const copiesOk = validateField(document.getElementById('copiesCount1'), document.getElementById('copiesError1'), val => parseInt(val) > 0);
+        const notesOk = validateField(document.getElementById('notes1'), document.getElementById('notesError1'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
+
+        if (!nameOk || !copiesOk || !notesOk) isValid = false;
+
+        if (fileInput.files && fileInput.files.length > 0) {
+          selectedFile = fileInput.files[0];
+        } else if (imageFileInput.files && imageFileInput.files.length > 0) {
+          selectedFile = imageFileInput.files[0];
+        }
+
+        payload = {
+          "الخدمة": "طباعة ملفات",
+          "الاسم الثلاثي": document.getElementById('fullName1').value.trim(),
+          "عدد النسخ": parseInt(document.getElementById('copiesCount1').value, 10),
+          "الملاحظات": document.getElementById('notes1').value.trim()
+        };
+
+      } else if (currentPage === 'page2') {
+        const nameOk = validateField(document.getElementById('fullName2'), document.getElementById('nameError2'), val => val && isArabicOnly(val));
+        const bookOk = validateField(document.getElementById('bookPrint'), document.getElementById('bookError'), val => val !== "");
+        const copiesOk = validateField(document.getElementById('copiesCount2'), document.getElementById('copiesError2'), val => parseInt(val) > 0);
+        const notesOk = validateField(document.getElementById('notes2'), document.getElementById('notesError2'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
+
+        if (!nameOk || !bookOk || !copiesOk || !notesOk) isValid = false;
+
+        payload = {
+          "الخدمة": "طباعة كتب مدرسية",
+          "الاسم الثلاثي": document.getElementById('fullName2').value.trim(),
+          "طباعة كتب": document.getElementById('bookPrint').value,
+          "عدد النسخ": parseInt(document.getElementById('copiesCount2').value, 10),
+          "الملاحظات": document.getElementById('notes2').value.trim()
+        };
+
+      } else if (currentPage === 'page3') {
+        const nameOk = validateField(document.getElementById('fullName3'), document.getElementById('nameError3'), val => val && isArabicOnly(val));
+        const tshirtOk = tshirtInput.files && tshirtInput.files.length > 0;
+        if (!tshirtOk) document.getElementById('tshirtError').classList.remove('hidden');
+        else document.getElementById('tshirtError').classList.add('hidden');
+        const notesOk = validateField(document.getElementById('notes3'), document.getElementById('notesError3'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
+
+        if (!nameOk || !tshirtOk || !notesOk) isValid = false;
+
+        if (tshirtInput.files && tshirtInput.files.length > 0) {
+          selectedFile = tshirtInput.files[0];
+        }
+
+        payload = {
+          "الخدمة": "طباعة تيشرت او كوب",
+          "الاسم الثلاثي": document.getElementById('fullName3').value.trim(),
+          "الملاحظات": document.getElementById('notes3').value.trim()
+        };
+      }
+
+      if (!isValid) {
+        showNotification("يرجى التأكد من استكمال كافة الحقول المطلوبة بشكل صحيح.", "error");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      spinner.classList.remove("hidden");
+      submitText.textContent = "جاري المعالجة...";
+      statusMessage.classList.add("hidden");
+
+      startProgressSimulation();
+
+      try {
+        if (selectedFile) {
+          let fileToUpload = selectedFile;
+
+          if (selectedFile.type.startsWith('image/')) {
+            const options = {
+              maxSizeMB: 1.5,
+              maxWidthOrHeight: 2048,
+              useWebWorker: true
+            };
+            try {
+              fileToUpload = await imageCompression(selectedFile, options);
+            } catch (err) {
+              console.log("Image compression skipped:", err);
             }
-
-            payload.fileData = await fileToBase64(fileToUpload);
-            payload.fileName = fileToUpload.name;
-            payload.fileType = fileToUpload.type;
           }
 
-          await fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify(payload)
-          });
-
-          finishProgressSimulation();
-          showNotification("تم إرسال البيانات بنجاح! ⚡", "success");
-          form.reset();
-          resetFileState();
-          resetImageState();
-          resetTshirtState();
-          ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
-
-        } catch (error) {
-          console.error("Submission error:", error);
-          if (progressTimer) clearInterval(progressTimer);
-          progressBox.classList.add("hidden");
-          showNotification("حدث خطأ أثناء الإرسال: " + error.message, "error");
-        } finally {
-          submitBtn.disabled = false;
-          spinner.classList.add("hidden");
-          submitText.textContent = "إرسال مطبوعاتك";
+          payload.fileData = await fileToBase64(fileToUpload);
+          payload.fileName = fileToUpload.name;
+          payload.fileType = fileToUpload.type;
         }
-      });
 
-      cancelBtn.addEventListener("click", function () {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+
+        finishProgressSimulation();
+        showNotification("تم إرسال البيانات بنجاح! ⚡", "success");
         form.reset();
         resetFileState();
         resetImageState();
         resetTshirtState();
-        resetUIFeedback();
         ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
-      });
 
-      function showNotification(msg, type) {
-        statusMessage.textContent = msg;
-        statusMessage.classList.remove("hidden");
-        statusMessage.className = type === "success" 
-          ? "p-2.5 rounded-xl text-center text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200"
-          : "p-2.5 rounded-xl text-center text-xs font-bold bg-red-50 text-red-800 border border-red-200";
+      } catch (error) {
+        console.error("Submission error:", error);
+        if (progressTimer) clearInterval(progressTimer);
+        progressBox.classList.add("hidden");
+        showNotification("حدث خطأ أثناء الإرسال: " + error.message, "error");
+      } finally {
+        submitBtn.disabled = false;
+        spinner.classList.add("hidden");
+        submitText.textContent = "إرسال البيانات";
       }
-    </script>
-  </body>
+    });
+
+    cancelBtn.addEventListener("click", function () {
+      form.reset();
+      resetFileState();
+      resetImageState();
+      resetTshirtState();
+      resetUIFeedback();
+      ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
+    });
+
+    function showNotification(msg, type) {
+      statusMessage.textContent = msg;
+      statusMessage.classList.remove("hidden");
+      statusMessage.className = type === "success" 
+        ? "my-3 p-3 rounded-2xl text-center text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-sm"
+        : "my-3 p-3 rounded-2xl text-center text-xs font-bold bg-rose-50 text-rose-800 border border-rose-200 shadow-sm";
+    }
+  </script>
+</body>
 </html>
