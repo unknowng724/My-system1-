@@ -39,19 +39,11 @@
       .marquee-container:active .animate-marquee-right {
         animation-play-state: paused;
       }
-
-      @keyframes softGlow {
-        0%, 100% { opacity: 0.35; }
-        50% { opacity: 0.6; }
-      }
-      .glow-orb {
-        animation: softGlow 6s ease-in-out infinite;
-      }
     </style>
   </head>
-<body class="min-h-screen bg-gradient-to-b from-[#f3f5f8] to-[#eef1f6] flex flex-col items-center justify-start p-0 md:p-0">
+<body class="min-h-screen bg-[#f6f7f9] flex flex-col items-center justify-start p-0 md:p-0">
   <!-- 1. شريط الصلاة على النبي -->
-  <div class="marquee-container fixed top-0 left-0 w-screen z-50 bg-gradient-to-l from-[#0f172a] via-[#132038] to-[#0f172a] text-[#ffffff] py-2.5 px-0 shadow-md border-b border-white/5 overflow-hidden flex items-center">
+  <div class="marquee-container fixed top-0.1 left-0 w-screen z-50 bg-[#0f172a] text-[#ffffff] py-2 px-0 shadow-none border-0 overflow-hidden flex items-center">
     <div class="w-full overflow-hidden relative flex items-center">
       <div class="animate-marquee-right font-medium text-xs md:text-sm tracking-wide flex items-center gap-6 whitespace-nowrap">
       <span>✨ اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ ✨</span>
@@ -91,15 +83,15 @@
     <!-- حاوية العنوان والأيقونة -->
 
     <div class="flex items-center justify-center gap-3 mb-2 md:mb-3 relative z-10">
-        <h2 class="text-[#f3ead8] text-lg md:text-xl font-extrabold tracking-wide">
+        <h2 class="text-[#e8dcc8] text-1xl md:text-1xl font-bold tracking-wide">
          مكتبتي - نموذج الطلبات
         </h2>
-        <span class="w-9 h-9 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center shadow-inner"><i class="fa-solid fa-print text-[#f49e0b] text-base md:text-lg drop-shadow-md"></i></span>
+        <i class="fa-solid fa-print text-[#f49e0b] text-2xl md:text-3xl drop-shadow-md"></i>
     </div>
 
     <!-- النص الفرعي -->
 
-    <p class="text-[#d9ccae] text-xs md:text-sm font-medium relative z-10">
+    <p class="text-[#e8dcc8] text-sm md:text-base font-medium relative z-10">
 
         أرسل طلبك بسهولة وسنقوم بالطباعة فوراً
 
@@ -109,9 +101,9 @@
 
 </div>
 
-        <h1 class="text-lg font-extrabold text-[#0a4d48] tracking-tight text-center mt-4">خدمات الطباعة الإلكترونية</h1>
+        <h1 class="text-xl font-bold text-[#0a4d48] tracking-tight text-center">خدمات الطباعة الإلكترونية</h1>
 
-        <p class="text-xs text-slate-500 mt-1">اختر نوع الخدمة التي ترغب بها</p>
+        <p class="text-xs text-[#0a4d48] mt-1">اختر نوع الخدمة التي ترغب بها</p>
 
       </div>
       <!-- زر تثبيت التطبيق -->
@@ -119,7 +111,7 @@
         <button
           id="pwaInstallBtn"
           type="button"
-          class="w-full py-3 px-4 bg-gradient-to-l from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs rounded-2xl shadow-lg shadow-emerald-600/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-emerald-400/40 animate-pulse"
+          class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-[#05443c]-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-emerald-500 animate-pulse"
         >
           <i class="fa-solid fa-download text-sm"></i>
           <span>تثبيت التطبيق على جهازك</span>
@@ -130,9 +122,9 @@
 <div class="space-y-2.5 mb-6">
 
   <div id="tabBtn1" onclick="switchPage('page1')"
-    class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-slate-800 border border-slate-800 cursor-pointer transition-all duration-300 active:scale-[.98] shadow-md shadow-slate-800/10 hover:shadow-lg">
+    class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-slate-800 border border-slate-800 cursor-pointer transition-all duration-300 active:scale-[.98]">
     <div class="flex items-center gap-3">
-      <div class="row-icon w-10 h-10 rounded-2xl flex items-center justify-center bg-[#fac30c] text-white text-base shadow-sm transition-all duration-300">
+      <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center bg-[#fac30c] text-white text-base transition-all duration-300">
         <i class="fa-solid fa-file-pdf"></i>
       </div>
       <span class="row-label font-bold text-sm text-white transition-colors duration-300">طباعة ملفات</span>
@@ -141,9 +133,9 @@
   </div>
 
   <div id="tabBtn2" onclick="switchPage('page2')"
-    class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-white border border-[#ece9e2] cursor-pointer transition-all duration-300 active:scale-[.98] shadow-sm hover:shadow-md hover:border-slate-300">
+    class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-white border border-[#ece9e2] cursor-pointer transition-all duration-300 active:scale-[.98]">
     <div class="flex items-center gap-3">
-      <div class="row-icon w-10 h-10 rounded-2xl flex items-center justify-center bg-[#fac30c] text-[#8a90a2] text-base shadow-sm transition-all duration-300">
+      <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center bg-[#fac30c] text-[#8a90a2] text-base transition-all duration-300">
         <i class="fa-solid fa-book-open"></i>
       </div>
       <span class="row-label font-bold text-sm text-slate-800 transition-colors duration-300">كتب مدرسية</span>
@@ -152,9 +144,9 @@
   </div>
 
   <div id="tabBtn3" onclick="switchPage('page3')"
-    class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-white border border-[#ece9e2] cursor-pointer transition-all duration-300 active:scale-[.98] shadow-sm hover:shadow-md hover:border-slate-300">
+    class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-white border border-[#ece9e2] cursor-pointer transition-all duration-300 active:scale-[.98]">
     <div class="flex items-center gap-3">
-      <div class="row-icon w-10 h-10 rounded-2xl flex items-center justify-center bg-[#fac30c] text-[#8a90a2] text-base shadow-sm transition-all duration-300">
+      <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center bg-[#fac30c] text-[#8a90a2] text-base transition-all duration-300">
         <i class="fa-solid fa-shirt"></i>
       </div>
       <span class="row-label font-bold text-sm text-slate-800 transition-colors duration-300">تيشرت / كوب</span>
@@ -180,7 +172,7 @@
                 type="text"
                 id="fullName1"
                 placeholder="مثال:محمود خالد"
-                class="w-full pl-8 pr-9 py-4 bg-[#f9fafc]/90 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all shadow-sm focus:shadow-md text-xs text-[#f49e0b]"
+                class="w-full pl-8 pr-9 py-4 bg-[#f9fafc]/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-[#f49e0b]"
               />
             </div>
             <p id="nameError1" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
@@ -200,7 +192,7 @@
                 id="copiesCount1"
                 min="1"
                 placeholder="أدخل عدد النسخ المطلوبة"
-                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc]/90 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all shadow-sm focus:shadow-md text-xs text-slate-800"
+                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc]/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800"
               />
             </div>
             <p id="copiesError1" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال عدد نسخ صحيح (رقم أكبر من 0).</p>
@@ -209,7 +201,7 @@
           <!-- زر تحميل مستند -->
           <div>
             <label class="block text-xs font-semibold text-[#f49e0b] mb-1"> تحميل ملفك (اختياري)</label>
-            <div class="relative border-2 border-dashed border-slate-200 hover:border-[#f19124] rounded-2xl bg-slate-50/60 hover:bg-orange-50/40 transition-all duration-200 hover:shadow-sm">
+            <div class="relative border-2 border-dashed border-slate-200 hover:border-[#f19124] rounded-xl bg-white/50 transition-colors duration-200">
               <input
                 type="file"
                 id="fileInput"
@@ -217,7 +209,7 @@
                 accept="*/*"
               />
               <div class="p-2.5 flex flex-col items-center justify-center text-center">
-                <span class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-[#f19124] mb-1.5 shadow-sm">
+                <span class="w-7 h-7 rounded-full bg-orange-50 flex items-center justify-center text-[#f19124] mb-1">
                   <i class="fa-solid fa-file-arrow-up text-xs"></i>
                 </span>
                 <span class="text-xs font-semibold text-slate-600" id="fileBtnLabel">اختر ملفك (يمكنك مشاركته من الوتساب نفسه)...</span>
@@ -228,7 +220,7 @@
               <!-- زر رفع الصور -->
           <div>
             <label class="block text-xs font-semibold text-[#f49e0b] mb-1">زر رفع الصور (اختياري)</label>
-            <div class="relative border-2 border-dashed border-slate-200 hover:border-[#0e1d3e] rounded-2xl bg-slate-50/60 hover:bg-slate-50 transition-all duration-200 hover:shadow-sm">
+            <div class="relative border-2 border-dashed border-slate-200 hover:border-[#0e1d3e] rounded-xl bg-white/50 transition-colors duration-200">
               <input
                 type="file"
                 id="imageFileInput"
@@ -236,7 +228,7 @@
                 accept="image/*"
               />
               <div class="p-2.5 flex flex-col items-center justify-center text-center">
-                <span class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-[#0e1d3e] mb-1.5 shadow-sm">
+                <span class="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-[#0e1d3e] mb-1">
                   <i class="fa-solid fa-image text-xs"></i>
                 </span>
                 <span class="text-xs font-semibold text-slate-600" id="imageBtnLabel">اختر صورة لرفعها...</span>
@@ -255,7 +247,7 @@
               id="notes1"
               rows="2"
               placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
-              class="w-full p-2 bg-white/90 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all shadow-sm focus:shadow-md text-xs text-slate-800 resize-none"
+              class="w-full p-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800 resize-none"
             ></textarea>
             <p id="notesError1" class="text-[10px] text-red-500 mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
         </div>
@@ -282,7 +274,7 @@
                 type="text"
                 id="fullName2"
                 placeholder="اكتب اسمك الثلاثي باللغة العربية"
-                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc] border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all shadow-sm focus:shadow-md text-xs text-slate-800"
+                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc] border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800"
               />
             </div>
             <p id="nameError2" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
@@ -299,7 +291,7 @@
               </span>
               <select
                 id="bookPrint"
-                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc] border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all shadow-sm focus:shadow-md text-xs text-slate-800 appearance-none cursor-pointer"
+                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc] border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800 appearance-none cursor-pointer"
               >
                 <option value="">-- اختر الصف الدراسي والمادة المطلوب طباعتها --</option>
                 <option value="الصف الأول">الصف الأول</option>
@@ -336,7 +328,7 @@
                 id="copiesCount2"
                 min="1"
                 placeholder="أدخل عدد النسخ المطلوبة"
-                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc] border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all shadow-sm focus:shadow-md text-xs text-slate-800"
+                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc] border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800"
               />
             </div>
             <p id="copiesError2" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال عدد نسخ صحيح (رقم أكبر من 0).</p>
@@ -352,7 +344,7 @@
               id="notes2"
               rows="2"
               placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
-              class="w-full p-2 bg-white/90 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all shadow-sm focus:shadow-md text-xs text-slate-800 resize-none"
+              class="w-full p-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800 resize-none"
             ></textarea>
             <p id="notesError2" class="text-[10px] text-red-500 mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
           </div>
@@ -375,7 +367,7 @@
                 type="text"
                 id="fullName3"
                 placeholder="اكتب اسمك الثلاثي باللغة العربية"
-                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc] border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all shadow-sm focus:shadow-md text-xs text-slate-800"
+                class="w-full pl-3 pr-9 py-4 bg-[#f9fafc] border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800"
               />
             </div>
             <p id="nameError3" class="text-[10px] text-red-500 mt-1 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط وبدون أرقام.</p>
@@ -386,7 +378,7 @@
             <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
               تحميل الصورة التي تريد طباعتها <span class="text-red-500">*</span>
             </label>
-            <div class="relative border-2 border-dashed border-slate-200 hover:border-[#0e1d3e] rounded-2xl bg-slate-50/60 hover:bg-slate-50 transition-all duration-200 hover:shadow-sm">
+            <div class="relative border-2 border-dashed border-slate-200 hover:border-[#0e1d3e] rounded-xl bg-white/50 transition-colors duration-200">
               <input
                 type="file"
                 id="tshirtInput"
@@ -394,7 +386,7 @@
                 accept="image/*"
               />
               <div class="p-2.5 flex flex-col items-center justify-center text-center">
-                <span class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-[#0e1d3e] mb-1.5 shadow-sm">
+                <span class="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-[#0e1d3e] mb-1">
                   <i class="fa-solid fa-image text-xs"></i>
                 </span>
                 <span class="text-xs font-semibold text-slate-600" id="tshirtBtnLabel">اختر صورة التصميم...</span>
@@ -424,14 +416,14 @@
               id="notes3"
               rows="2"
               placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
-              class="w-full p-2 bg-white/90 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all shadow-sm focus:shadow-md text-xs text-slate-800 resize-none"
+              class="w-full p-2 bg-white/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f19124]/40 focus:border-[#0e1d3e] transition-all text-xs text-slate-800 resize-none"
             ></textarea>
             <p id="notesError3" class="text-[10px] text-red-500 mt-1 hidden">يجب أن تكون الكتابة بالعربية وبدون أرقام ولا تتجاوز 10 كلمات.</p>
           </div>
         </div>
 
         <!-- ⏳ شريط وشاشة التقدم الذكية عند الرفع ⏳ -->
-        <div id="progressBox" class="hidden p-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-200 shadow-sm space-y-2">
+        <div id="progressBox" class="hidden p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
           <div class="flex justify-between items-center text-xs font-bold text-amber-900">
             <span id="progressText" class="flex items-center gap-1.5">
               <i class="fa-solid fa-cloud-arrow-up animate-bounce text-[#f19124]"></i>
@@ -439,7 +431,7 @@
             </span>
             <span id="progressPercent" class="text-xs text-[#0e1d3e]">0%</span>
           </div>
-          <div class="w-full bg-amber-200/70 h-2.5 rounded-full overflow-hidden shadow-inner">
+          <div class="w-full bg-amber-200 h-2.5 rounded-full overflow-hidden">
             <div id="progressBar" class="bg-gradient-to-r from-[#0e1d3e] to-[#f19124] h-full w-0 transition-all duration-300 rounded-full"></div>
           </div>
           <div class="flex justify-between text-[10px] text-amber-700 font-semibold pt-1">
@@ -449,14 +441,14 @@
         </div>
 
         <!-- Submission Feedback Message -->
-        <div id="statusMessage" class="hidden p-2.5 rounded-2xl text-center text-xs font-bold transition-all duration-300"></div>
+        <div id="statusMessage" class="hidden p-2.5 rounded-xl text-center text-xs font-bold transition-all duration-300"></div>
 
         <!-- Form Action Buttons -->
         <div class="flex items-center gap-2 pt-2">
           <button
             type="submit"
             id="submitBtn"
-            class="flex-1 py-3 bg-gradient-to-l from-[#0f3d2e] to-[#1a5c47] hover:from-[#0d3527] hover:to-[#164d3c] text-white font-bold text-xs rounded-2xl shadow-lg shadow-[#0f3d2e]/20 hover:shadow-xl hover:shadow-[#0f3d2e]/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-[#1a5c47]/30"
+            class="flex-1 py-2.5 bg-[#cfa211] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-lg shadow-orange-600/10 hover:shadow-orange-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
           >
             <span id="submitText">إرسال البيانات</span>
             <span id="spinner" class="hidden w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -464,7 +456,7 @@
           <button
             type="button"
             id="cancelBtn"
-            class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs rounded-2xl active:scale-[0.98] transition-all border border-slate-200"
+            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs rounded-xl active:scale-[0.98] transition-all"
           >
             إلغاء
           </button>
@@ -636,7 +628,7 @@ function switchPage(pageId) {
         // إنشاء كادر التنبيه والزر تلقائياً إذا لم يكن موجوداً
         const adviceDiv = document.createElement("div");
         adviceDiv.id = "pdfCompressAdvice";
-        adviceDiv.className = "mt-2 p-2.5 bg-amber-50 border border-amber-300 rounded-2xl shadow-sm text-xs text-amber-900 space-y-1.5 flex flex-col items-center text-center";
+        adviceDiv.className = "mt-2 p-2.5 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-900 space-y-1.5 flex flex-col items-center text-center";
         adviceDiv.innerHTML = `
           <div class="font-bold text-amber-800">
             ⚠️ تنبيه: حجم الملف كبير (${fileSizeMB.toFixed(1)} MB)
@@ -645,7 +637,7 @@ function switchPage(pageId) {
             لضمان رفع الملف فوراً وبسرعة صاروخية، يُفضل ضغط حجمه مجاناً بنقرة واحدة:
           </p>
           <a href="https://www.ilovepdf.com/ar/compress_pdf" target="_blank" rel="noopener noreferrer" 
-             class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-l from-[#f19124] to-[#f49e0b] hover:from-orange-600 hover:to-orange-500 text-white font-bold text-[11px] rounded-xl shadow-sm hover:shadow-md transition-all">
+             class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#f19124] hover:bg-orange-600 text-white font-bold text-[11px] rounded-lg shadow-sm transition-colors">
             <i class="fa-solid fa-file-zipper"></i>
             <span>اضغط هنا لضغط الملف أونلاين (iLovePDF)</span>
           </a>
@@ -944,8 +936,8 @@ function startProgressSimulation() {
         statusMessage.textContent = msg;
         statusMessage.classList.remove("hidden");
         statusMessage.className = type === "success" 
-          ? "p-2.5 rounded-2xl text-center text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-sm"
-          : "p-2.5 rounded-2xl text-center text-xs font-bold bg-red-50 text-red-800 border border-red-200 shadow-sm";
+          ? "p-2.5 rounded-xl text-center text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200"
+          : "p-2.5 rounded-xl text-center text-xs font-bold bg-red-50 text-red-800 border border-red-200";
       }
     </script>
   </body>
