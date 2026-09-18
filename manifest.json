@@ -31,16 +31,11 @@
     "params": {
       "title": "title",
       "text": "text",
+      "url": "url",
       "files": [
         {
           "name": "shared_file",
-          "accept": [
-            "image/*",
-            "application/pdf",
-            "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "*/*"
-          ]
+          "accept": ["*/*"]
         }
       ]
     }
