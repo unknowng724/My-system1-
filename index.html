@@ -47,7 +47,7 @@
         transform: scale(0.97);
       }
 
-      /* الوضع النهاري (Light Mode) - أبيض ناصع ومشرق بالكامل دون أي أجزاء سوداء */
+      /* الوضع النهاري (Light Mode) */
       body.light-theme {
         background: #f8fafc !important;
         background-image: radial-gradient(circle at 50% 10%, #ffffff 0%, #f1f5f9 60%, #e2e8f0 100%) !important;
@@ -228,6 +228,12 @@
           <p class="text-xs text-emerald-200/70 font-medium">اختر نوع الخدمة التي ترغب بها</p>
         </div>
 
+        <!-- تنبيه عند استلام ملف عبر المشاركة -->
+        <div id="sharedFileAlert" class="hidden mb-4 p-3 bg-emerald-500/20 border border-[#00e676] rounded-2xl text-center text-xs text-[#00e676] font-bold animate-pulse">
+          <i class="fa-solid fa-paperclip ml-1"></i>
+          <span>تم إرفاق الملف المصرَّح بمشاركته تلقائياً! 📄</span>
+        </div>
+
         <!-- زر تثبيت التطبيق -->
         <div id="installContainer" class="hidden mb-4">
           <button
@@ -327,7 +333,7 @@
 
             <!-- زر تحميل مستند -->
             <div>
-              <label class="block text-xs font-bold text-emerald-200/90 mb-1.5">تحميل ملفك (اختياري)</label>
+              <label class="block text-xs font-bold text-emerald-200/90 mb-1.5">تحميل ملفك (أو مشاركته مباشرة)</label>
               <div class="drop-zone relative border-2 border-dashed border-emerald-500/40 hover:border-[#00e676] rounded-2xl bg-[#041f17]/60 hover:bg-[#07382a]/50 transition-all duration-200">
                 <input
                   type="file"
@@ -339,7 +345,7 @@
                   <span class="w-9 h-9 rounded-xl bg-[#00e676]/20 border border-[#00e676]/40 flex items-center justify-center text-[#00e676] mb-1.5 shadow-sm">
                     <i class="fa-solid fa-file-arrow-up text-sm"></i>
                   </span>
-                  <span class="text-xs font-bold text-white" id="fileBtnLabel">اختر ملفك...</span>
+                  <span class="text-xs font-bold text-white" id="fileBtnLabel">اختر ملفك أو أسقطه هنا...</span>
                   <span class="text-[10px] font-semibold text-emerald-300/60 mt-0.5" id="fileNameDisplay">لم يتم اختيار أي مستند</span>
                 </div>
               </div>
@@ -347,7 +353,7 @@
 
             <!-- زر رفع الصور -->
             <div>
-              <label class="block text-xs font-bold text-emerald-200/90 mb-1.5">زر رفع الصور (اختياري)</label>
+              <label class="block text-xs font-bold text-emerald-200/90 mb-1.5">رفع صورة (اختياري)</label>
               <div class="drop-zone relative border-2 border-dashed border-emerald-500/40 hover:border-[#00e676] rounded-2xl bg-[#041f17]/60 hover:bg-[#07382a]/50 transition-all duration-200">
                 <input
                   type="file"
@@ -642,7 +648,7 @@
         [btn1, btn2, btn3].forEach(btn => {
           btn.classList.remove('bg-[#062c21]', 'border-2', 'border-[#00e676]', 'shadow-[0_0_15px_rgba(0,230,118,0.2)]', 'tab-active');
           btn.classList.add('bg-[#041f17]/90', 'border', 'border-emerald-500/30');
-          btn.querySelector('.row-label').classList.remove('text-white', 'font-black');
+          btn.querySelector('.row-label').classList.remove('text-[#ffffff]', 'font-black');
           btn.querySelector('.row-label').classList.add('text-emerald-100/80', 'font-bold');
           btn.querySelector('.row-chev').classList.remove('text-[#00e676]');
           btn.querySelector('.row-chev').classList.add('text-emerald-400/60');
@@ -652,7 +658,7 @@
         const active = pageId === 'page1' ? btn1 : pageId === 'page2' ? btn2 : btn3;
         active.classList.add('bg-[#062c21]', 'border-2', 'border-[#00e676]', 'shadow-[0_0_15px_rgba(0,230,118,0.2)]', 'tab-active');
         active.classList.remove('bg-[#041f17]/90', 'border-emerald-500/30');
-        active.querySelector('.row-label').classList.add('text-white', 'font-black');
+        active.querySelector('.row-label').classList.add('text-[#ffffff]', 'font-black');
         active.querySelector('.row-label').classList.remove('text-emerald-100/80');
         active.querySelector('.row-chev').classList.add('text-[#00e676]');
         active.querySelector('.row-chev').classList.remove('text-emerald-400/60');
@@ -687,6 +693,61 @@
       const progressPercent = document.getElementById("progressPercent");
       const progressText = document.getElementById("progressText");
       const timerText = document.getElementById("timerText");
+
+      // 📌 دالة ربط وإرفاق أي ملف قادم من الخارج أو المشاركة 📌
+      function attachFileToForm(file) {
+        if (!file) return;
+        
+        const dt = new DataTransfer();
+        dt.items.add(file);
+
+        if (file.type.startsWith('image/')) {
+          if (currentPage === 'page3') {
+            tshirtInput.files = dt.files;
+            tshirtInput.dispatchEvent(new Event('change'));
+          } else {
+            imageFileInput.files = dt.files;
+            imageFileInput.dispatchEvent(new Event('change'));
+          }
+        } else {
+          switchPage('page1');
+          fileInput.files = dt.files;
+          fileInput.dispatchEvent(new Event('change'));
+        }
+
+        const sharedAlert = document.getElementById("sharedFileAlert");
+        if (sharedAlert) {
+          sharedAlert.classList.remove("hidden");
+          setTimeout(() => sharedAlert.classList.add("hidden"), 5000);
+        }
+      }
+
+      // دعم السحب والإسقاط (Drag & Drop)
+      window.addEventListener("dragover", e => e.preventDefault());
+      window.addEventListener("drop", e => {
+        e.preventDefault();
+        if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+          attachFileToForm(e.dataTransfer.files[0]);
+        }
+      });
+
+      // دعم اللصق المباشر (Paste)
+      window.addEventListener("paste", e => {
+        if (e.clipboardData && e.clipboardData.files.length > 0) {
+          attachFileToForm(e.clipboardData.files[0]);
+        }
+      });
+
+      // استقبال المشاركة الفورية عبر PWA Launch API (Web Share Target)
+      if ('launchQueue' in window && 'LaunchParams' in window) {
+        window.launchQueue.setConsumer(async (launchParams) => {
+          if (launchParams.files && launchParams.files.length > 0) {
+            const handle = launchParams.files[0];
+            const file = await handle.getFile();
+            attachFileToForm(file);
+          }
+        });
+      }
 
       // PWA Elements
       const installContainer = document.getElementById("installContainer");
@@ -737,7 +798,7 @@
           const fileSizeMB = file.size / (1024 * 1024);
           
           fileNameDisplay.textContent = `${file.name} (${fileSizeMB.toFixed(1)} MB)`;
-          fileBtnLabel.textContent = "تم اختيار المستند";
+          fileBtnLabel.textContent = "تم إرفاق المستند بنجاح 📄";
 
           if (fileSizeMB >= 20) {
             if (!compressBox) {
@@ -775,7 +836,7 @@
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
           if (!file.type.startsWith('image/')) {
-            alert('يرجى اختيار ملف صورة فقط.');
+            showNotification('يرجى اختيار ملف صورة فقط.', 'error');
             resetImageState();
             return;
           }
@@ -790,7 +851,7 @@
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
           if (!file.type.startsWith('image/')) {
-            alert('يرجى اختيار ملف صورة فقط.');
+            showNotification('يرجى اختيار ملف صورة فقط.', 'error');
             resetTshirtState();
             return;
           }
@@ -847,27 +908,16 @@
       function isValidArabicName(name) {
         if (!name) return false;
         const trimmed = name.trim();
-        
-        // 1. يجب أن يحتوي على أحرف عربية ومسافات فقط
         if (!/^[\u0621-\u064A\s]+$/.test(trimmed)) return false;
 
-        // 2. تقسيم الاسم إلى كلمات
         const words = trimmed.split(/\s+/).filter(w => w.length > 0);
-        
-        // يجب أن يتكون من 3 كلمات على الأقل (اسم ثلاثي)
         if (words.length < 3) return false;
 
-        // 3. فحص كل كلمة بشكل منفرد
         for (let word of words) {
           if (word.length < 2 || word.length > 18) return false;
-
-          // منع تكرار نفس الحرف 3 مرات متتالية أو أكثر (مثل: سسسسس أو ههههه)
           if (/(.)\1{2,}/.test(word)) return false;
-
-          // منع تكرار مقطع حرفين أكثر من مرتين (مثل: اباباب)
           if (/(..)\1{2,}/.test(word)) return false;
 
-          // منع تتابع صفوف لوحة المفاتيح العشوائية
           const keyboardRows = ["ضصثقفغعهخحجد", "شسيبلاتنمكط", "ئءؤرلاىةوزظ"];
           for (let row of keyboardRows) {
             for (let i = 0; i <= row.length - 4; i++) {
@@ -875,7 +925,6 @@
             }
           }
 
-          // منع التكرار المفرط للهمزات
           const hamzas = (word.match(/[ءئؤإأآ]/g) || []).length;
           if (hamzas > 2) return false;
         }
