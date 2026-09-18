@@ -1,70 +1,67 @@
-// Service Worker - يتعامل مع خاصية مشاركة الملفات (Web Share Target) والتثبيت
+// sw.js - v3
+const CACHE_NAME = "shared-files-cache-v3";
 
-// v2: رفعنا رقم النسخة عمداً لإجبار كروم يحدّث الـ Service Worker فوراً
-// بدل ما ينتظر دورة التحقق الاعتيادية (ممكن تاخد ساعات/أيام)
-const CACHE_NAME = "shared-files-cache-v2";
-
-self.addEventListener("install", (event) => {
-  // تفعيل الـ Service Worker فوراً بدون انتظار إغلاق كل التبويبات القديمة
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
-      // نحذف أي نسخ كاش قديمة من إصدارات سابقة (shared-files-cache بدون v2)
       const keys = await caches.keys();
       await Promise.all(
         keys
-          .filter((key) => key.startsWith("shared-files-cache") && key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
+          .filter((k) => k.startsWith("shared-files-cache") && k !== CACHE_NAME)
+          .map((k) => caches.delete(k))
       );
       await self.clients.claim();
     })()
   );
 });
 
+// ✅ نعترض فقط طلب المشاركة - ونترك باقي الطلبات للـ browser
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
-
-  // نلتقط فقط طلبات POST المرسلة من نظام المشاركة على المسار /share-target/
   if (event.request.method === "POST" && url.pathname === "/share-target/") {
     event.respondWith(handleShareTarget(event));
-  } else {
-    // الطلبات العادية لتشغيل الموقع بشكل طبيعي
-    event.respondWith(fetch(event.request));
   }
+  // لا نستدعي respondWith للطلبات الأخرى
 });
 
 async function handleShareTarget(event) {
+  const origin = self.location.origin;
   try {
     const formData = await event.request.formData();
     const file = formData.get("shared_file");
 
-    if (file && file.size > 0) {
-      const cache = await caches.open(CACHE_NAME);
-      // نخزن الملف مؤقتاً بنفس المفتاح اللي بيقرأه الكود بصفحة index.html
-      await cache.put("/shared-file", new Response(file, {
-        headers: {
-          "Content-Type": file.type || "application/octet-stream",
-          "X-Original-Filename": encodeURIComponent(file.name || "")
-        }
-      }));
-    } else {
-      // ما وصل ملف حقيقي - نشوف هل وصل نص/رابط بدل الملف عشان نعرف السبب بالضبط
-      const text = formData.get("text");
-      const title = formData.get("title");
-      const debugInfo = text || title
-        ? "received_text: " + (text || title).slice(0, 80)
-        : "no_file_no_text";
-      return Response.redirect("/?shareError=" + encodeURIComponent("empty|" + debugInfo), 303);
+    if (!file || file.size === 0) {
+      return Response.redirect(origin + "/?shareError=empty", 303);
     }
-  } catch (err) {
-    console.error("فشل التقاط الملف المشارك:", err);
-    // نرجّع رسالة الخطأ بالرابط نفسه عشان تظهر على الشاشة بدون الحاجة لكمبيوتر
-    return Response.redirect("/?shareError=" + encodeURIComponent(err.message || "unknown"), 303);
-  }
 
-  // نرجع المستخدم لصفحة التطبيق الرئيسية مع علامة ?shared=true
-  return Response.redirect("/?shared=true", 303);
+    const cache = await caches.open(CACHE_NAME);
+    // توكن فريد لكل مشاركة لتجنب تعارض الكاش
+    const token = Date.now().toString(36) + Math.random().toString(36).slice(2);
+
+    const headers = new Headers();
+    headers.set("Content-Type", file.type || "application/octet-stream");
+    headers.set("X-Original-Filename", encodeURIComponent(file.name || ""));
+
+    // ✅ تخزين بمفتاح فريد ومسار مطلق
+    await cache.put(
+      origin + "/shared-file-" + token,
+      new Response(file, { headers })
+    );
+
+    // ✅ رابط مطلق في إعادة التوجيه
+    return Response.redirect(
+      origin + "/?shared=true&token=" + token,
+      303
+    );
+  } catch (err) {
+    console.error("Share target error:", err);
+    return Response.redirect(
+      origin + "/?shareError=" + encodeURIComponent(err.message || "unknown"),
+      303
+    );
+  }
 }
