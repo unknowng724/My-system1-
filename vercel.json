@@ -1,7 +1,4 @@
 {
-  "rewrites": [
-    { "source": "/share-target/", "destination": "/index.html" }
-  ],
   "headers": [
     {
       "source": "/sw.js",
