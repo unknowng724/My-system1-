@@ -315,6 +315,14 @@
         </div>
 
       </form>
+      
+      <!-- زر مساعدة إعداد المشاركة -->
+      <div class="mt-6 text-center">
+        <button type="button" onclick="downloadSystemFiles()" class="text-[10px] text-slate-400 hover:text-slate-600 underline flex items-center justify-center gap-1 mx-auto">
+          <i class="fa-solid fa-wrench"></i>
+          إصلاح ميزة المشاركة (تحميل ملفات النظام)
+        </button>
+      </div>
     </div>
 
     <script>
@@ -422,71 +430,90 @@
 
       window.addEventListener('DOMContentLoaded', async () => {
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('shared') && 'caches' in window) {
-          try {
-            const cache = await caches.open('shared-files-cache');
-            const response = await cache.match('/shared-file');
-            
-            if (response) {
-              const blob = await response.blob();
+        if (urlParams.has('shared')) {
+          if ('caches' in window) {
+            try {
+              showNotification("جاري معالجة الملف المشارك...", "success");
+              const cache = await caches.open('shared-files-cache');
+              const response = await cache.match('/shared-file');
               
-              // تحديد اسم الملف ونوعه بذكاء
-              const originalName = response.headers.get('X-Original-Filename') || "ملف_مشارك_" + Date.now();
-              const mimeType = blob.type || 'application/octet-stream';
-              
-              let extension = "";
-              if (!originalName.includes('.')) {
-                  if (mimeType.includes('pdf')) extension = '.pdf';
-                  else if (mimeType.includes('jpeg')) extension = '.jpg';
-                  else if (mimeType.includes('png')) extension = '.png';
-                  else if (mimeType.includes('/')) extension = '.' + mimeType.split('/')[1];
-              }
-              
-              const finalFileName = originalName + extension;
-              const sharedFile = new File([blob], finalFileName, { type: mimeType });
-
-              // توجيه المستخدم تلقائياً للصفحة الأولى (تبويب الملفات والصور)
-              switchPage('page1');
-
-              const dataTransfer = new DataTransfer();
-              dataTransfer.items.add(sharedFile);
-
-              // 🌟 التوجيه الذكي: إذا كان الملف صورة، ضعه في زر الصور. إذا كان ملفاً، ضعه في زر المستند.
-              if (mimeType.startsWith('image/')) {
-                // إرسال لزر الصورة
-                imageFileInput.files = dataTransfer.files;
+              if (response) {
+                const blob = await response.blob();
                 
-                // تحديث واجهة زر الصور بتأثيرات بصرية لإخبار المستخدم بنجاح العملية
-                imageNameDisplay.textContent = `${finalFileName} (تمت المشاركة من تطبيق آخر ⚡)`;
-                imageBtnLabel.textContent = "تم استلام الصورة بنجاح";
-                document.getElementById("imageContainer").classList.add("border-[#f19124]", "bg-orange-50");
+                if (blob.size === 0) {
+                    showNotification("الملف المشارك فارغ أو معطوب.", "error");
+                    return;
+                }
                 
-                // إطلاق حدث التغيير ليعمل كأنه قام بالرفع يدوياً
-                imageFileInput.dispatchEvent(new Event('change', { bubbles: true }));
-                showNotification("تم استقبال الصورة المشاركة بنجاح!", "success");
+                // فك تشفير الاسم لدعم اللغة العربية
+                let originalName = response.headers.get('X-Original-Filename');
+                if (originalName) {
+                    try { originalName = decodeURIComponent(originalName); } catch(e){}
+                } else {
+                    originalName = "ملف_مشارك_" + Date.now();
+                }
+                
+                const mimeType = blob.type || 'application/octet-stream';
+                
+                let extension = "";
+                if (!originalName.includes('.')) {
+                    if (mimeType.includes('pdf')) extension = '.pdf';
+                    else if (mimeType.includes('jpeg')) extension = '.jpg';
+                    else if (mimeType.includes('png')) extension = '.png';
+                    else if (mimeType.includes('/')) extension = '.' + mimeType.split('/')[1];
+                }
+                
+                const finalFileName = originalName + extension;
+                const sharedFile = new File([blob], finalFileName, { type: mimeType });
 
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(sharedFile);
+
+                if (mimeType.startsWith('image/')) {
+                  switchPage('page1');
+                  imageFileInput.files = dataTransfer.files;
+                  imageNameDisplay.textContent = `${finalFileName} (تمت المشاركة ⚡)`;
+                  imageBtnLabel.textContent = "تم استلام الصورة بنجاح";
+                  document.getElementById("imageContainer").classList.add("border-[#f19124]", "bg-orange-50");
+                  
+                  // إضافتها أيضاً لصفحة التيشرت احتياطياً
+                  tshirtInput.files = dataTransfer.files;
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    tshirtPreview.src = e.target.result;
+                    tshirtPreviewContainer.classList.remove("hidden");
+                  };
+                  reader.readAsDataURL(sharedFile);
+                  tshirtNameDisplay.textContent = `${finalFileName} (تمت المشاركة ⚡)`;
+                  tshirtBtnLabel.textContent = "تم اختيار التصميم";
+
+                  showNotification("تم استقبال الصورة بنجاح!", "success");
+
+                } else {
+                  switchPage('page1');
+                  fileInput.files = dataTransfer.files;
+                  const fileSizeMB = sharedFile.size / (1024 * 1024);
+                  fileNameDisplay.textContent = `${finalFileName} (${fileSizeMB.toFixed(1)} MB) - تمت المشاركة ⚡`;
+                  fileBtnLabel.textContent = "تم استلام الملف بنجاح";
+                  document.getElementById("fileContainer").classList.add("border-[#f19124]", "bg-orange-50");
+                  
+                  if (fileSizeMB >= 20) {
+                     fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+                  }
+                  showNotification("تم استقبال المستند بنجاح!", "success");
+                }
+
+                await cache.delete('/shared-file');
+                window.history.replaceState({}, document.title, window.location.pathname);
               } else {
-                // إرسال لزر المستند (PDF, Word, الخ)
-                fileInput.files = dataTransfer.files;
-                
-                // تحديث واجهة المستندات
-                const fileSizeMB = sharedFile.size / (1024 * 1024);
-                fileNameDisplay.textContent = `${finalFileName} (${fileSizeMB.toFixed(1)} MB) - تمت المشاركة ⚡`;
-                fileBtnLabel.textContent = "تم استلام الملف بنجاح";
-                document.getElementById("fileContainer").classList.add("border-[#f19124]", "bg-orange-50");
-                
-                // إطلاق حدث التغيير ليعمل كأنه قام بالرفع يدوياً
-                fileInput.dispatchEvent(new Event('change', { bubbles: true }));
-                showNotification("تم استقبال المستند المشارك بنجاح!", "success");
+                 showNotification("لم يتم العثور على الملف. تأكد من تحميل ووضع ملف sw.js بشكل صحيح.", "error");
               }
-
-              // مسح الملف من الكاش وتنظيف الرابط لعدم تكرار العملية عند إعادة التحديث
-              await cache.delete('/shared-file');
-              window.history.replaceState({}, document.title, window.location.pathname);
+            } catch (err) {
+              console.error("Failed to read shared file:", err);
+              showNotification("خطأ في قراءة الملف: " + err.message, "error");
             }
-          } catch (err) {
-            console.error("Failed to read shared file from cache:", err);
-            showNotification("حدث خطأ أثناء قراءة الملف المشارك.", "error");
+          } else {
+            showNotification("متصفحك لا يدعم استقبال الملفات.", "error");
           }
         }
       });
@@ -817,6 +844,91 @@
         statusMessage.className = type === "success" 
           ? "p-2.5 rounded-xl text-center text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 mt-4"
           : "p-2.5 rounded-xl text-center text-xs font-bold bg-red-50 text-red-800 border border-red-200 mt-4";
+      }
+
+      // دالة توليد ملفات النظام المطلوبة للمشاركة
+      function downloadSystemFiles() {
+        const swContent = `self.addEventListener('install', (e) => self.skipWaiting());
+self.addEventListener('activate', (e) => self.clients.claim());
+
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  if (event.request.method === 'POST' && url.searchParams.has('shared')) {
+    event.respondWith((async () => {
+      try {
+        const formData = await event.request.formData();
+        const file = formData.get('shared_file');
+        
+        if (file) {
+          const cache = await caches.open('shared-files-cache');
+          // تشفير اسم الملف لتجنب خطأ الحروف العربية في الترويسات
+          const safeFileName = encodeURIComponent(file.name || 'shared_file');
+          const response = new Response(file, {
+            headers: {
+              'Content-Type': file.type || 'application/octet-stream',
+              'X-Original-Filename': safeFileName
+            }
+          });
+          await cache.put('/shared-file', response);
+        }
+      } catch (err) {
+        console.error('SW Error:', err);
+      }
+      return Response.redirect('/?shared=true', 303);
+    })());
+  }
+});`;
+
+        const manifestContent = `{
+  "name": "تطبيق مكتبتي",
+  "short_name": "مكتبتي",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f7f9",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3145/3145765.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "share_target": {
+    "action": "/?shared=true",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "shared_file",
+          "accept": ["*/*", ".pdf", ".doc", ".docx", ".jpg", ".png", ".jpeg", "image/*"]
+        }
+      ]
+    }
+  }
+}`;
+        
+        // تحميل sw.js
+        const swBlob = new Blob([swContent], { type: 'application/javascript' });
+        const swLink = document.createElement('a');
+        swLink.href = URL.createObjectURL(swBlob);
+        swLink.download = 'sw.js';
+        swLink.click();
+
+        // تحميل manifest.json
+        setTimeout(() => {
+          const manBlob = new Blob([manifestContent], { type: 'application/json' });
+          const manLink = document.createElement('a');
+          manLink.href = URL.createObjectURL(manBlob);
+          manLink.download = 'manifest.json';
+          manLink.click();
+          
+          alert("تم تحميل ملفات النظام المحدثة (sw.js و manifest.json).\\n\\nيرجى استبدال الملفات القديمة بهذين الملفين في نفس المجلد بجوار index.html لكي تعمل ميزة المشاركة بلا أخطاء.");
+        }, 500);
       }
     </script>
   </body>
