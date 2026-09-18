@@ -61,21 +61,6 @@
         border-color: #cbd5e1 !important;
       }
 
-      body.light-theme #splashScreen {
-        background-color: rgba(255, 255, 255, 0.98) !important;
-      }
-
-      body.light-theme #splashScreen > div {
-        background-color: #ffffff !important;
-        border-color: #a7f3d0 !important;
-        box-shadow: 0 20px 40px rgba(16, 185, 129, 0.12) !important;
-      }
-
-      body.light-theme #splashScreen h2,
-      body.light-theme #splashScreen p {
-        color: #064e3b !important;
-      }
-
       body.light-theme h1, 
       body.light-theme h2:not(.header-title), 
       body.light-theme label,
@@ -185,8 +170,6 @@
       <i id="themeIcon" class="fa-solid fa-sun text-amber-400"></i>
       <span id="themeText" class="hidden sm:inline">الوضع النهاري</span>
     </button>
-    
-    
 
     <!-- شريط الصلاة على النبي -->
     <div class="marquee-container fixed top-0 left-0 w-full z-50 bg-[#02140e]/90 text-emerald-300 py-2 px-0 shadow-lg border-b border-emerald-500/30 backdrop-blur-md flex items-center">
@@ -622,15 +605,6 @@
     </div>
 
     <script>
-      // شاشة الترحيب
-      const splashScreen = document.getElementById('splashScreen');
-      const closeSplashBtn = document.getElementById('closeSplashBtn');
-
-      closeSplashBtn.addEventListener('click', () => {
-        splashScreen.classList.add('opacity-0', 'pointer-events-none');
-        setTimeout(() => splashScreen.remove(), 500);
-      });
-
       // زر التبديل بين الوضع المظلم والنهاري
       const themeToggleBtn = document.getElementById('themeToggleBtn');
       const themeIcon = document.getElementById('themeIcon');
