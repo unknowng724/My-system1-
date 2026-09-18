@@ -440,12 +440,19 @@
         if (urlParams.has('shareError')) {
           const reason = urlParams.get('shareError');
           window.history.replaceState({}, document.title, window.location.pathname);
-          showNotification(
-            reason === 'empty'
-              ? "لم يصل أي ملف مع طلب المشاركة. جرّب المشاركة مجدداً."
-              : "حدث خطأ أثناء استقبال الملف المشارك: " + reason,
-            "error"
-          );
+          let message;
+          if (reason.startsWith('empty')) {
+            const parts = reason.split('|');
+            const detail = parts[1] || '';
+            if (detail.startsWith('received_text')) {
+              message = "التطبيق يلي شاركت منه أرسل رابط/نص بدل الملف الفعلي (" + detail.replace('received_text: ', '') + "). جرّب تشارك صورة محفوظة بمعرض الصور أو ملف PDF محفوظ فعلياً عالجهاز، مش رابط أو منشور.";
+            } else {
+              message = "لم يصل أي ملف مع طلب المشاركة إطلاقاً. جرّب المشاركة من معرض الصور مباشرة.";
+            }
+          } else {
+            message = "حدث خطأ أثناء استقبال الملف المشارك: " + reason;
+          }
+          showNotification(message, "error");
           return;
         }
 
