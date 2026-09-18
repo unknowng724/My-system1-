@@ -51,8 +51,13 @@ async function handleShareTarget(event) {
         }
       }));
     } else {
-      // وصل الطلب للـ Service Worker لكن بدون ملف فعلي داخله
-      return Response.redirect("/?shareError=empty", 303);
+      // ما وصل ملف حقيقي - نشوف هل وصل نص/رابط بدل الملف عشان نعرف السبب بالضبط
+      const text = formData.get("text");
+      const title = formData.get("title");
+      const debugInfo = text || title
+        ? "received_text: " + (text || title).slice(0, 80)
+        : "no_file_no_text";
+      return Response.redirect("/?shareError=" + encodeURIComponent("empty|" + debugInfo), 303);
     }
   } catch (err) {
     console.error("فشل التقاط الملف المشارك:", err);
