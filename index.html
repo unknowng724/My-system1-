@@ -237,10 +237,10 @@
               <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400">
                 <i class="fa-solid fa-user"></i>
               </span>
-              <input type="text" id="fullName1" placeholder="اكتب اسمك الثلاثي باللغة العربية"
+              <input type="text" id="fullName1" placeholder="اكتب اسمك الثلاثي (عربي أو إنجليزي)"
                 class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold light-input-field dark:input-field" />
             </div>
-            <p id="nameError1" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط.</p>
+            <p id="nameError1" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال اسم شخص حقيقي (3 مقاطع، بدون تكرار عشوائي للأحرف أو أسماء جماد).</p>
           </div>
 
           <!-- عدد النسخ -->
@@ -317,10 +317,10 @@
               <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400">
                 <i class="fa-solid fa-user"></i>
               </span>
-              <input type="text" id="fullName2" placeholder="اكتب اسمك الثلاثي باللغة العربية"
+              <input type="text" id="fullName2" placeholder="اكتب اسمك الثلاثي (عربي أو إنجليزي)"
                 class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold light-input-field dark:input-field" />
             </div>
-            <p id="nameError2" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط.</p>
+            <p id="nameError2" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال اسم شخص حقيقي (3 مقاطع، بدون تكرار عشوائي للأحرف أو أسماء جماد).</p>
           </div>
 
           <!-- اختر الكتب -->
@@ -399,10 +399,10 @@
               <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400">
                 <i class="fa-solid fa-user"></i>
               </span>
-              <input type="text" id="fullName3" placeholder="اكتب اسمك الثلاثي باللغة العربية"
+              <input type="text" id="fullName3" placeholder="اكتب اسمك الثلاثي (عربي أو إنجليزي)"
                 class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold light-input-field dark:input-field" />
             </div>
-            <p id="nameError3" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال الاسم الثلاثي باللغة العربية فقط.</p>
+            <p id="nameError3" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال اسم شخص حقيقي (3 مقاطع، بدون تكرار عشوائي للأحرف أو أسماء جماد).</p>
           </div>
 
           <!-- زر تحميل الصورة (الآن اختياري) -->
@@ -748,7 +748,33 @@
       });
 
       // 10. Validation Rules
-      function isArabicOnly(text) { return /^[\u0600-\u06FF\s]+$/.test(text); }
+      function isValidFullName(text) { 
+        if (!text) return false;
+        
+        const trimmed = text.trim();
+        
+        // 1. التحقق من أن النص يحتوي فقط على أحرف عربية أو إنجليزية ومسافات
+        if (!/^[\u0600-\u06FFa-zA-Z\s]+$/.test(trimmed)) return false;
+        
+        const words = trimmed.split(/\s+/);
+        
+        // 2. التحقق من وجود 3 كلمات على الأقل (الاسم الثلاثي)
+        if (words.length < 3) return false;
+        
+        // 3. كل كلمة يجب أن تكون حرفين على الأقل (لمنع الإدخالات مثل "أ ب ت")
+        if (!words.every(word => word.length >= 2)) return false;
+        
+        // 4. منع تكرار نفس الحرف 3 مرات متتالية (لمنع الإدخالات العشوائية مثل "ااا"، "ببب"، "sss")
+        if (/(.)\1{2,}/.test(trimmed)) return false;
+        
+        // 5. قائمة سوداء للكلمات العشوائية وأسماء الجماد الشائعة 
+        // (يمكنك إضافة أي كلمات أخرى تراها مزعجة داخل هذه الأقواس)
+        const blackList = ['تجربة', 'كرسي', 'طاولة', 'مكتب', 'كتاب', 'قلم', 'باب', 'شباك', 'سيارة', 'جوال', 'لابتوب', 'مدرسة', 'ورقة', 'دفتر', 'test', 'asdf', 'qwer', 'zxcv', 'asd', 'qwe'];
+        const isFakeWord = words.some(word => blackList.includes(word.toLowerCase()));
+        if (isFakeWord) return false;
+
+        return true;
+      }
       function isArabicNotesOnly(text) { return !text || /^[\u0600-\u06FF\s\.,،؛\?\!\(\)\[\]"'\-\_0-9]+$/.test(text); }
 
       function validateField(inputEl, errorEl, checkFn) {
@@ -794,7 +820,7 @@
         let selectedFile = null;
 
         if (currentPage === 'page1') {
-          const nameOk = validateField(document.getElementById('fullName1'), document.getElementById('nameError1'), val => val && isArabicOnly(val));
+          const nameOk = validateField(document.getElementById('fullName1'), document.getElementById('nameError1'), isValidFullName);
           const copiesOk = validateField(document.getElementById('copiesCount1'), document.getElementById('copiesError1'), val => parseInt(val) > 0);
           const notesOk = validateField(document.getElementById('notes1'), document.getElementById('notesError1'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
           if (!nameOk || !copiesOk || !notesOk) isValid = false;
@@ -810,7 +836,7 @@
           };
 
         } else if (currentPage === 'page2') {
-          const nameOk = validateField(document.getElementById('fullName2'), document.getElementById('nameError2'), val => val && isArabicOnly(val));
+          const nameOk = validateField(document.getElementById('fullName2'), document.getElementById('nameError2'), isValidFullName);
           const bookOk = validateField(document.getElementById('bookPrint'), document.getElementById('bookError'), val => val !== "");
           const copiesOk = validateField(document.getElementById('copiesCount2'), document.getElementById('copiesError2'), val => parseInt(val) > 0);
           const notesOk = validateField(document.getElementById('notes2'), document.getElementById('notesError2'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
@@ -825,7 +851,7 @@
           };
 
         } else if (currentPage === 'page3') {
-          const nameOk = validateField(document.getElementById('fullName3'), document.getElementById('nameError3'), val => val && isArabicOnly(val));
+          const nameOk = validateField(document.getElementById('fullName3'), document.getElementById('nameError3'), isValidFullName);
           const notesOk = validateField(document.getElementById('notes3'), document.getElementById('notesError3'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
           if (!nameOk || !notesOk) isValid = false;
           
@@ -908,6 +934,37 @@
            statusMessage.className = "p-4 rounded-2xl text-center text-sm font-extrabold transition-all duration-300 mt-6 shadow-md border bg-red-100 border-red-400 text-red-800 dark:bg-red-900/30 dark:border-red-500/50 dark:text-red-400";
         }
       }
+
+      // 12. تذكر اسم المستخدم (ليتعرف النظام على اسمك الحقيقي تلقائياً)
+      const nameInputs = [
+        document.getElementById('fullName1'), 
+        document.getElementById('fullName2'), 
+        document.getElementById('fullName3')
+      ];
+
+      // استرجاع الاسم المحفوظ بمجرد فتح التطبيق
+      const savedName = localStorage.getItem('maktabati_userName');
+      if (savedName) {
+        nameInputs.forEach(input => {
+          if (input) input.value = savedName;
+        });
+      }
+
+      // مزامنة الاسم بين جميع الأقسام وحفظه فوراً عند الكتابة
+      nameInputs.forEach(input => {
+        if (input) {
+          input.addEventListener('input', function(e) {
+            const currentName = e.target.value;
+            localStorage.setItem('maktabati_userName', currentName); // حفظ الاسم في الجهاز
+            // تحديث الحقول الأخرى في نفس اللحظة
+            nameInputs.forEach(otherInput => {
+              if (otherInput && otherInput !== e.target) {
+                otherInput.value = currentName;
+              }
+            });
+          });
+        }
+      });
     </script>
   </body>
 </html>
