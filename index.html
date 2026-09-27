@@ -670,8 +670,11 @@
             if (response) {
               const blob = await response.blob();
               const mimeType = blob.type || 'application/octet-stream';
-              const sharedFile = new File([blob], "shared_file_" + Date.now() + (mimeType.includes('/') ? '.' + mimeType.split('/')[1] : ''), { type: mimeType });
-              
+                 
+              // تحديث مهم لمتصفح كروم: استخدام arrayBuffer لضمان عدم تلف الملف المسترجع من الكاش
+              const buffer = await blob.arrayBuffer();
+              const sharedFile = new File([buffer], "shared_file_" + Date.now() + (mimeType.includes('/') ? '.' + mimeType.split('/')[1] : ''), { type: mimeType });
+           
               switchPage('page1');
 
               if (mimeType.startsWith('image/')) {
