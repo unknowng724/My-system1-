@@ -3,7 +3,6 @@
 const CACHE_NAME = "shared-files-cache";
 
 self.addEventListener("install", (event) => {
-  // تفعيل الـ Service Worker فوراً بدون انتظار إغلاق كل التبويبات القديمة
   self.skipWaiting();
 });
 
@@ -14,13 +13,13 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  // نلتقط فقط طلبات POST المرسلة من نظام المشاركة على المسار /share-target/
+  // التقاط طلبات POST الخاصة بالمشاركة
   if (event.request.method === "POST" && url.pathname.includes("/share-target")) {
     event.respondWith(handleShareTarget(event));
+  } else {
+    // السماح بباقي الطلبات بالمرور بشكل طبيعي
+    event.respondWith(fetch(event.request));
   }
-  
-  // ملاحظة مهمة: تم إزالة اعتراض باقي الطلبات العادية 
-  // لأنها كانت تسبب المشكلة في إصدارات كروم الحديثة وتمنع عمل النموذج بشكل طبيعي
 });
 
 async function handleShareTarget(event) {
@@ -29,13 +28,15 @@ async function handleShareTarget(event) {
     const file = formData.get("shared_file");
 
     if (file && file.size > 0) {
+      // الحل الجذري لتحديثات كروم: قراءة الملف كـ ArrayBuffer خام لضمان عدم تلفه في الذاكرة
+      const buffer = await file.arrayBuffer();
       const cache = await caches.open(CACHE_NAME);
-      // نخزن الملف مؤقتاً بنفس المفتاح اللي بيقرأه الكود بصفحة index.html
-      // مع إضافة ترويسات صريحة لحل مشاكل كروم
-      await cache.put("/shared-file", new Response(file, {
+      
+      // حفظ البايتات مع إضافة اسم الملف ونوعه في الترويسة
+      await cache.put("/shared-file", new Response(buffer, {
         headers: { 
           "Content-Type": file.type || "application/octet-stream",
-          "Content-Length": file.size
+          "X-File-Name": encodeURIComponent(file.name || "shared_file")
         }
       }));
     }
@@ -43,6 +44,6 @@ async function handleShareTarget(event) {
     console.error("فشل التقاط الملف المشارك:", err);
   }
 
-  // نرجع المستخدم لصفحة التطبيق الرئيسية مع علامة ?shared=true
+  // إعادة التوجيه للصفحة الرئيسية
   return Response.redirect("/?shared=true", 303);
 }
