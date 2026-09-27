@@ -15,12 +15,12 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
   // نلتقط فقط طلبات POST المرسلة من نظام المشاركة على المسار /share-target/
-  if (event.request.method === "POST" && url.pathname === "/share-target/") {
+  if (event.request.method === "POST" && url.pathname.includes("/share-target")) {
     event.respondWith(handleShareTarget(event));
-  } else {
-    // الطلبات العادية لتشغيل الموقع بشكل طبيعي
-    event.respondWith(fetch(event.request));
   }
+  
+  // ملاحظة مهمة: تم إزالة اعتراض باقي الطلبات العادية 
+  // لأنها كانت تسبب المشكلة في إصدارات كروم الحديثة وتمنع عمل النموذج بشكل طبيعي
 });
 
 async function handleShareTarget(event) {
@@ -31,8 +31,12 @@ async function handleShareTarget(event) {
     if (file && file.size > 0) {
       const cache = await caches.open(CACHE_NAME);
       // نخزن الملف مؤقتاً بنفس المفتاح اللي بيقرأه الكود بصفحة index.html
+      // مع إضافة ترويسات صريحة لحل مشاكل كروم
       await cache.put("/shared-file", new Response(file, {
-        headers: { "Content-Type": file.type || "application/octet-stream" }
+        headers: { 
+          "Content-Type": file.type || "application/octet-stream",
+          "Content-Length": file.size
+        }
       }));
     }
   } catch (err) {
