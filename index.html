@@ -660,21 +660,54 @@
         deferredPrompt = null;
       });
 
-      // 8. Handle Shared Files Incoming
+      // 8. Handle Shared Files Incoming (تم التحديث لدعم ArrayBuffer)
       window.addEventListener('DOMContentLoaded', async () => {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('shared') && 'caches' in window) {
           try {
+            // إظهار رسالة للمستخدم أثناء محاولة جلب الملف
+            showNotification("جاري معالجة الملف المشارك...", "warning");
+            
             const cache = await caches.open('shared-files-cache');
             const response = await cache.match('/shared-file');
+            
             if (response) {
-              const blob = await response.blob();
-              const mimeType = blob.type || 'application/octet-stream';
-                 
-              // تحديث مهم لمتصفح كروم: استخدام arrayBuffer لضمان عدم تلف الملف المسترجع من الكاش
-              const buffer = await blob.arrayBuffer();
-              const sharedFile = new File([buffer], "shared_file_" + Date.now() + (mimeType.includes('/') ? '.' + mimeType.split('/')[1] : ''), { type: mimeType });
-           
+              // قراءة الملف كبايتات (متوافق مع التعديل الجديد في sw.js)
+              const buffer = await response.arrayBuffer();
+              const mimeType = response.headers.get("Content-Type") || "application/octet-stream";
+              
+              // استخراج اسم الملف الأصلي
+              let fileName = "shared_file_" + Date.now();
+              const encodedName = response.headers.get("X-File-Name");
+              if (encodedName) {
+                  fileName = decodeURIComponent(encodedName);
+              } else {
+                  fileName += (mimeType.includes('/') ? '.' + mimeType.split('/')[1] : '');
+              }
+              
+              // إعادة بناء الملف
+              const sharedFile = new File([buffer], fileName, { type: mimeType });
+              n navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW setup skipped for local dev/preview'));
+        });
+      }
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault(); // Prevent standard Chrome mini-infobar
+        deferredPrompt = e;
+        installContainer.classList.remove('hidden'); // Show custom button
+      });
+
+      pwaInstallBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            installContainer.classList.add('hidden');
+        }
+        deferredPrompt = null;
+      });
               switchPage('page1');
 
               if (mimeType.startsWith('image/')) {
