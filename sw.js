@@ -25,14 +25,12 @@ self.addEventListener("fetch", (event) => {
 async function handleShareTarget(event) {
   try {
     const formData = await event.request.formData();
-    const file = formData.get("shared_file");
+    const file = formData.get("shared_file"); // تأكد أن هذا الاسم يطابق الموجود في manifest
 
     if (file && file.size > 0) {
-      // الحل الجذري لتحديثات كروم: قراءة الملف كـ ArrayBuffer خام لضمان عدم تلفه في الذاكرة
       const buffer = await file.arrayBuffer();
       const cache = await caches.open(CACHE_NAME);
       
-      // حفظ البايتات مع إضافة اسم الملف ونوعه في الترويسة
       await cache.put("/shared-file", new Response(buffer, {
         headers: { 
           "Content-Type": file.type || "application/octet-stream",
@@ -44,6 +42,6 @@ async function handleShareTarget(event) {
     console.error("فشل التقاط الملف المشارك:", err);
   }
 
-  // إعادة التوجيه للصفحة الرئيسية
+  // التوجيه للصفحة الرئيسية مع معامل التأكيد
   return Response.redirect("/?shared=true", 303);
 }
