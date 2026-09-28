@@ -24,24 +24,39 @@ self.addEventListener("fetch", (event) => {
 
 async function handleShareTarget(event) {
   try {
-    const formData = await event.request.formData();
-    const file = formData.get("shared_file"); // تأكد أن هذا الاسم يطابق الموجود في manifest
+    // 1. استنساخ الطلب: متصفح كروم الجديد يستهلك البيانات أحياناً ويمنع قراءتها مرتين
+    const req = event.request.clone();
+    const formData = await req.formData();
+    
+    // 2. البحث الذكي: لا نعتمد على اسم محدد، بل نبحث عن أي "ملف" تم إرساله
+    let sharedFile = null;
+    for (const value of formData.values()) {
+      if (value instanceof File && value.size > 0) {
+        sharedFile = value;
+        break; // بمجرد أن نجد الملف نلتقطه
+      }
+    }
 
-    if (file && file.size > 0) {
-      const buffer = await file.arrayBuffer();
-      const cache = await caches.open(CACHE_NAME);
+    if (sharedFile) {
+      const cache = await caches.open("shared-files-cache");
       
-      await cache.put("/shared-file", new Response(buffer, {
-        headers: { 
-          "Content-Type": file.type || "application/octet-stream",
-          "X-File-Name": encodeURIComponent(file.name || "shared_file")
-        }
+      // 3. حفظ البايتات النقية للملف كملف منفصل
+      await cache.put("/shared-file-data", new Response(sharedFile));
+      
+      // 4. حفظ معلومات الملف (الاسم والنوع) كـ JSON (هذا يتجاوز كل قيود كروم على الهيدرز)
+      const fileMeta = JSON.stringify({
+        name: sharedFile.name || "shared_file_" + Date.now(),
+        type: sharedFile.type || "application/octet-stream"
+      });
+      
+      await cache.put("/shared-file-meta", new Response(fileMeta, {
+        headers: { "Content-Type": "application/json" }
       }));
     }
   } catch (err) {
     console.error("فشل التقاط الملف المشارك:", err);
   }
 
-  // التوجيه للصفحة الرئيسية مع معامل التأكيد
+  // التوجيه للصفحة الرئيسية
   return Response.redirect("/?shared=true", 303);
 }
