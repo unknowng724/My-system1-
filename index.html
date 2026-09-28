@@ -660,43 +660,62 @@
         deferredPrompt = null;
       });
 
-      // 8. Handle Shared Files Incoming
+        // 8. Handle Shared Files Incoming
       window.addEventListener('DOMContentLoaded', async () => {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('shared') && 'caches' in window) {
           try {
+            // إظهار رسالة للمستخدم أثناء محاولة جلب الملف
+            showNotification("جاري معالجة الملف المشارك...", "warning");
+            
             const cache = await caches.open('shared-files-cache');
             const response = await cache.match('/shared-file');
+            
             if (response) {
-              const blob = await response.blob();
-              const mimeType = blob.type || 'application/octet-stream';
+              // قراءة الملف كبايتات مباشرة من الاستجابة (الحل الجذري لتحديث كروم)
+              const buffer = await response.arrayBuffer();
+              const mimeType = response.headers.get("Content-Type") || "application/octet-stream";
+              
+              // استخراج اسم الملف الأصلي من الترويسة
+              let fileName = "shared_file_" + Date.now();
+              const encodedName = response.headers.get("X-File-Name");
+              if (encodedName) {
+                  fileName = decodeURIComponent(encodedName);
+              } else {
+                  fileName += (mimeType.includes('/') ? '.' + mimeType.split('/')[1] : '');
+              }
+              
+              // إعادة بناء الملف
+              const sharedFile = new File([buffer], fileName, { type: mimeType });
                  
-              // تحديث مهم لمتصفح كروم: استخدام arrayBuffer لضمان عدم تلف الملف المسترجع من الكاش
-              const buffer = await blob.arrayBuffer();
-              const sharedFile = new File([buffer], "shared_file_" + Date.now() + (mimeType.includes('/') ? '.' + mimeType.split('/')[1] : ''), { type: mimeType });
-           
               switchPage('page1');
 
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(sharedFile);
+
               if (mimeType.startsWith('image/')) {
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(sharedFile);
                 imageFileInput.files = dataTransfer.files;
                 imageFileInput.dispatchEvent(new Event('change'));
               } else {
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(sharedFile);
                 fileInput.files = dataTransfer.files;
                 fileInput.dispatchEvent(new Event('change'));
               }
+              
               await cache.delete('/shared-file');
               window.history.replaceState({}, document.title, window.location.pathname);
+              
+              // إشعار بالنجاح
+              showNotification("تم استيراد الملف المشارك بنجاح! يمكنك إرسال الطلب الآن.", "success");
+            } else {
+              showNotification("عذراً، لم نتمكن من قراءة الملف المشارك. قد يكون بسبب قيود المتصفح.", "error");
             }
           } catch (err) {
             console.error("Shared file load error:", err);
+            showNotification("حدث خطأ فني أثناء معالجة الملف المشارك.", "error");
           }
         }
       });
-
+      
       function fileToBase64(file) {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
