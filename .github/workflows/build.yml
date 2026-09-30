@@ -13,23 +13,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Java 21
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '17'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Clean Remnants & Prepare App
+      - name: Clean & Prepare App
         run: |
-          # مسح أي بقايا ملفات قديمة معطوبة من المحاولات السابقة
           rm -rf android capacitor.config.* package*.json node_modules www
-
-          # إنشاء مجلد الويب ونقل كافة ملفات الموقع إليه أوتوماتيكياً
           mkdir -p www
           shopt -s dotglob
           for item in *; do
@@ -37,13 +34,15 @@ jobs:
               cp -r "$item" www/ 2>/dev/null || true
             fi
           done
-
-          # تهيئة التطبيق وبناء منصة الأندرويد من الصفر
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
           npx cap init "MyApp" "com.mycompany.myapp" --web-dir "www"
           npx cap add android
           npx cap sync
+
+      - name: Fix Kotlin Duplicate Classes Conflict
+        run: |
+          echo 'configurations.all { resolutionStrategy { exclude group: "org.jetbrains.kotlin", module: "kotlin-stdlib-jdk7"; exclude group: "org.jetbrains.kotlin", module: "kotlin-stdlib-jdk8" } }' >> android/app/build.gradle
 
       - name: Build APK File
         run: |
