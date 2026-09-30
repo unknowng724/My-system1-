@@ -695,65 +695,104 @@
         }
       }
 
-// 8. Handle Shared Files Incoming (Universal Fallback)
+// ==========================================
+// 8. Handle Shared Files Incoming (Safe & Universal)
+// ==========================================
 window.addEventListener('DOMContentLoaded', async () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  if (!urlParams.has('shared')) return;
-
   try {
-    let sharedFile = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('shared')) {
+      await extractAndProcessSharedFile();
+      // تنظيف الرابط بدون إعادة تحميل الصفحة
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  } catch (err) {
+    console.error("⚠️ خطأ غير متوقع أثناء استيراد الملف المشارك:", err);
+  }
+});
 
-    // 1. البحث في IndexedDB أولاً (الطريقة الآمنة لجميع الإصدارات)
+// دالة استخراج الملف الممرر من الذاكرة
+async function extractAndProcessSharedFile() {
+  return new Promise((resolve) => {
+    if (!('indexedDB' in window)) {
+      checkCacheFallback();
+      return resolve();
+    }
+
     const dbRequest = indexedDB.open('MaktabatiShareDB', 1);
-    dbRequest.onsuccess = async (e) => {
+
+    dbRequest.onsuccess = (e) => {
       const db = e.target.result;
-      if (!db.objectStoreNames.contains('shared_files')) return;
+      if (!db.objectStoreNames.contains('shared_files')) {
+        checkCacheFallback();
+        return resolve();
+      }
 
       const tx = db.transaction('shared_files', 'readwrite');
       const store = tx.objectStore('shared_files');
       const getReq = store.get('latest_share');
 
-      getReq.onsuccess = async () => {
+      getReq.onsuccess = () => {
         const record = getReq.result;
         if (record && record.buffer) {
-          sharedFile = new File([record.buffer], record.name, { type: record.type });
-          store.delete('latest_share'); // تنظيف الذاكرة بعد الاستلام
-          processIncomingFile(sharedFile);
+          const sharedFile = new File(
+            [record.buffer], 
+            record.name || "shared_file", 
+            { type: record.type || "application/octet-stream" }
+          );
+          store.delete('latest_share'); // حذف من الذاكرة بعد الاستلام
+          processIncomingFileSafely(sharedFile);
         } else {
-          // 2. إذا لم يجد في IndexedDB، يجرب الـ Cache API كخيار احتياطي للإصدارات القديمة جداً
           checkCacheFallback();
         }
+        resolve();
+      };
+
+      getReq.onerror = () => {
+        checkCacheFallback();
+        resolve();
       };
     };
-    
-    dbRequest.onerror = () => checkCacheFallback();
 
-  } catch (err) {
-    console.error("Shared file extraction failed:", err);
-  } finally {
-    // تنظيف الرابط من كلمة ?shared=true
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
-});
-
-// دالة معالجة وضع الملف داخل النموذج
-function processIncomingFile(file) {
-  switchPage('page1');
-  const dataTransfer = new DataTransfer();
-  dataTransfer.items.add(file);
-
-  if (file.type.startsWith('image/')) {
-    imageFileInput.files = dataTransfer.files;
-    imageFileInput.dispatchEvent(new Event('change'));
-  } else {
-    fileInput.files = dataTransfer.files;
-    fileInput.dispatchEvent(new Event('change'));
-  }
-
-  showNotification("تم استيراد الملف المشارك بنجاح! ⚡", "success");
+    dbRequest.onerror = () => {
+      checkCacheFallback();
+      resolve();
+    };
+  });
 }
 
-// خيار احتياطي في حال عدم استخدام IndexedDB
+// دالة آمنة لإسقاط الملف في حقول النموذج
+function processIncomingFileSafely(file) {
+  try {
+    // التنقل لصفحة النموذج إن وجدت الدالة
+    if (typeof switchPage === 'function') {
+      switchPage('page1');
+    }
+
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+
+    // البحث عن عناصر الإدخال بشكل آمن بدلاً من افتراض الـ ID مباشرة
+    const imgInput = document.getElementById('imageFileInput') || document.querySelector('input[type="file"][accept*="image"]');
+    const genInput = document.getElementById('fileInput') || document.querySelector('input[type="file"]');
+
+    if (file.type.startsWith('image/') && imgInput) {
+      imgInput.files = dataTransfer.files;
+      imgInput.dispatchEvent(new Event('change', { bubbles: true }));
+    } else if (genInput) {
+      genInput.files = dataTransfer.files;
+      genInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    if (typeof showNotification === 'function') {
+      showNotification("تم استيراد الملف المشارك بنجاح! ⚡", "success");
+    }
+  } catch (err) {
+    console.error("⚠️ خطأ أثناء وضع الملف بالنموذج:", err);
+  }
+}
+
+// دالة احتياطية في حال الفشل
 async function checkCacheFallback() {
   if (!('caches' in window)) return;
   try {
@@ -764,13 +803,12 @@ async function checkCacheFallback() {
       const type = response.headers.get('content-type') || 'application/octet-stream';
       const file = new File([buffer], "shared_file_" + Date.now(), { type: type });
       await cache.delete('/shared-file');
-      processIncomingFile(file);
+      processIncomingFileSafely(file);
     }
   } catch (e) {
-    console.warn("Cache fallback failed:", e);
+    console.warn("Cache fallback warning:", e);
   }
 }
-
             if (sharedFile) {
               switchPage('page1');
 
