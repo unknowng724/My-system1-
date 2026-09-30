@@ -24,16 +24,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Dependencies
+      - name: Initialize App and Install Dependencies
         run: |
-          npm install
+          npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
-
-      - name: Add Android Platform
-        run: npx cap add android || true
-
-      - name: Sync Capacitor
-        run: npx cap sync
+          npx cap init "MyApp" "com.mycompany.myapp" --web-dir ./
+          npx cap add android
+          npx cap sync
 
       - name: Build APK
         run: |
