@@ -59,40 +59,64 @@ async function saveSharedFileToDB(file) {
 
 async function handleShareTarget(event) {
   try {
-    // عدم استخدام .clone() إطلاقاً لتجنب خطأ كروم الجديد
-    const formData = await event.request.formData();
-    
-    let sharedFile = null;
-    
-    // البحث عن الملف داخل النموذج
-    for (const value of formData.values()) {
-      if (value && typeof value === 'object' && value.name && value.size > 0) {
-        sharedFile = value;
-        break;
+    let fileToSave = null;
+    let fileName = "shared_file_" + Date.now();
+    let fileType = "application/octet-stream";
+
+    // 1. المحاولة الأولى (طريقة كروم الحديثة 154+)
+    try {
+      const formData = await event.request.formData();
+      // البحث عن الملف بأي اسم هيدر مفترض
+      fileToSave = formData.get('file') || formData.get('image') || formData.get('document');
+      if (fileToSave && fileToSave instanceof File) {
+        fileName = fileToSave.name || fileName;
+        fileType = fileToSave.type || fileType;
+      }
+    } catch (e) {
+      console.warn("FormData parse failed, falling back to blob/arrayBuffer...", e);
+    }
+
+    // 2. المحاولة الثانية: Fallback للإصدارات القديمة إذا فشلت الأولى
+    if (!fileToSave) {
+      const blob = await event.request.blob();
+      if (blob && blob.size > 0) {
+        fileToSave = blob;
       }
     }
 
-    if (sharedFile) {
-      await saveSharedFileToDB(sharedFile);
-
-      // حفظ احتياطي في الـ Cache أيضاً
-      try {
-        const cache = await caches.open(CACHE_NAME);
-        await cache.put("/shared-file-data", new Response(sharedFile));
-        await cache.put("/shared-file-meta", new Response(JSON.stringify({
-          name: sharedFile.name || "shared_file_" + Date.now(),
-          type: sharedFile.type || "application/octet-stream"
-        }), { headers: { "Content-Type": "application/json" } }));
-      } catch(e) {
-        console.log("Cache fallback skipped:", e);
-      }
-
-      return Response.redirect("/?shared=true", 303);
-    } else {
-      return Response.redirect("/?shared_error=" + encodeURIComponent("لم يتم العثور على ملف في البيانات المرسلة"), 303);
+    if (fileToSave) {
+      const buffer = await fileToSave.arrayBuffer();
+      
+      // حفظ الملف في IndexedDB للتوافقية الشاملة
+      const db = await openDatabase();
+      const tx = db.transaction('shared_files', 'readwrite');
+      await tx.objectStore('shared_files').put({
+        id: 'latest_share',
+        buffer: buffer,
+        name: fileName,
+        type: fileType,
+        timestamp: Date.now()
+      });
     }
   } catch (err) {
-    console.error("فشل التقاط الملف المشارك:", err);
-    return Response.redirect("/?shared_error=" + encodeURIComponent(err.message || "خطأ أثناء المعالجة في الخلفية"), 303);
+    console.error("Share handling error:", err);
   }
+
+  // التوجيه للواجهة الرئيسية مع معلمة shared
+  return Response.redirect('/index.html?shared=true', 303);
+}
+
+// فتح قاعدة البيانات بصورة آمنة
+function openDatabase() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('MaktabatiShareDB', 1);
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('shared_files')) {
+        db.createObjectStore('shared_files', { keyPath: 'id' });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
 }
