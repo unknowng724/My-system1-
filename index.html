@@ -772,7 +772,7 @@ function processIncomingFileSafely(file) {
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(file);
 
-    // البحث عن عناصر الإدخال بشكل آمن بدلاً من افتراض الـ ID مباشرة
+    // البحث عن عناصر الإدخال بشكل آمن
     const imgInput = document.getElementById('imageFileInput') || document.querySelector('input[type="file"][accept*="image"]');
     const genInput = document.getElementById('fileInput') || document.querySelector('input[type="file"]');
 
@@ -809,32 +809,6 @@ async function checkCacheFallback() {
     console.warn("Cache fallback warning:", e);
   }
 }
-            if (sharedFile) {
-              switchPage('page1');
-
-              const dataTransfer = new DataTransfer();
-              dataTransfer.items.add(sharedFile);
-
-              if (sharedFile.type.startsWith('image/')) {
-                imageFileInput.files = dataTransfer.files;
-                imageFileInput.dispatchEvent(new Event('change'));
-              } else {
-                fileInput.files = dataTransfer.files;
-                fileInput.dispatchEvent(new Event('change'));
-              }
-              
-              window.history.replaceState({}, document.title, window.location.pathname);
-              showNotification("تم استيراد الملف المشارك بنجاح!", "success");
-            } else {
-              showNotification("لم يتم العثور على الملف في الذاكرة المحلية، يرجى المحاولة مجدداً.", "error");
-            }
-          } catch (err) {
-            console.error("Shared file load error:", err);
-            showNotification("حدث خطأ فني أثناء استيراد الملف: " + err.message, "error");
-          }
-        }
-      });
-
               
       
       
