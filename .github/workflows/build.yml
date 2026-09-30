@@ -24,11 +24,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Initialize App and Install Dependencies
+      - name: Prepare Web Directory & Build Capacitor
         run: |
+          mkdir -p www
+          find . -maxdepth 1 -type f -exec cp {} www/ \;
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init "MyApp" "com.mycompany.myapp" --web-dir ./
+          npx cap init "MyApp" "com.mycompany.myapp" --web-dir "www"
           npx cap add android
           npx cap sync
 
