@@ -695,42 +695,81 @@
         }
       }
 
-      // 8. Handle Shared Files Incoming - طريقة IndexedDB الشاملة للتوافق مع أحدث إصدارات كروم
-      window.addEventListener('DOMContentLoaded', async () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        // التحقق مما إذا كان هناك خطأ تقني قادم من الخدمة
-        if (urlParams.has('shared_error')) {
-          const errorMsg = urlParams.get('shared_error');
-          showNotification("خطأ مشاركة: " + errorMsg, "error");
-          window.history.replaceState({}, document.title, window.location.pathname);
-          return;
+      // 8. Handle Shared Files Incoming (Universal Fallback)
+window.addEventListener('DOMContentLoaded', async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (!urlParams.has('shared')) return;
+
+  try {
+    let sharedFile = null;
+
+    // 1. البحث في IndexedDB أولاً (الطريقة الآمنة لجميع الإصدارات)
+    const dbRequest = indexedDB.open('MaktabatiShareDB', 1);
+    dbRequest.onsuccess = async (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('shared_files')) return;
+
+      const tx = db.transaction('shared_files', 'readwrite');
+      const store = tx.objectStore('shared_files');
+      const getReq = store.get('latest_share');
+
+      getReq.onsuccess = async () => {
+        const record = getReq.result;
+        if (record && record.buffer) {
+          sharedFile = new File([record.buffer], record.name, { type: record.type });
+          store.delete('latest_share'); // تنظيف الذاكرة بعد الاستلام
+          processIncomingFile(sharedFile);
+        } else {
+          // 2. إذا لم يجد في IndexedDB، يجرب الـ Cache API كخيار احتياطي للإصدارات القديمة جداً
+          checkCacheFallback();
         }
+      };
+    };
+    
+    dbRequest.onerror = () => checkCacheFallback();
 
-        if (urlParams.has('shared')) {
-          try {
-            showNotification("جاري معالجة الملف المشارك...", "warning");
-            
-            let sharedFile = null;
+  } catch (err) {
+    console.error("Shared file extraction failed:", err);
+  } finally {
+    // تنظيف الرابط من كلمة ?shared=true
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+});
 
-            // 1. المحاولة الأولى: القراءة من قاعدة بيانات IndexedDB
-            const idbRecord = await getSharedFileFromDB();
-            if (idbRecord && idbRecord.file) {
-              sharedFile = new File([idbRecord.file], idbRecord.name, { type: idbRecord.type });
-            } else if ('caches' in window) {
-              // 2. المحاولة الثانية: القراءة من Cache Storage كبديل
-              const cache = await caches.open('shared-files-cache');
-              const dataRes = await cache.match('/shared-file-data');
-              const metaRes = await cache.match('/shared-file-meta');
-              
-              if (dataRes && metaRes) {
-                const meta = await metaRes.json();
-                const blob = await dataRes.blob();
-                sharedFile = new File([blob], meta.name, { type: meta.type });
-                await cache.delete('/shared-file-data');
-                await cache.delete('/shared-file-meta');
-              }
-            }
+// دالة معالجة وضع الملف داخل النموذج
+function processIncomingFile(file) {
+  switchPage('page1');
+  const dataTransfer = new DataTransfer();
+  dataTransfer.items.add(file);
+
+  if (file.type.startsWith('image/')) {
+    imageFileInput.files = dataTransfer.files;
+    imageFileInput.dispatchEvent(new Event('change'));
+  } else {
+    fileInput.files = dataTransfer.files;
+    fileInput.dispatchEvent(new Event('change'));
+  }
+
+  showNotification("تم استيراد الملف المشارك بنجاح! ⚡", "success");
+}
+
+// خيار احتياطي في حال عدم استخدام IndexedDB
+async function checkCacheFallback() {
+  if (!('caches' in window)) return;
+  try {
+    const cache = await caches.open('shared-files-cache');
+    const response = await cache.match('/shared-file');
+    if (response) {
+      const buffer = await response.arrayBuffer();
+      const type = response.headers.get('content-type') || 'application/octet-stream';
+      const file = new File([buffer], "shared_file_" + Date.now(), { type: type });
+      await cache.delete('/shared-file');
+      processIncomingFile(file);
+    }
+  } catch (e) {
+    console.warn("Cache fallback failed:", e);
+  }
+}
 
             if (sharedFile) {
               switchPage('page1');
