@@ -539,7 +539,7 @@
       });
 
       // 4. Application Variables
-      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFUrfYvcEUTd9aEjinX8Ca4KDKOGWOvL6HwCaK4q71IR2VB2cEgnFkgtQ/exec";
+      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyudr9ltHGVycxCiwOPjDLnuR3jz4JUNZTur8kkVgZEMX6dgwf5emMa1OmswFreDQQ4/exec";
       let currentPage = 'page1';
       let progressTimer = null;
 
@@ -760,49 +760,163 @@
 
               
       
-      
-      // ==========================================
-      // 8.5 GitHub File Upload Helper (بديل Base64)
-      // ==========================================
-      async function uploadToGithubAndGetLink(fileObject) {
-        if (!fileObject) return "";
+  // 1. تعديل دالة رفع الملفات على GitHub وتحديث التوكن وتوضيح رسالة الخطأ
+async function uploadToGithubAndGetLink(fileObject) {
+  if (!fileObject) return "";
 
-        // ضع بياناتك هنا
-        const GITHUB_TOKEN = "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";
-        const REPO_OWNER = "unknowng724";
-        const REPO_NAME = "My-system1-";
-        const BRANCH = "main";
+  // يُنصح بإنشاء Token جديد من حسابك على GitHub إذا كان القديم معطلاً
+  const GITHUB_TOKEN = "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";
+  const REPO_OWNER = "unknowng724";
+  const REPO_NAME = "My-system1-";
+  const BRANCH = "main";
 
-        const fileName = Date.now() + "_" + (fileObject.name || "file").replace(/\s+/g, "_");
-        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/uploads/${encodeURIComponent(fileName)}`;
+  const fileName = Date.now() + "_" + (fileObject.name || "file").replace(/\s+/g, "_");
+  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/uploads/${encodeURIComponent(fileName)}`;
 
-        const base64Content = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result.split(",")[1]);
-          reader.onerror = (error) => reject(error);
-          reader.readAsDataURL(fileObject);
-        });
+  const base64Content = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(fileObject);
+  });
 
-        const response = await fetch(url, {
-          method: "PUT",
-          headers: {
-            "Authorization": `Bearer ${GITHUB_TOKEN}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            message: `رفع ملف جديد: ${fileName}`,
-            content: base64Content,
-            branch: BRANCH
-          })
-        });
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Authorization": `Bearer ${GITHUB_TOKEN}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: `رفع ملف جديد: ${fileName}`,
+      content: base64Content,
+      branch: BRANCH
+    })
+  });
 
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error("فشل الرفع إلى جيثب: " + (data.message || "خطأ غير معروف"));
-        }
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error("فشل الرفع إلى GitHub (تأكد من صلاحية Token): " + (data.message || "خطأ غير معروف"));
+  }
 
-        return `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/uploads/${encodeURIComponent(fileName)}`;
+  return `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/uploads/${encodeURIComponent(fileName)}`;
+}
+
+// 2. تعديل دالة الإرسال لحل حظر CORS من Google Apps Script
+form.addEventListener("submit", async function (e) {
+  e.preventDefault();
+  let isValid = true;
+  let payload = {};
+  let selectedFile = null;
+
+  if (currentPage === 'page1') {
+    const nameOk = validateField(document.getElementById('fullName1'), document.getElementById('nameError1'), isValidFullName);
+    const copiesOk = validateField(document.getElementById('copiesCount1'), document.getElementById('copiesError1'), val => parseInt(val) > 0);
+    const notesOk = validateField(document.getElementById('notes1'), document.getElementById('notesError1'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
+    if (!nameOk || !copiesOk || !notesOk) isValid = false;
+
+    if (fileInput.files && fileInput.files.length > 0) selectedFile = fileInput.files[0];
+    else if (imageFileInput.files && imageFileInput.files.length > 0) selectedFile = imageFileInput.files[0];
+
+    payload = {
+      "الخدمة": "طباعة ملفات",
+      "الاسم الثلاثي": document.getElementById('fullName1').value.trim(),
+      "عدد النسخ": parseInt(document.getElementById('copiesCount1').value, 10),
+      "الملاحظات": document.getElementById('notes1').value.trim()
+    };
+
+  } else if (currentPage === 'page2') {
+    const nameOk = validateField(document.getElementById('fullName2'), document.getElementById('nameError2'), isValidFullName);
+    const bookOk = validateField(document.getElementById('bookPrint'), document.getElementById('bookError'), val => val !== "");
+    const copiesOk = validateField(document.getElementById('copiesCount2'), document.getElementById('copiesError2'), val => parseInt(val) > 0);
+    const notesOk = validateField(document.getElementById('notes2'), document.getElementById('notesError2'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
+    if (!nameOk || !bookOk || !copiesOk || !notesOk) isValid = false;
+
+    payload = {
+      "الخدمة": "طباعة كتب مدرسية",
+      "الاسم الثلاثي": document.getElementById('fullName2').value.trim(),
+      "طباعة كتب": document.getElementById('bookPrint').value,
+      "عدد النسخ": parseInt(document.getElementById('copiesCount2').value, 10),
+      "الملاحظات": document.getElementById('notes2').value.trim()
+    };
+
+  } else if (currentPage === 'page3') {
+    const nameOk = validateField(document.getElementById('fullName3'), document.getElementById('nameError3'), isValidFullName);
+    const notesOk = validateField(document.getElementById('notes3'), document.getElementById('notesError3'), val => isArabicNotesOnly(val) && (val ? val.split(/\s+/).length <= 10 : true));
+    if (!nameOk || !notesOk) isValid = false;
+    
+    if (tshirtInput.files && tshirtInput.files.length > 0) {
+      selectedFile = tshirtInput.files[0];
+    }
+
+    payload = {
+      "الخدمة": "طباعة تيشرت او كوب",
+      "الاسم الثلاثي": document.getElementById('fullName3').value.trim(),
+      "الملاحظات": document.getElementById('notes3').value.trim()
+    };
+  }
+
+  if (!isValid) {
+    showNotification("يرجى مراجعة الحقول المطلوبة باللون الأحمر.", "error");
+    return;
+  }
+
+  submitBtn.disabled = true;
+  spinner.classList.remove("hidden");
+  submitIcon.classList.add("hidden");
+  submitText.textContent = "جاري المعالجة...";
+  resetUIFeedback();
+  startProgressSimulation();
+
+  try {
+    if (selectedFile) {
+      let fileToUpload = selectedFile;
+      if (selectedFile.type.startsWith('image/')) {
+        try {
+          if (typeof imageCompression === 'function') {
+              fileToUpload = await imageCompression(selectedFile, { maxSizeMB: 1.5, maxWidthOrHeight: 2048, useWebWorker: true });
+          }
+        } catch (err) { console.warn("Compression skipped or failed", err); }
       }
+      payload.fileUrl = await uploadToGithubAndGetLink(fileToUpload);
+      payload.fileName = fileToUpload.name;
+      payload.fileType = fileToUpload.type;
+    }
+
+    // إرسال البيانات باستخدام mode: "no-cors" لمنع حظر Google Apps Script
+    await fetch(GOOGLE_SCRIPT_URL, { 
+        method: "POST", 
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify(payload)
+    });
+
+    if (progressTimer) clearInterval(progressTimer);
+    progressBar.style.width = "100%"; progressPercent.textContent = "100%";
+    timerText.textContent = "اكتمل الرفع!";
+    
+    setTimeout(() => {
+      progressBox.classList.add("hidden");
+      showNotification("تم إرسال طلبك بنجاح! ⚡", "success");
+      form.reset();
+      resetFileState(); resetImageState(); resetTshirtState();
+      ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
+    }, 800);
+
+  } catch (error) {
+    console.error("Submission Error:", error);
+    if (progressTimer) clearInterval(progressTimer);
+    progressBox.classList.add("hidden");
+    showNotification(error.message || "حدث خطأ بالاتصال، يرجى المحاولة مرة أخرى.", "error");
+  } finally {
+    submitBtn.disabled = false;
+    spinner.classList.add("hidden");
+    submitIcon.classList.remove("hidden");
+    submitText.textContent = "إرسال الطلب";
+  }
+});    
+      
 
       // 9. File Input Handlers
       fileInput.addEventListener("change", function () {
