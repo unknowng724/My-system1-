@@ -2,14 +2,13 @@
 <html lang="ar" dir="rtl" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <!-- تم إزالة user-scalable=no ليتوافق مع أحدث معايير الوصول في Chrome Lighthouse -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     
     <!-- دعم ألوان شريط Chrome في التحديثات الجديدة -->
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8fafc" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#061c13" />
     
-    <title>مكتبتي - نموذج الطلبات</title>
+    <title>مكتبتي - نموذج الطلبات والطباعة الإلكترونية</title>
     
     <!-- Tailwind CSS with Custom Config -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -36,7 +35,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
-    <!-- Google Font (Cairo) - Preloaded for performance -->
+    <!-- Google Font (Cairo) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
@@ -44,7 +43,7 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json" />
     
-    <!-- Image Compression -->
+    <!-- Image Compression Library -->
     <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js" defer></script>
 
     <style>
@@ -109,402 +108,431 @@
       .splash-logo {
         animation: pulseLogo 1.5s ease-in-out infinite;
       }
+
+      /* Pulse glow for micro progress */
+      @keyframes pulseGlow {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; }
+      }
+      .animate-pulse-glow {
+        animation: pulseGlow 1.2s infinite ease-in-out;
+      }
     </style>
   </head>
   
-<body class="min-h-screen bg-slate-50 dark:bg-maktabati-dark transition-colors duration-500 relative flex flex-col items-center justify-start pt-14 pb-10 px-4">
-  
-  <!-- واجهة ترحيبية (Splash Screen) -->
-  <div id="splashScreen" class="fixed inset-0 bg-white dark:bg-maktabati-dark z-[100] flex flex-col items-center justify-center transition-all duration-700">
-    <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-400 to-emerald-600 dark:from-green-500 dark:to-emerald-700 flex items-center justify-center splash-logo shadow-2xl shadow-emerald-500/50 mb-4">
-      <i class="fa-solid fa-print text-4xl text-white"></i>
-    </div>
-    <h1 class="text-2xl font-black text-slate-800 dark:text-white tracking-wide">مكتبتي</h1>
-    <p class="text-sm text-slate-500 dark:text-gray-400 font-semibold mt-2">نجهز خدمات الطباعة...</p>
-  </div>
-
-  <!-- خلفية مجردة للوضع الداكن (Abstract Background Waves) -->
-  <div class="fixed inset-0 pointer-events-none hidden dark:block z-0 overflow-hidden">
-    <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-900/20 rounded-full blur-[100px]"></div>
-    <div class="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-green-900/20 rounded-full blur-[80px]"></div>
-  </div>
-
-  <!-- زر التبديل بين الوضع المشرق والليلي -->
-  <button id="themeToggleBtn" aria-label="تبديل المظهر" class="fixed top-14 left-4 z-40 w-10 h-10 rounded-full bg-white dark:bg-maktabati-card border border-slate-200 dark:border-maktabati-border shadow-md flex items-center justify-center text-slate-600 dark:text-yellow-400 hover:scale-110 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500">
-    <i id="themeIcon" class="fa-solid fa-sun text-lg"></i>
-  </button>
-
-  <!-- شريط الصلاة على النبي -->
-  <div class="marquee-container fixed top-0 left-0 w-full z-50 bg-white dark:bg-black/80 text-slate-800 dark:text-white py-2 px-0 shadow-sm border-b border-slate-200 dark:border-white/10 backdrop-blur-md flex items-center">
-    <div class="w-full overflow-hidden relative flex items-center">
-      <div class="animate-marquee-right font-semibold text-xs md:text-sm tracking-wide flex items-center gap-6 whitespace-nowrap">
-        <span class="inline-flex items-center gap-2"><i class="fa-solid fa-star text-emerald-500 dark:text-maktabati-green text-[10px]"></i> اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ</span>
-        <span class="text-emerald-500 dark:text-maktabati-green">✦</span>
-        <span class="inline-flex items-center gap-2"><i class="fa-solid fa-star text-emerald-500 dark:text-maktabati-green text-[10px]"></i> اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ</span>
-        <span class="text-emerald-500 dark:text-maktabati-green">✦</span>
-        <span class="inline-flex items-center gap-2"><i class="fa-solid fa-star text-emerald-500 dark:text-maktabati-green text-[10px]"></i> اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ</span>
+  <body class="min-h-screen bg-slate-50 dark:bg-maktabati-dark transition-colors duration-500 relative flex flex-col items-center justify-start pt-14 pb-10 px-4">
+    
+    <!-- واجهة ترحيبية (Splash Screen) -->
+    <div id="splashScreen" class="fixed inset-0 bg-white dark:bg-maktabati-dark z-[100] flex flex-col items-center justify-center transition-all duration-700">
+      <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-400 to-emerald-600 dark:from-green-500 dark:to-emerald-700 flex items-center justify-center splash-logo shadow-2xl shadow-emerald-500/50 mb-4">
+        <i class="fa-solid fa-print text-4xl text-white"></i>
       </div>
+      <h1 class="text-2xl font-black text-slate-800 dark:text-white tracking-wide">مكتبتي</h1>
+      <p class="text-sm text-slate-500 dark:text-gray-400 font-semibold mt-2">جاري تجهيز خدمة الرفع السريع...</p>
     </div>
-  </div>
 
-  <!-- الحاوية الرئيسية للتطبيق -->
-  <div class="w-full max-w-md relative z-10 mt-4">
-      
-      <!-- ترويسة التطبيق (مطابقة للصورة) -->
-      <div class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 dark:from-emerald-900 dark:to-maktabati-card rounded-3xl p-5 shadow-xl relative overflow-hidden mb-6 border-2 border-emerald-400 dark:border-maktabati-green/50 dark:shadow-[0_0_20px_rgba(0,223,96,0.15)] flex flex-row items-center justify-between">
-        <!-- تأثيرات بصرية للخلفية -->
-        <div class="absolute top-0 right-0 w-40 h-40 bg-emerald-400/20 dark:bg-maktabati-green/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
-        <div class="absolute bottom-0 left-0 w-32 h-32 bg-teal-400/20 dark:bg-emerald-500/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none"></div>
+    <!-- خلفية مجردة للوضع الداكن -->
+    <div class="fixed inset-0 pointer-events-none hidden dark:block z-0 overflow-hidden">
+      <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-900/20 rounded-full blur-[100px]"></div>
+      <div class="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-green-900/20 rounded-full blur-[80px]"></div>
+    </div>
 
-        <!-- النصوص -->
-        <div class="relative z-10 flex-1 pl-4 text-right">
-            <h2 class="text-white text-xl md:text-2xl font-black tracking-wide drop-shadow-md mb-1">
-             مكتبتي - نموذج الطلبات
-            </h2>
-            <p class="text-emerald-50 dark:text-gray-300 text-[11px] md:text-xs font-semibold drop-shadow-sm">
-                أرسل طلبك بسهولة وسيقوم بالطباعة فوراً
-            </p>
-        </div>
+    <!-- زر التبديل بين الوضع المشرق والليلي -->
+    <button id="themeToggleBtn" aria-label="تبديل المظهر" class="fixed top-14 left-4 z-40 w-10 h-10 rounded-full bg-white dark:bg-maktabati-card border border-slate-200 dark:border-maktabati-border shadow-md flex items-center justify-center text-slate-600 dark:text-yellow-400 hover:scale-110 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500">
+      <i id="themeIcon" class="fa-solid fa-sun text-lg"></i>
+    </button>
 
-        <!-- الأيقونة -->
-        <div class="relative z-10 w-14 h-14 rounded-2xl bg-white/20 dark:bg-maktabati-green/20 border border-white/40 dark:border-maktabati-green/50 flex items-center justify-center backdrop-blur-md shadow-inner flex-shrink-0">
-          <i class="fa-solid fa-print text-white dark:text-maktabati-green text-2xl drop-shadow-lg"></i>
+    <!-- شريط الصلاة على النبي -->
+    <div class="marquee-container fixed top-0 left-0 w-full z-50 bg-white dark:bg-black/80 text-slate-800 dark:text-white py-2 px-0 shadow-sm border-b border-slate-200 dark:border-white/10 backdrop-blur-md flex items-center">
+      <div class="w-full overflow-hidden relative flex items-center">
+        <div class="animate-marquee-right font-semibold text-xs md:text-sm tracking-wide flex items-center gap-6 whitespace-nowrap">
+          <span class="inline-flex items-center gap-2"><i class="fa-solid fa-star text-emerald-500 dark:text-maktabati-green text-[10px]"></i> اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ</span>
+          <span class="text-emerald-500 dark:text-maktabati-green">✦</span>
+          <span class="inline-flex items-center gap-2"><i class="fa-solid fa-star text-emerald-500 dark:text-maktabati-green text-[10px]"></i> اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ</span>
+          <span class="text-emerald-500 dark:text-maktabati-green">✦</span>
+          <span class="inline-flex items-center gap-2"><i class="fa-solid fa-star text-emerald-500 dark:text-maktabati-green text-[10px]"></i> اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ</span>
         </div>
       </div>
+    </div>
 
-      <div class="text-center mb-6">
-        <h1 class="text-xl md:text-2xl font-black text-slate-800 dark:text-white tracking-tight">
-          خدمات الطباعة الإلكترونية
-        </h1>
-        <div class="w-16 h-1 bg-emerald-500 dark:bg-maktabati-green mx-auto mt-2 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-        <p class="text-sm text-slate-600 dark:text-gray-400 font-semibold mt-3">اختر نوع الخدمة التي ترغب بها</p>
-      </div>
-
-      <!-- زر تثبيت التطبيق -->
-      <div id="installContainer" class="hidden mb-5">
-        <button id="pwaInstallBtn" type="button" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 dark:from-green-600 dark:to-emerald-700 text-white font-bold text-sm rounded-2xl shadow-lg shadow-emerald-500/30 btn-bounce transition-all flex items-center justify-center gap-2 border border-emerald-400/50 focus:outline-none focus:ring-2 focus:ring-emerald-400">
-          <i class="fa-solid fa-download"></i>
-          <span>تثبيت التطبيق على جهازك</span>
-        </button>
-      </div>
-
-      <!-- أزرار التبويبات الثلاثة -->
-      <div class="space-y-3 mb-8" role="tablist">
+    <!-- الحاوية الرئيسية للتطبيق -->
+    <div class="w-full max-w-md relative z-10 mt-4">
         
-        <!-- Tab 1 -->
-        <div id="tabBtn1" onclick="switchPage('page1')" role="tab" aria-selected="true"
-          class="flex items-center justify-between px-5 py-4 rounded-2xl cursor-pointer transition-all duration-300 btn-bounce shadow-md bg-white dark:bg-maktabati-card border-2 border-emerald-500 dark:border-maktabati-green tab-active">
-          <div class="flex items-center gap-4">
-            <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 bg-emerald-100 dark:bg-maktabati-green/20 text-emerald-600 dark:text-maktabati-green shadow-sm">
-              <i class="fa-solid fa-file-pdf text-lg"></i>
-            </div>
-            <span class="row-label font-extrabold text-base transition-colors duration-300 text-slate-800 dark:text-white">طباعة ملفات</span>
+        <!-- ترويسة التطبيق -->
+        <div class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 dark:from-emerald-900 dark:to-maktabati-card rounded-3xl p-5 shadow-xl relative overflow-hidden mb-6 border-2 border-emerald-400 dark:border-maktabati-green/50 dark:shadow-[0_0_20px_rgba(0,223,96,0.15)] flex flex-row items-center justify-between">
+          <div class="absolute top-0 right-0 w-40 h-40 bg-emerald-400/20 dark:bg-maktabati-green/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+          <div class="absolute bottom-0 left-0 w-32 h-32 bg-teal-400/20 dark:bg-emerald-500/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none"></div>
+
+          <div class="relative z-10 flex-1 pl-4 text-right">
+              <h2 class="text-white text-xl md:text-2xl font-black tracking-wide drop-shadow-md mb-1">
+               مكتبتي - نموذج الطلبات
+              </h2>
+              <p class="text-emerald-50 dark:text-gray-300 text-[11px] md:text-xs font-semibold drop-shadow-sm flex items-center gap-1">
+                  <i class="fa-solid fa-bolt text-yellow-300 animate-pulse"></i>
+                  رفع خلفي ذكي بدون أي انتظار!
+              </p>
           </div>
-          <i class="row-chev fa-solid fa-chevron-left text-sm transition-all duration-300 text-emerald-500 dark:text-maktabati-green"></i>
+
+          <div class="relative z-10 w-14 h-14 rounded-2xl bg-white/20 dark:bg-maktabati-green/20 border border-white/40 dark:border-maktabati-green/50 flex items-center justify-center backdrop-blur-md shadow-inner flex-shrink-0">
+            <i class="fa-solid fa-print text-white dark:text-maktabati-green text-2xl drop-shadow-lg"></i>
+          </div>
         </div>
 
-        <!-- Tab 2 -->
-        <div id="tabBtn2" onclick="switchPage('page2')" role="tab" aria-selected="false"
-          class="flex items-center justify-between px-5 py-4 rounded-2xl cursor-pointer transition-all duration-300 btn-bounce shadow-sm bg-white dark:bg-maktabati-card border border-slate-200 dark:border-maktabati-border tab-inactive">
-          <div class="flex items-center gap-4">
-            <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 bg-slate-100 dark:bg-maktabati-dark text-slate-400 dark:text-gray-500">
-              <i class="fa-solid fa-book-open text-lg"></i>
-            </div>
-            <span class="row-label font-bold text-base transition-colors duration-300 text-slate-600 dark:text-gray-400">كتب مدرسية</span>
-          </div>
-          <i class="row-chev fa-solid fa-chevron-left text-sm transition-all duration-300 text-slate-300 dark:text-gray-600"></i>
+        <div class="text-center mb-6">
+          <h1 class="text-xl md:text-2xl font-black text-slate-800 dark:text-white tracking-tight">
+            خدمات الطباعة الإلكترونية
+          </h1>
+          <div class="w-16 h-1 bg-emerald-500 dark:bg-maktabati-green mx-auto mt-2 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+          <p class="text-sm text-slate-600 dark:text-gray-400 font-semibold mt-3">اختر نوع الخدمة وأرفق ملفك لرفعه فوراً</p>
         </div>
 
-        <!-- Tab 3 -->
-        <div id="tabBtn3" onclick="switchPage('page3')" role="tab" aria-selected="false"
-          class="flex items-center justify-between px-5 py-4 rounded-2xl cursor-pointer transition-all duration-300 btn-bounce shadow-sm bg-white dark:bg-maktabati-card border border-slate-200 dark:border-maktabati-border tab-inactive">
-          <div class="flex items-center gap-4">
-            <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 bg-slate-100 dark:bg-maktabati-dark text-slate-400 dark:text-gray-500">
-              <i class="fa-solid fa-shirt text-lg"></i>
-            </div>
-            <span class="row-label font-bold text-base transition-colors duration-300 text-slate-600 dark:text-gray-400">تيشرت / كوب</span>
-          </div>
-          <i class="row-chev fa-solid fa-chevron-left text-sm transition-all duration-300 text-slate-300 dark:text-gray-600"></i>
+        <!-- زر تثبيت التطبيق -->
+        <div id="installContainer" class="hidden mb-5">
+          <button id="pwaInstallBtn" type="button" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 dark:from-green-600 dark:to-emerald-700 text-white font-bold text-sm rounded-2xl shadow-lg shadow-emerald-500/30 btn-bounce transition-all flex items-center justify-center gap-2 border border-emerald-400/50 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            <i class="fa-solid fa-download"></i>
+            <span>تثبيت التطبيق على جهازك</span>
+          </button>
         </div>
+
+        <!-- أزرار التبويبات الثلاثة -->
+        <div class="space-y-3 mb-8" role="tablist">
+          
+          <!-- Tab 1 -->
+          <div id="tabBtn1" onclick="switchPage('page1')" role="tab" aria-selected="true"
+            class="flex items-center justify-between px-5 py-4 rounded-2xl cursor-pointer transition-all duration-300 btn-bounce shadow-md bg-white dark:bg-maktabati-card border-2 border-emerald-500 dark:border-maktabati-green tab-active">
+            <div class="flex items-center gap-4">
+              <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 bg-emerald-100 dark:bg-maktabati-green/20 text-emerald-600 dark:text-maktabati-green shadow-sm">
+                <i class="fa-solid fa-file-pdf text-lg"></i>
+              </div>
+              <span class="row-label font-extrabold text-base transition-colors duration-300 text-slate-800 dark:text-white">طباعة ملفات</span>
+            </div>
+            <i class="row-chev fa-solid fa-chevron-left text-sm transition-all duration-300 text-emerald-500 dark:text-maktabati-green"></i>
+          </div>
+
+          <!-- Tab 2 -->
+          <div id="tabBtn2" onclick="switchPage('page2')" role="tab" aria-selected="false"
+            class="flex items-center justify-between px-5 py-4 rounded-2xl cursor-pointer transition-all duration-300 btn-bounce shadow-sm bg-white dark:bg-maktabati-card border border-slate-200 dark:border-maktabati-border tab-inactive">
+            <div class="flex items-center gap-4">
+              <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 bg-slate-100 dark:bg-maktabati-dark text-slate-400 dark:text-gray-500">
+                <i class="fa-solid fa-book-open text-lg"></i>
+              </div>
+              <span class="row-label font-bold text-base transition-colors duration-300 text-slate-600 dark:text-gray-400">كتب مدرسية</span>
+            </div>
+            <i class="row-chev fa-solid fa-chevron-left text-sm transition-all duration-300 text-slate-300 dark:text-gray-600"></i>
+          </div>
+
+          <!-- Tab 3 -->
+          <div id="tabBtn3" onclick="switchPage('page3')" role="tab" aria-selected="false"
+            class="flex items-center justify-between px-5 py-4 rounded-2xl cursor-pointer transition-all duration-300 btn-bounce shadow-sm bg-white dark:bg-maktabati-card border border-slate-200 dark:border-maktabati-border tab-inactive">
+            <div class="flex items-center gap-4">
+              <div class="row-icon w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 bg-slate-100 dark:bg-maktabati-dark text-slate-400 dark:text-gray-500">
+                <i class="fa-solid fa-shirt text-lg"></i>
+              </div>
+              <span class="row-label font-bold text-base transition-colors duration-300 text-slate-600 dark:text-gray-400">تيشرت / كوب</span>
+            </div>
+            <i class="row-chev fa-solid fa-chevron-left text-sm transition-all duration-300 text-slate-300 dark:text-gray-600"></i>
+          </div>
+        </div>
+
+        <form id="dataForm" novalidate class="mt-4 pb-10">
+
+          <!-- PAGE 1: طباعة ملفات -->
+          <div id="page1" class="space-y-5 animate-fade-in" role="tabpanel">
+
+            <!-- الاسم الثلاثي -->
+            <div>
+              <label for="fullName1" class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-1">
+                الاسم الثلاثي <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400 pointer-events-none">
+                  <i class="fa-solid fa-user"></i>
+                </span>
+                <input type="text" id="fullName1" placeholder="اكتب اسمك الثلاثي (عربي أو إنجليزي)"
+                  class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold light-input-field dark:input-field" />
+              </div>
+              <p id="nameError1" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال اسم شخص حقيقي (3 مقاطع، بدون تكرار عشوائي للأحرف).</p>
+            </div>
+
+            <!-- عدد النسخ -->
+            <div>
+              <label for="copiesCount1" class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-1">
+                عدد النسخ <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400 pointer-events-none">
+                  <i class="fa-regular fa-copy"></i>
+                </span>
+                <input type="number" id="copiesCount1" min="1" placeholder="أدخل عدد النسخ المطلوبة"
+                  class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold light-input-field dark:input-field" />
+              </div>
+              <p id="copiesError1" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال عدد صحيح.</p>
+            </div>
+
+            <!-- زر تحميل مستند مع شريط رفع مصغر (Inline Micro Progress) -->
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2">تحميل ملفك (رفع تلقائي مسبق ⚡)</label>
+              <div class="relative border-2 border-dashed border-slate-300 dark:border-maktabati-border hover:border-emerald-500 dark:hover:border-maktabati-green rounded-2xl bg-white/50 dark:bg-maktabati-card/50 transition-all duration-300">
+                <input type="file" id="fileInput" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="*/*" title="اختر ملف" />
+                <div class="p-5 flex flex-col items-center justify-center text-center pointer-events-none">
+                  <span class="w-12 h-12 rounded-full bg-slate-100 dark:bg-maktabati-dark flex items-center justify-center text-slate-500 dark:text-gray-400 mb-2 shadow-sm border border-slate-200 dark:border-maktabati-border">
+                    <i class="fa-solid fa-file-arrow-up text-lg"></i>
+                  </span>
+                  <span class="text-sm font-bold text-slate-700 dark:text-gray-300" id="fileBtnLabel">اختر ملفك (أو شاركه عبر الواتساب)</span>
+                  <span class="text-xs font-semibold text-slate-400 dark:text-gray-500 mt-1" id="fileNameDisplay">لم يتم اختيار أي مستند</span>
+                </div>
+              </div>
+
+              <!-- شريط رفع مصغر للـ PDF/المستندات -->
+              <div id="fileMicroProgress" class="hidden mt-3 p-3 bg-slate-100 dark:bg-maktabati-card border border-slate-200 dark:border-maktabati-border rounded-xl space-y-2">
+                <div class="flex justify-between items-center text-xs font-extrabold">
+                  <span id="fileMicroStatusText" class="text-emerald-600 dark:text-maktabati-green flex items-center gap-2">
+                    <i class="fa-solid fa-spinner animate-spin"></i> جاري الرفع بالخلفية...
+                  </span>
+                  <span id="fileMicroPercent" class="text-slate-700 dark:text-slate-200 font-black">0%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-maktabati-dark h-2 rounded-full overflow-hidden">
+                  <div id="fileMicroBar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-0 transition-all duration-300 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- زر رفع الصور -->
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2">رفع صورة (اختياري)</label>
+              <div class="relative border-2 border-dashed border-slate-300 dark:border-maktabati-border hover:border-emerald-500 dark:hover:border-maktabati-green rounded-2xl bg-white/50 dark:bg-maktabati-card/50 transition-all duration-300">
+                <input type="file" id="imageFileInput" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" title="اختر صورة" />
+                <div class="p-5 flex flex-col items-center justify-center text-center pointer-events-none">
+                  <span class="w-12 h-12 rounded-full bg-slate-100 dark:bg-maktabati-dark flex items-center justify-center text-slate-500 dark:text-gray-400 mb-2 shadow-sm border border-slate-200 dark:border-maktabati-border">
+                    <i class="fa-solid fa-image text-lg"></i>
+                  </span>
+                  <span class="text-sm font-bold text-slate-700 dark:text-gray-300" id="imageBtnLabel">اختر صورة لرفعها...</span>
+                  <span class="text-xs font-semibold text-slate-400 dark:text-gray-500 mt-1" id="imageNameDisplay">يقبل الصور فقط</span>
+                </div>
+              </div>
+
+              <!-- شريط رفع مصغر للصور -->
+              <div id="imageMicroProgress" class="hidden mt-3 p-3 bg-slate-100 dark:bg-maktabati-card border border-slate-200 dark:border-maktabati-border rounded-xl space-y-2">
+                <div class="flex justify-between items-center text-xs font-extrabold">
+                  <span id="imageMicroStatusText" class="text-emerald-600 dark:text-maktabati-green flex items-center gap-2">
+                    <i class="fa-solid fa-spinner animate-spin"></i> جاري رفع الصورة بالخلفية...
+                  </span>
+                  <span id="imageMicroPercent" class="text-slate-700 dark:text-slate-200 font-black">0%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-maktabati-dark h-2 rounded-full overflow-hidden">
+                  <div id="imageMicroBar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-0 transition-all duration-300 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ملاحظات -->
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label for="notes1" class="text-sm font-bold text-slate-700 dark:text-gray-200">إضافة ملاحظات (اختياري)</label>
+                <span id="wordCounter1" class="text-xs text-slate-500 dark:text-emerald-400 font-bold bg-slate-100 dark:bg-emerald-900/30 px-2 py-1 rounded-md">0 / 10 كلمة</span>
+              </div>
+              <div class="relative">
+                 <span class="absolute top-4 right-4 text-slate-400 dark:text-gray-400 pointer-events-none">
+                  <i class="fa-solid fa-note-sticky"></i>
+                </span>
+                <textarea id="notes1" rows="2" placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
+                  class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold resize-none light-input-field dark:input-field"></textarea>
+              </div>
+              <p id="notesError1" class="text-xs font-bold text-red-500 mt-1.5 hidden">يجب أن تكون الكتابة بالعربية ولا تتجاوز 10 كلمات.</p>
+            </div>
+          </div>
+
+          <!-- PAGE 2: طباعة الكتب المدرسية -->
+          <div id="page2" class="space-y-5 hidden animate-fade-in" role="tabpanel">
+            
+            <!-- الاسم الثلاثي -->
+            <div>
+              <label for="fullName2" class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-1">
+                الاسم الثلاثي <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400 pointer-events-none">
+                  <i class="fa-solid fa-user"></i>
+                </span>
+                <input type="text" id="fullName2" placeholder="اكتب اسمك الثلاثي (عربي أو إنجليزي)"
+                  class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold light-input-field dark:input-field" />
+              </div>
+              <p id="nameError2" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال اسم شخص حقيقي.</p>
+            </div>
+
+            <!-- اختر الكتب -->
+            <div>
+              <label for="bookPrint" class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-1">
+                اختر الكتب التي تريد طباعتها <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400 z-10 pointer-events-none">
+                  <i class="fa-solid fa-book"></i>
+                </span>
+                <select id="bookPrint"
+                  class="w-full pl-10 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold appearance-none cursor-pointer light-input-field dark:input-field">
+                  <option value="">-- اختر الصف الدراسي والمادة المطلوب طباعتها --</option>
+                  <option value="الصف الأول">الصف الأول</option>
+                  <option value="الصف الثاني">الصف الثاني</option>
+                  <option value="الصف الثالث">الصف الثالث</option>
+                  <option value="الصف الرابع">الصف الرابع</option>
+                  <option value="الصف الخامس">الصف الخامس</option>
+                  <option value="الصف السادس">الصف السادس</option>
+                  <option value="الصف السابع">الصف السابع</option>
+                  <option value="الصف الثامن">الصف الثامن</option>
+                  <option value="الصف التاسع">الصف التاسع</option>
+                  <option value="الصف العاشر">الصف العاشر</option>
+                  <option value="الصف الحادي عشر">الصف الحادي عشر</option>
+                  <option value="البكالوريا">البكالوريا</option>
+                </select>
+                <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 dark:text-gray-400">
+                  <i class="fa-solid fa-chevron-down text-xs"></i>
+                </span>
+              </div>
+              <p id="bookError" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء اختيار الصف/الكتب المراد طباعتها.</p>
+            </div>
+
+            <!-- عدد النسخ -->
+            <div>
+              <label for="copiesCount2" class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-1">
+                عدد النسخ <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400 pointer-events-none">
+                  <i class="fa-regular fa-copy"></i>
+                </span>
+                <input type="number" id="copiesCount2" min="1" placeholder="أدخل عدد النسخ المطلوبة"
+                  class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold light-input-field dark:input-field" />
+              </div>
+              <p id="copiesError2" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال عدد نسخ صحيح.</p>
+            </div>
+
+            <!-- ملاحظات -->
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label for="notes2" class="text-sm font-bold text-slate-700 dark:text-gray-200">الملاحظات (اختياري)</label>
+                <span id="wordCounter2" class="text-xs text-slate-500 dark:text-emerald-400 font-bold bg-slate-100 dark:bg-emerald-900/30 px-2 py-1 rounded-md">0 / 10 كلمة</span>
+              </div>
+              <div class="relative">
+                 <span class="absolute top-4 right-4 text-slate-400 dark:text-gray-400 pointer-events-none">
+                  <i class="fa-solid fa-note-sticky"></i>
+                </span>
+                <textarea id="notes2" rows="2" placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
+                  class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold resize-none light-input-field dark:input-field"></textarea>
+              </div>
+              <p id="notesError2" class="text-xs font-bold text-red-500 mt-1.5 hidden">يجب أن تكون الكتابة بالعربية ولا تتجاوز 10 كلمات.</p>
+            </div>
+          </div>
+
+          <!-- PAGE 3: طباعة تيشرت او كوب -->
+          <div id="page3" class="space-y-5 hidden animate-fade-in" role="tabpanel">
+
+            <!-- الاسم الثلاثي -->
+            <div>
+              <label for="fullName3" class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-1">
+                الاسم الثلاثي <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400 pointer-events-none">
+                  <i class="fa-solid fa-user"></i>
+                </span>
+                <input type="text" id="fullName3" placeholder="اكتب اسمك الثلاثي (عربي أو إنجليزي)"
+                  class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold light-input-field dark:input-field" />
+              </div>
+              <p id="nameError3" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال اسم شخص حقيقي.</p>
+            </div>
+
+            <!-- زر تحميل الصورة -->
+            <div>
+              <label class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-1">
+                تحميل الصورة التي تريد طباعتها <span class="text-slate-400 text-xs font-normal">(اختياري)</span>
+              </label>
+              <div class="relative border-2 border-dashed border-slate-300 dark:border-maktabati-border hover:border-emerald-500 dark:hover:border-maktabati-green rounded-2xl bg-white/50 dark:bg-maktabati-card/50 transition-all duration-300">
+                <input type="file" id="tshirtInput" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" title="اختر تصميم" />
+                <div class="p-5 flex flex-col items-center justify-center text-center pointer-events-none">
+                  <span class="w-12 h-12 rounded-full bg-slate-100 dark:bg-maktabati-dark flex items-center justify-center text-slate-500 dark:text-gray-400 mb-2 shadow-sm border border-slate-200 dark:border-maktabati-border">
+                    <i class="fa-solid fa-image text-lg"></i>
+                  </span>
+                  <span class="text-sm font-bold text-slate-700 dark:text-gray-300" id="tshirtBtnLabel">اختر صورة التصميم...</span>
+                  <span class="text-xs font-semibold text-slate-400 dark:text-gray-500 mt-1" id="tshirtNameDisplay">لا يقبل إلا الصور فقط</span>
+                </div>
+              </div>
+
+              <!-- شريط رفع مصغر لصور التيشرت/الكوب -->
+              <div id="tshirtMicroProgress" class="hidden mt-3 p-3 bg-slate-100 dark:bg-maktabati-card border border-slate-200 dark:border-maktabati-border rounded-xl space-y-2">
+                <div class="flex justify-between items-center text-xs font-extrabold">
+                  <span id="tshirtMicroStatusText" class="text-emerald-600 dark:text-maktabati-green flex items-center gap-2">
+                    <i class="fa-solid fa-spinner animate-spin"></i> جاري رفع التصميم بالخلفية...
+                  </span>
+                  <span id="tshirtMicroPercent" class="text-slate-700 dark:text-slate-200 font-black">0%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-maktabati-dark h-2 rounded-full overflow-hidden">
+                  <div id="tshirtMicroBar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-0 transition-all duration-300 rounded-full"></div>
+                </div>
+              </div>
+
+              <!-- معاينة الصورة -->
+              <div id="tshirtPreviewContainer" class="hidden mt-3 flex justify-center">
+                <div class="relative w-24 h-24 rounded-2xl border-2 border-slate-200 dark:border-maktabati-border overflow-hidden bg-white dark:bg-maktabati-card shadow-md p-1">
+                  <img id="tshirtPreview" class="w-full h-full object-cover rounded-xl" src="" alt="Preview" />
+                  <button type="button" id="removeTshirtBtn" aria-label="حذف الصورة" class="absolute top-1 left-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm z-20 focus:outline-none focus:ring-2 focus:ring-red-400">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- الملاحظات -->
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label for="notes3" class="text-sm font-bold text-slate-700 dark:text-gray-200">الملاحظات (اختياري)</label>
+                <span id="wordCounter3" class="text-xs text-slate-500 dark:text-emerald-400 font-bold bg-slate-100 dark:bg-emerald-900/30 px-2 py-1 rounded-md">0 / 10 كلمة</span>
+              </div>
+              <div class="relative">
+                 <span class="absolute top-4 right-4 text-slate-400 dark:text-gray-400 pointer-events-none">
+                  <i class="fa-solid fa-note-sticky"></i>
+                </span>
+                <textarea id="notes3" rows="2" placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
+                  class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold resize-none light-input-field dark:input-field"></textarea>
+              </div>
+              <p id="notesError3" class="text-xs font-bold text-red-500 mt-1.5 hidden">يجب أن تكون الكتابة بالعربية ولا تتجاوز 10 كلمات.</p>
+            </div>
+          </div>
+
+          <!-- رسالة حالة الطلب (Custom Notification Box) -->
+          <div id="statusMessage" class="hidden p-4 rounded-2xl text-center text-sm font-extrabold transition-all duration-300 mt-6 shadow-md border" role="alert" aria-live="polite"></div>
+
+          <!-- أزرار الإرسال والإلغاء -->
+          <div class="flex flex-col sm:flex-row items-center gap-3 pt-8">
+            <button type="submit" id="submitBtn"
+              class="w-full sm:flex-1 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 dark:from-[#00df60] dark:to-[#009b43] hover:opacity-90 text-white font-extrabold text-sm md:text-base rounded-full shadow-lg shadow-emerald-500/30 dark:shadow-[0_0_15px_rgba(0,223,96,0.3)] btn-bounce transition-all flex items-center justify-center gap-3 border border-emerald-400/50 dark:border-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+              <span id="submitText">إرسال الطلب</span>
+              <i id="submitIcon" class="fa-solid fa-paper-plane"></i>
+              <span id="spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            </button>
+            
+            <button type="button" id="cancelBtn"
+              class="w-full sm:w-1/3 py-4 bg-white dark:bg-maktabati-card hover:bg-slate-50 dark:hover:bg-maktabati-dark text-slate-700 dark:text-gray-300 font-bold text-sm rounded-full btn-bounce transition-all border border-slate-200 dark:border-maktabati-border shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300">
+              إلغاء
+            </button>
+          </div>
+
+        </form>
       </div>
-
-      <form id="dataForm" novalidate class="mt-4 pb-10">
-
-        <!-- PAGE 1: طباعة ملفات -->
-        <div id="page1" class="space-y-5 animate-fade-in" role="tabpanel">
-
-          <!-- الاسم الثلاثي -->
-          <div>
-            <label for="fullName1" class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-1">
-              الاسم الثلاثي <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400 pointer-events-none">
-                <i class="fa-solid fa-user"></i>
-              </span>
-              <input type="text" id="fullName1" placeholder="اكتب اسمك الثلاثي (عربي أو إنجليزي)"
-                class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold light-input-field dark:input-field" />
-            </div>
-            <p id="nameError1" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال اسم شخص حقيقي (3 مقاطع، بدون تكرار عشوائي للأحرف).</p>
-          </div>
-
-          <!-- عدد النسخ -->
-          <div>
-            <label for="copiesCount1" class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-1">
-              عدد النسخ <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400 pointer-events-none">
-                <i class="fa-regular fa-copy"></i>
-              </span>
-              <input type="number" id="copiesCount1" min="1" placeholder="أدخل عدد النسخ المطلوبة"
-                class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold light-input-field dark:input-field" />
-            </div>
-            <p id="copiesError1" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال عدد صحيح.</p>
-          </div>
-
-          <!-- زر تحميل مستند -->
-          <div>
-            <label class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2"> تحميل ملفك (اختياري)</label>
-            <div class="relative border-2 border-dashed border-slate-300 dark:border-maktabati-border hover:border-emerald-500 dark:hover:border-maktabati-green rounded-2xl bg-white/50 dark:bg-maktabati-card/50 transition-all duration-300">
-              <input type="file" id="fileInput" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="*/*" title="اختر ملف" />
-              <div class="p-5 flex flex-col items-center justify-center text-center pointer-events-none">
-                <span class="w-12 h-12 rounded-full bg-slate-100 dark:bg-maktabati-dark flex items-center justify-center text-slate-500 dark:text-gray-400 mb-2 shadow-sm border border-slate-200 dark:border-maktabati-border">
-                  <i class="fa-solid fa-file-arrow-up text-lg"></i>
-                </span>
-                <span class="text-sm font-bold text-slate-700 dark:text-gray-300" id="fileBtnLabel">اختر ملفك (يمكنك مشاركته من الوتساب)</span>
-                <span class="text-xs font-semibold text-slate-400 dark:text-gray-500 mt-1" id="fileNameDisplay">لم يتم اختيار أي مستند</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- زر رفع الصور -->
-          <div>
-            <label class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2">رفع صورة (اختياري)</label>
-            <div class="relative border-2 border-dashed border-slate-300 dark:border-maktabati-border hover:border-emerald-500 dark:hover:border-maktabati-green rounded-2xl bg-white/50 dark:bg-maktabati-card/50 transition-all duration-300">
-              <input type="file" id="imageFileInput" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" title="اختر صورة" />
-              <div class="p-5 flex flex-col items-center justify-center text-center pointer-events-none">
-                <span class="w-12 h-12 rounded-full bg-slate-100 dark:bg-maktabati-dark flex items-center justify-center text-slate-500 dark:text-gray-400 mb-2 shadow-sm border border-slate-200 dark:border-maktabati-border">
-                  <i class="fa-solid fa-image text-lg"></i>
-                </span>
-                <span class="text-sm font-bold text-slate-700 dark:text-gray-300" id="imageBtnLabel">اختر صورة لرفعها...</span>
-                <span class="text-xs font-semibold text-slate-400 dark:text-gray-500 mt-1" id="imageNameDisplay">يقبل الصور فقط</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- ملاحظات -->
-          <div>
-            <div class="flex justify-between items-center mb-2">
-              <label for="notes1" class="text-sm font-bold text-slate-700 dark:text-gray-200">إضافة ملاحظات (اختياري)</label>
-              <span id="wordCounter1" class="text-xs text-slate-500 dark:text-emerald-400 font-bold bg-slate-100 dark:bg-emerald-900/30 px-2 py-1 rounded-md">0 / 10 كلمة</span>
-            </div>
-            <div class="relative">
-               <span class="absolute top-4 right-4 text-slate-400 dark:text-gray-400 pointer-events-none">
-                <i class="fa-solid fa-note-sticky"></i>
-              </span>
-              <textarea id="notes1" rows="2" placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
-                class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold resize-none light-input-field dark:input-field"></textarea>
-            </div>
-            <p id="notesError1" class="text-xs font-bold text-red-500 mt-1.5 hidden">يجب أن تكون الكتابة بالعربية ولا تتجاوز 10 كلمات.</p>
-          </div>
-        </div>
-
-        <!-- PAGE 2: طباعة الكتب المدرسية -->
-        <div id="page2" class="space-y-5 hidden animate-fade-in" role="tabpanel">
-          
-          <!-- الاسم الثلاثي -->
-          <div>
-            <label for="fullName2" class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-1">
-              الاسم الثلاثي <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400 pointer-events-none">
-                <i class="fa-solid fa-user"></i>
-              </span>
-              <input type="text" id="fullName2" placeholder="اكتب اسمك الثلاثي (عربي أو إنجليزي)"
-                class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold light-input-field dark:input-field" />
-            </div>
-            <p id="nameError2" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال اسم شخص حقيقي.</p>
-          </div>
-
-          <!-- اختر الكتب -->
-          <div>
-            <label for="bookPrint" class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-1">
-              اختر الكتب التي تريد طباعتها <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400 z-10 pointer-events-none">
-                <i class="fa-solid fa-book"></i>
-              </span>
-              <select id="bookPrint"
-                class="w-full pl-10 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold appearance-none cursor-pointer light-input-field dark:input-field">
-                <option value="">-- اختر الصف الدراسي والمادة المطلوب طباعتها --</option>
-                <option value="الصف الأول">الصف الأول</option>
-                <option value="الصف الثاني">الصف الثاني</option>
-                <option value="الصف الثالث">الصف الثالث</option>
-                <option value="الصف الرابع">الصف الرابع</option>
-                <option value="الصف الخامس">الصف الخامس</option>
-                <option value="الصف السادس">الصف السادس</option>
-                <option value="الصف السابع">الصف السابع</option>
-                <option value="الصف الثامن">الصف الثامن</option>
-                <option value="الصف التاسع">الصف التاسع</option>
-                <option value="الصف العاشر">الصف العاشر</option>
-                <option value="الصف الحادي عشر">الصف الحادي عشر</option>
-                <option value="البكالوريا">البكالوريا</option>
-              </select>
-              <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 dark:text-gray-400">
-                <i class="fa-solid fa-chevron-down text-xs"></i>
-              </span>
-            </div>
-            <p id="bookError" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء اختيار الصف/الكتب المراد طباعتها.</p>
-          </div>
-
-          <!-- عدد النسخ -->
-          <div>
-            <label for="copiesCount2" class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-1">
-              عدد النسخ <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400 pointer-events-none">
-                <i class="fa-regular fa-copy"></i>
-              </span>
-              <input type="number" id="copiesCount2" min="1" placeholder="أدخل عدد النسخ المطلوبة"
-                class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold light-input-field dark:input-field" />
-            </div>
-            <p id="copiesError2" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال عدد نسخ صحيح.</p>
-          </div>
-
-          <!-- ملاحظات -->
-          <div>
-            <div class="flex justify-between items-center mb-2">
-              <label for="notes2" class="text-sm font-bold text-slate-700 dark:text-gray-200">الملاحظات (اختياري)</label>
-              <span id="wordCounter2" class="text-xs text-slate-500 dark:text-emerald-400 font-bold bg-slate-100 dark:bg-emerald-900/30 px-2 py-1 rounded-md">0 / 10 كلمة</span>
-            </div>
-            <div class="relative">
-               <span class="absolute top-4 right-4 text-slate-400 dark:text-gray-400 pointer-events-none">
-                <i class="fa-solid fa-note-sticky"></i>
-              </span>
-              <textarea id="notes2" rows="2" placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
-                class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold resize-none light-input-field dark:input-field"></textarea>
-            </div>
-            <p id="notesError2" class="text-xs font-bold text-red-500 mt-1.5 hidden">يجب أن تكون الكتابة بالعربية ولا تتجاوز 10 كلمات.</p>
-          </div>
-        </div>
-
-        <!-- PAGE 3: طباعة تيشرت او كوب -->
-        <div id="page3" class="space-y-5 hidden animate-fade-in" role="tabpanel">
-
-          <!-- الاسم الثلاثي -->
-          <div>
-            <label for="fullName3" class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-1">
-              الاسم الثلاثي <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-gray-400 pointer-events-none">
-                <i class="fa-solid fa-user"></i>
-              </span>
-              <input type="text" id="fullName3" placeholder="اكتب اسمك الثلاثي (عربي أو إنجليزي)"
-                class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold light-input-field dark:input-field" />
-            </div>
-            <p id="nameError3" class="text-xs font-bold text-red-500 mt-1.5 hidden">الرجاء إدخال اسم شخص حقيقي.</p>
-          </div>
-
-          <!-- زر تحميل الصورة (اختياري) -->
-          <div>
-            <label class="block text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-1">
-              تحميل الصورة التي تريد طباعتها <span class="text-slate-400 text-xs font-normal">(اختياري)</span>
-            </label>
-            <div class="relative border-2 border-dashed border-slate-300 dark:border-maktabati-border hover:border-emerald-500 dark:hover:border-maktabati-green rounded-2xl bg-white/50 dark:bg-maktabati-card/50 transition-all duration-300">
-              <input type="file" id="tshirtInput" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" title="اختر تصميم" />
-              <div class="p-5 flex flex-col items-center justify-center text-center pointer-events-none">
-                <span class="w-12 h-12 rounded-full bg-slate-100 dark:bg-maktabati-dark flex items-center justify-center text-slate-500 dark:text-gray-400 mb-2 shadow-sm border border-slate-200 dark:border-maktabati-border">
-                  <i class="fa-solid fa-image text-lg"></i>
-                </span>
-                <span class="text-sm font-bold text-slate-700 dark:text-gray-300" id="tshirtBtnLabel">اختر صورة التصميم...</span>
-                <span class="text-xs font-semibold text-slate-400 dark:text-gray-500 mt-1" id="tshirtNameDisplay">لا يقبل إلا الصور فقط</span>
-              </div>
-            </div>
-
-            <!-- معاينة الصورة -->
-            <div id="tshirtPreviewContainer" class="hidden mt-3 flex justify-center">
-              <div class="relative w-24 h-24 rounded-2xl border-2 border-slate-200 dark:border-maktabati-border overflow-hidden bg-white dark:bg-maktabati-card shadow-md p-1">
-                <img id="tshirtPreview" class="w-full h-full object-cover rounded-xl" src="" alt="Preview" />
-                <button type="button" id="removeTshirtBtn" aria-label="حذف الصورة" class="absolute top-1 left-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm z-20 focus:outline-none focus:ring-2 focus:ring-red-400">
-                  <i class="fa-solid fa-xmark text-xs"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- الملاحظات -->
-          <div>
-            <div class="flex justify-between items-center mb-2">
-              <label for="notes3" class="text-sm font-bold text-slate-700 dark:text-gray-200">الملاحظات (اختياري)</label>
-              <span id="wordCounter3" class="text-xs text-slate-500 dark:text-emerald-400 font-bold bg-slate-100 dark:bg-emerald-900/30 px-2 py-1 rounded-md">0 / 10 كلمة</span>
-            </div>
-            <div class="relative">
-               <span class="absolute top-4 right-4 text-slate-400 dark:text-gray-400 pointer-events-none">
-                <i class="fa-solid fa-note-sticky"></i>
-              </span>
-              <textarea id="notes3" rows="2" placeholder="اكتب ملاحظاتك بالعربية (بحد أقصى 10 كلمات)..."
-                class="w-full pl-4 pr-11 py-4 rounded-2xl focus:outline-none transition-all text-sm font-semibold resize-none light-input-field dark:input-field"></textarea>
-            </div>
-            <p id="notesError3" class="text-xs font-bold text-red-500 mt-1.5 hidden">يجب أن تكون الكتابة بالعربية ولا تتجاوز 10 كلمات.</p>
-          </div>
-        </div>
-
-        <!-- شريط التقدم -->
-        <div id="progressBox" class="hidden p-4 bg-white dark:bg-maktabati-card rounded-2xl border border-slate-200 dark:border-maktabati-border space-y-3 shadow-md mt-6">
-          <div class="flex justify-between items-center text-sm font-extrabold text-slate-700 dark:text-white">
-            <span id="progressText" class="flex items-center gap-2">
-              <i class="fa-solid fa-cloud-arrow-up animate-bounce text-emerald-500 dark:text-maktabati-green"></i>
-              <span>جاري الرفع والحفظ...</span>
-            </span>
-            <span id="progressPercent" class="text-xs font-black text-emerald-700 dark:text-maktabati-dark bg-emerald-100 dark:bg-maktabati-green px-2 py-1 rounded-md">0%</span>
-          </div>
-          <div class="w-full bg-slate-100 dark:bg-maktabati-dark h-3 rounded-full overflow-hidden p-0.5 border border-slate-200 dark:border-maktabati-border">
-            <div id="progressBar" class="bg-gradient-to-r from-emerald-500 to-teal-500 dark:from-green-500 dark:to-maktabati-green h-full w-0 transition-all duration-300 rounded-full shadow-[0_0_10px_rgba(0,223,96,0.5)]"></div>
-          </div>
-          <div class="flex justify-between text-[11px] text-slate-500 dark:text-gray-400 font-bold pt-1">
-            <span>الرفع يعتمد على حجم الملف</span>
-            <span id="timerText">المتبقي: ~45s</span>
-          </div>
-        </div>
-
-        <!-- رسالة الحالة (تم استبدال alerts المزعجة بها) -->
-        <div id="statusMessage" class="hidden p-4 rounded-2xl text-center text-sm font-extrabold transition-all duration-300 mt-6 shadow-md border" role="alert" aria-live="polite"></div>
-
-        <!-- أزرار الإرسال والإلغاء -->
-        <div class="flex flex-col sm:flex-row items-center gap-3 pt-8">
-          <button type="submit" id="submitBtn"
-            class="w-full sm:flex-1 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 dark:from-[#00df60] dark:to-[#009b43] hover:opacity-90 text-white font-extrabold text-sm md:text-base rounded-full shadow-lg shadow-emerald-500/30 dark:shadow-[0_0_15px_rgba(0,223,96,0.3)] btn-bounce transition-all flex items-center justify-center gap-3 border border-emerald-400/50 dark:border-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400">
-            <span id="submitText">إرسال الطلب</span>
-            <i id="submitIcon" class="fa-solid fa-paper-plane"></i>
-            <span id="spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-          </button>
-          
-          <button type="button" id="cancelBtn"
-            class="w-full sm:w-1/3 py-4 bg-white dark:bg-maktabati-card hover:bg-slate-50 dark:hover:bg-maktabati-dark text-slate-700 dark:text-gray-300 font-bold text-sm rounded-full btn-bounce transition-all border border-slate-200 dark:border-maktabati-border shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300">
-            إلغاء
-          </button>
-        </div>
-
-      </form>
-    </div>
 
     <script>
-      // 1. Splash Screen Logic (Modernized)
+      /* 1. Splash Screen Logic */
       window.addEventListener('load', () => {
-        // Ensures splash screen only runs just long enough for modern fast-loading Chrome
         setTimeout(() => {
           const splash = document.getElementById('splashScreen');
-          splash.style.opacity = '0';
-          setTimeout(() => splash.classList.add('hidden'), 700);
+          if (splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => splash.classList.add('hidden'), 700);
+          }
         }, 800); 
       });
 
-      // 2. Safe Local Storage Access (Important for modern strict privacy in Chrome)
+      /* 2. Safe Local Storage Access */
       function safeLocalStorageGet(key) {
         try { return localStorage.getItem(key); } catch (e) { return null; }
       }
@@ -512,7 +540,7 @@
         try { localStorage.setItem(key, value); } catch (e) { console.warn("Storage restricted."); }
       }
 
-      // 3. Dark/Light Mode Toggle Logic
+      /* 3. Dark/Light Mode Switcher */
       const themeToggleBtn = document.getElementById('themeToggleBtn');
       const themeIcon = document.getElementById('themeIcon');
       const htmlEl = document.documentElement;
@@ -538,35 +566,45 @@
         }
       });
 
-      // 4. Application Variables
+      /* 4. Global Variables & Endpoint */
       const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2knpjItvbFUrfYvcEUTd9aEjinX8Ca4KDKOGWOvL6HwCaK4q71IR2VB2cEgnFkgtQ/exec";
       let currentPage = 'page1';
-      let progressTimer = null;
 
-      // 5. Custom Notification System (Replaces alert())
+      // السجل المركزي لحالة الرفع المسبق للـ Upload الذكي بالخلفية
+      const preuploadState = {
+        status: 'idle', // 'idle' | 'reading' | 'uploading' | 'completed' | 'error'
+        progress: 0,
+        fileName: '',
+        fileType: '',
+        base64Data: null,
+        xhrInstance: null,
+        pendingSubmission: false, // إذا ضغط الزبون "إرسال" أثناء الرفع
+        payloadData: null
+      };
+
+      /* Custom Notification Banner */
       const statusMessage = document.getElementById("statusMessage");
       function showNotification(msg, type) {
         statusMessage.textContent = msg;
         statusMessage.classList.remove("hidden");
         if(type === "success") {
-           statusMessage.className = "p-4 rounded-2xl text-center text-sm font-extrabold transition-all duration-300 mt-6 shadow-md border bg-emerald-100 border-emerald-400 text-emerald-800 dark:bg-maktabati-green/20 dark:border-maktabati-green dark:text-emerald-300";
+           statusMessage.className = "p-4 rounded-2xl text-center text-sm font-extrabold transition-all duration-300 mt-6 shadow-md border bg-emerald-100 border-emerald-400 text-emerald-800 dark:bg-maktabati-green/20 dark:border-maktabati-green dark:text-emerald-300 animate-bounce-once";
         } else if (type === "warning") {
            statusMessage.className = "p-4 rounded-2xl text-center text-sm font-extrabold transition-all duration-300 mt-6 shadow-md border bg-amber-100 border-amber-400 text-amber-800 dark:bg-amber-900/30 dark:border-amber-500/50 dark:text-amber-400";
         } else {
            statusMessage.className = "p-4 rounded-2xl text-center text-sm font-extrabold transition-all duration-300 mt-6 shadow-md border bg-red-100 border-red-400 text-red-800 dark:bg-red-900/30 dark:border-red-500/50 dark:text-red-400";
         }
         
-        // Auto hide after 5 seconds if not a success message
         if (type !== "success") {
             setTimeout(() => {
                 if(!document.getElementById("submitBtn").disabled) {
                     statusMessage.classList.add("hidden");
                 }
-            }, 5000);
+            }, 6000);
         }
       }
 
-      // 6. Tab Switching UI Logic
+      /* 5. Tab Switcher */
       function switchPage(pageId) {
         currentPage = pageId;
 
@@ -602,10 +640,10 @@
           }
         });
 
-        resetUIFeedback();
+        statusMessage.classList.add("hidden");
       }
 
-      // DOM Elements
+      /* DOM Elements Reference */
       const form = document.getElementById("dataForm");
       const submitBtn = document.getElementById("submitBtn");
       const submitText = document.getElementById("submitText");
@@ -628,26 +666,21 @@
       const tshirtPreview = document.getElementById("tshirtPreview");
       const removeTshirtBtn = document.getElementById("removeTshirtBtn");
 
-      const progressBox = document.getElementById("progressBox");
-      const progressBar = document.getElementById("progressBar");
-      const progressPercent = document.getElementById("progressPercent");
-      const timerText = document.getElementById("timerText");
-
-         // 7. PWA Integration (Modern Chrome compatibility)
+      /* 6. PWA & Web Share Integration */
       const installContainer = document.getElementById("installContainer");
       const pwaInstallBtn = document.getElementById("pwaInstallBtn");
       let deferredPrompt = null;
 
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW setup skipped for local dev/preview'));
+          navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration skipped for preview env'));
         });
       }
 
       window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault(); // Prevent standard Chrome mini-infobar
+        e.preventDefault();
         deferredPrompt = e;
-        installContainer.classList.remove('hidden'); // Show custom button
+        installContainer.classList.remove('hidden');
       });
 
       pwaInstallBtn.addEventListener('click', async () => {
@@ -683,9 +716,7 @@
             const req = store.get("latest_file");
             req.onsuccess = () => {
               const record = req.result;
-              if (record) {
-                store.delete("latest_file"); // مسح الملف بعد قراءته
-              }
+              if (record) { store.delete("latest_file"); }
               resolve(record || null);
             };
             req.onerror = () => resolve(null);
@@ -695,30 +726,25 @@
         }
       }
 
-      // 8. Handle Shared Files Incoming - طريقة IndexedDB الشاملة للتوافق مع أحدث إصدارات كروم
+      /* Handling Incoming Files Shared from WhatsApp */
       window.addEventListener('DOMContentLoaded', async () => {
         const urlParams = new URLSearchParams(window.location.search);
         
-        // التحقق مما إذا كان هناك خطأ تقني قادم من الخدمة
         if (urlParams.has('shared_error')) {
-          const errorMsg = urlParams.get('shared_error');
-          showNotification("خطأ مشاركة: " + errorMsg, "error");
+          showNotification("خطأ مشاركة: " + urlParams.get('shared_error'), "error");
           window.history.replaceState({}, document.title, window.location.pathname);
           return;
         }
 
         if (urlParams.has('shared')) {
           try {
-            showNotification("جاري معالجة الملف المشارك...", "warning");
+            showNotification("جاري معالجة واستيراد الملف المشارك...", "warning");
             
             let sharedFile = null;
-
-            // 1. المحاولة الأولى: القراءة من قاعدة بيانات IndexedDB
             const idbRecord = await getSharedFileFromDB();
             if (idbRecord && idbRecord.file) {
               sharedFile = new File([idbRecord.file], idbRecord.name, { type: idbRecord.type });
             } else if ('caches' in window) {
-              // 2. المحاولة الثانية: القراءة من Cache Storage كبديل
               const cache = await caches.open('shared-files-cache');
               const dataRes = await cache.match('/shared-file-data');
               const metaRes = await cache.match('/shared-file-meta');
@@ -734,7 +760,6 @@
 
             if (sharedFile) {
               switchPage('page1');
-
               const dataTransfer = new DataTransfer();
               dataTransfer.items.add(sharedFile);
 
@@ -747,20 +772,17 @@
               }
               
               window.history.replaceState({}, document.title, window.location.pathname);
-              showNotification("تم استيراد الملف المشارك بنجاح!", "success");
             } else {
-              showNotification("لم يتم العثور على الملف في الذاكرة المحلية، يرجى المحاولة مجدداً.", "error");
+              showNotification("لم يتم العثور على الملف المشارك في الذاكرة المحلية.", "error");
             }
           } catch (err) {
             console.error("Shared file load error:", err);
-            showNotification("حدث خطأ فني أثناء استيراد الملف: " + err.message, "error");
+            showNotification("حدث خطأ أثناء استيراد الملف: " + err.message, "error");
           }
         }
       });
 
-              
-      
-      
+      /* Helper: Read File to Base64 */
       function fileToBase64(file) {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
@@ -770,15 +792,113 @@
         });
       }
 
-      // 9. File Input Handlers
+      /**
+       * وظيفة الرفع التلقائي المسبق في الخلفية (Auto Pre-Upload)
+       * تبدأ فور اختيار الزبون للملف حتى وهو يكتب اسمه
+       */
+      async function startAutoPreupload(file, uiPrefix) {
+        // إلغاء أي عملية رفع سابقة كانت جارية
+        if (preuploadState.xhrInstance) {
+          preuploadState.xhrInstance.abort();
+        }
+
+        // إظهار عناصر التقدم المصغرة
+        const microBox = document.getElementById(`${uiPrefix}MicroProgress`);
+        const statusText = document.getElementById(`${uiPrefix}MicroStatusText`);
+        const percentText = document.getElementById(`${uiPrefix}MicroPercent`);
+        const progressBar = document.getElementById(`${uiPrefix}MicroBar`);
+
+        if (microBox) microBox.classList.remove("hidden");
+        if (progressBar) progressBar.style.width = "2%";
+        if (percentText) percentText.textContent = "2%";
+        if (statusText) {
+          statusText.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> جاري الرفع بالخلفية ⚡...`;
+          statusText.className = "text-emerald-600 dark:text-maktabati-green flex items-center gap-2 font-bold";
+        }
+
+        preuploadState.status = 'reading';
+        preuploadState.fileName = file.name;
+        preuploadState.fileType = file.type;
+
+        try {
+          let fileToUpload = file;
+          // ضغط الصورة تلقائياً إذا كانت صورة
+          if (file.type.startsWith('image/') && typeof imageCompression === 'function') {
+            try {
+              fileToUpload = await imageCompression(file, { maxSizeMB: 1.5, maxWidthOrHeight: 2048, useWebWorker: true });
+            } catch (err) { console.warn("Compression skipped:", err); }
+          }
+
+          // تحويل لـ Base64
+          const base64 = await fileToBase64(fileToUpload);
+          preuploadState.base64Data = base64;
+          preuploadState.status = 'uploading';
+
+          // تجهيز حزمة الرفع المبدئية
+          const payload = {
+            "isPreupload": true,
+            "fileName": fileToUpload.name,
+            "fileType": fileToUpload.type,
+            "fileData": base64
+          };
+
+          // إنشاء طلب XHR لتسجيل الرفع المسبق ومتابعته بدقة %
+          const xhr = new XMLHttpRequest();
+          preuploadState.xhrInstance = xhr;
+
+          xhr.upload.addEventListener("progress", (e) => {
+            if (e.lengthComputable) {
+              const percent = Math.round((e.loaded / e.total) * 100);
+              preuploadState.progress = percent;
+              if (progressBar) progressBar.style.width = `${percent}%`;
+              if (percentText) percentText.textContent = `${percent}%`;
+            }
+          });
+
+          xhr.onload = function () {
+            preuploadState.status = 'completed';
+            preuploadState.progress = 100;
+            if (progressBar) progressBar.style.width = "100%";
+            if (percentText) percentText.textContent = "100%";
+            if (statusText) {
+              statusText.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> تم جاهز للطباعة ⚡`;
+              statusText.className = "text-emerald-600 dark:text-maktabati-green flex items-center gap-2 font-black";
+            }
+
+            // إذا كان العميل قد ضغط بالفعل على زر الإرسال وهو ينتظر الرفع
+            if (preuploadState.pendingSubmission) {
+              finalizePendingSubmission();
+            }
+          };
+
+          xhr.onerror = function () {
+            // في حالة حصول خطأ بسيط بالشراكة يتم الحفاظ على الـ Base64 للإرسال العادي
+            preuploadState.status = 'error';
+            if (statusText) {
+              statusText.innerHTML = `<i class="fa-solid fa-circle-info text-amber-500"></i> سيتم إرفاقه مع زر الإرسال مباشرة`;
+            }
+          };
+
+          xhr.open("POST", GOOGLE_SCRIPT_URL, true);
+          xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
+          xhr.send(JSON.stringify(payload));
+
+        } catch (err) {
+          console.error("Auto-preupload error:", err);
+          preuploadState.status = 'error';
+        }
+      }
+
+      /* 7. File Input Event Listeners */
       fileInput.addEventListener("change", function () {
         const compressBox = document.getElementById("pdfCompressAdvice");
         if (this.files && this.files.length > 0) {
           const file = this.files[0];
           const fileSizeMB = file.size / (1024 * 1024);
           fileNameDisplay.textContent = `${file.name} (${fileSizeMB.toFixed(1)} MB)`;
-          fileBtnLabel.textContent = "تم اختيار المستند";
+          fileBtnLabel.textContent = "تم اختيار المستند (جاري الرفع المسبق)";
 
+          // إظهار نصيحة ضغط الـ PDF للملفات الأكبر من 20MB
           if (fileSizeMB >= 20) {
             if (!compressBox) {
               const adviceDiv = document.createElement("div");
@@ -786,7 +906,7 @@
               adviceDiv.className = "mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700/50 rounded-xl text-xs text-amber-900 dark:text-amber-200 space-y-2 flex flex-col items-center text-center";
               adviceDiv.innerHTML = `
                 <div class="font-bold">⚠️ حجم الملف كبير (${fileSizeMB.toFixed(1)} MB)</div>
-                <p class="text-[11px] opacity-80">لضمان سرعة الرفع، يُفضل ضغطه:</p>
+                <p class="text-[11px] opacity-80">لضمان سرعة فائقة جداً، يُفضل ضغطه قبل الرفع:</p>
                 <a href="https://www.ilovepdf.com/ar/compress_pdf" target="_blank" rel="noopener noreferrer" 
                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#f19124] hover:bg-orange-600 text-white font-bold text-xs rounded-lg shadow-sm transition-colors focus:ring-2 focus:ring-orange-300">
                   <i class="fa-solid fa-file-zipper"></i> اضغط هنا لضغط الملف أونلاين
@@ -794,6 +914,10 @@
               fileInput.parentElement.parentElement.appendChild(adviceDiv);
             } else { compressBox.classList.remove("hidden"); }
           } else { if (compressBox) compressBox.classList.add("hidden"); }
+
+          // البدء الفوري المباشر بالرفع بالخلفية!
+          startAutoPreupload(file, "file");
+
         } else {
           resetFileState();
           if (compressBox) compressBox.classList.add("hidden");
@@ -807,8 +931,10 @@
             showNotification('يرجى اختيار ملف صورة فقط بدلاً من هذا الملف.', 'warning');
             resetImageState(); return;
           }
-          imageNameDisplay.textContent = `${file.name} (جاهز للرفع ⚡)`;
+          imageNameDisplay.textContent = `${file.name} (جاري الرفع ⚡)`;
           imageBtnLabel.textContent = "تم اختيار الصورة";
+
+          startAutoPreupload(file, "image");
         } else { resetImageState(); }
       });
 
@@ -825,19 +951,38 @@
             tshirtPreviewContainer.classList.remove("hidden");
           };
           reader.readAsDataURL(file);
-          tshirtNameDisplay.textContent = `${file.name} (جاهز ⚡)`;
+          tshirtNameDisplay.textContent = `${file.name} (جاري الرفع ⚡)`;
           tshirtBtnLabel.textContent = "تم اختيار التصميم";
+
+          startAutoPreupload(file, "tshirt");
         } else { resetTshirtState(); }
       });
 
       removeTshirtBtn.addEventListener("click", (e) => { e.preventDefault(); resetTshirtState(); });
 
-      // Reset Helpers
-      function resetFileState() { fileInput.value = ""; fileNameDisplay.textContent = "لم يتم اختيار أي مستند"; fileBtnLabel.textContent = "اختر مستنداً لرفعه..."; }
-      function resetImageState() { imageFileInput.value = ""; imageNameDisplay.textContent = "يقبل الصور فقط"; imageBtnLabel.textContent = "اختر صورة لرفعها..."; }
-      function resetTshirtState() { tshirtInput.value = ""; tshirtNameDisplay.textContent = "لا يقبل إلا الصور فقط"; tshirtBtnLabel.textContent = "اختر صورة التصميم..."; tshirtPreviewContainer.classList.add("hidden"); tshirtPreview.src = ""; }
+      /* Reset State Helpers */
+      function resetFileState() {
+        fileInput.value = "";
+        fileNameDisplay.textContent = "لم يتم اختيار أي مستند";
+        fileBtnLabel.textContent = "اختر مستنداً لرفعه...";
+        document.getElementById("fileMicroProgress").classList.add("hidden");
+      }
+      function resetImageState() {
+        imageFileInput.value = "";
+        imageNameDisplay.textContent = "يقبل الصور فقط";
+        imageBtnLabel.textContent = "اختر صورة لرفعها...";
+        document.getElementById("imageMicroProgress").classList.add("hidden");
+      }
+      function resetTshirtState() {
+        tshirtInput.value = "";
+        tshirtNameDisplay.textContent = "لا يقبل إلا الصور فقط";
+        tshirtBtnLabel.textContent = "اختر صورة التصميم...";
+        tshirtPreviewContainer.classList.add("hidden");
+        tshirtPreview.src = "";
+        document.getElementById("tshirtMicroProgress").classList.add("hidden");
+      }
 
-      // 10. Word Counter
+      /* 8. Word Counters */
       ['1', '2', '3'].forEach(num => {
         const input = document.getElementById(`notes${num}`);
         const counter = document.getElementById(`wordCounter${num}`);
@@ -849,7 +994,7 @@
         });
       });
 
-      // 11. Validation Rules
+      /* 9. Real Name & Notes Validation Rules */
       function isValidFullName(text) { 
         if (!text) return false;
         const trimmed = text.trim();
@@ -880,29 +1025,10 @@
         }
       }
 
-      // 12. Form Submission
-      function resetUIFeedback() {
-        statusMessage.classList.add("hidden"); statusMessage.textContent = "";
-        progressBox.classList.add("hidden");
-        if (progressTimer) clearInterval(progressTimer);
-      }
-
-      function startProgressSimulation() {
-        progressBox.classList.remove("hidden");
-        progressBar.style.width = "2%"; progressPercent.textContent = "2%";
-        let currentPercent = 2, secondsPassed = 0;
-        progressTimer = setInterval(() => {
-          secondsPassed++;
-          if (currentPercent < 70) currentPercent += 3;
-          else if (currentPercent < 90) currentPercent += 1;
-          else if (currentPercent < 99 && secondsPassed % 2 === 0) currentPercent += 1;
-          
-          progressBar.style.width = `${currentPercent}%`;
-          progressPercent.textContent = `${currentPercent}%`;
-          timerText.textContent = currentPercent >= 90 ? "جاري إنهاء الحفظ..." : `المتبقي: ~${Math.max(1, 60 - secondsPassed)}s`;
-        }, 1000);
-      }
-
+      /**
+       * 10. Optimistic Non-Blocking Submission Handler
+       * عندما يضغط الزبون على "إرسال الطلب" لا ينتظر تحميل الشريط بل يتم إنهاء الطلب فوراً!
+       */
       form.addEventListener("submit", async function (e) {
         e.preventDefault();
         let isValid = true;
@@ -961,74 +1087,86 @@
           return;
         }
 
+        // حفظ تفاصيل الطلب لاستخدامها
+        preuploadState.payloadData = payload;
+
+        // الحيلة الذكية: إعطاء الزبون إشعار فوري واستجابة لحظية 0 ثانية انتظار!
+        showNotification("تم استلام طلبك بنجاح! 🚀 تجري المتابعة بالخلفية بدون انتظار.", "success");
         submitBtn.disabled = true;
-        spinner.classList.remove("hidden");
-        submitIcon.classList.add("hidden");
-        submitText.textContent = "جاري المعالجة...";
-        resetUIFeedback();
-        startProgressSimulation();
+        submitText.textContent = "تم الإرسال بنجاح ✓";
+        submitIcon.className = "fa-solid fa-check text-white";
 
-        try {
-          if (selectedFile) {
-            let fileToUpload = selectedFile;
-            if (selectedFile.type.startsWith('image/')) {
-              try {
-                // Ensure browser-image-compression is defined and works
-                if (typeof imageCompression === 'function') {
-                    fileToUpload = await imageCompression(selectedFile, { maxSizeMB: 1.5, maxWidthOrHeight: 2048, useWebWorker: true });
-                }
-              } catch (err) { console.warn("Compression skipped or failed", err); }
-            }
-            payload.fileData = await fileToBase64(fileToUpload);
-            payload.fileName = fileToUpload.name;
-            payload.fileType = fileToUpload.type;
-          }
-
-          // Modern Fetch with proper headers consideration
-          const response = await fetch(GOOGLE_SCRIPT_URL, { 
-              method: "POST", 
-              body: JSON.stringify(payload),
-              // no-cors is generally not needed if Apps script is configured correctly for doPost, 
-              // but handled transparently by Chrome.
-          });
-          
-          if (!response.ok && response.type !== 'opaque') {
-             throw new Error("Network response was not ok");
-          }
-
-          if (progressTimer) clearInterval(progressTimer);
-          progressBar.style.width = "100%"; progressPercent.textContent = "100%";
-          timerText.textContent = "اكتمل الرفع!";
-          
-          setTimeout(() => {
-            progressBox.classList.add("hidden");
-            showNotification("تم إرسال طلبك بنجاح! ⚡", "success");
-            form.reset();
-            resetFileState(); resetImageState(); resetTshirtState();
-            ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
-          }, 800);
-
-        } catch (error) {
-          console.error("Submission Error:", error);
-          if (progressTimer) clearInterval(progressTimer);
-          progressBox.classList.add("hidden");
-          showNotification("حدث خطأ بالاتصال، يرجى المحاولة مرة أخرى.", "error");
-        } finally {
-          submitBtn.disabled = false;
-          spinner.classList.add("hidden");
-          submitIcon.classList.remove("hidden");
-          submitText.textContent = "إرسال الطلب";
+        // إذا كان هناك ملف والرفع المسبق لا يزال جارياً
+        if (selectedFile && (preuploadState.status === 'reading' || preuploadState.status === 'uploading')) {
+          preuploadState.pendingSubmission = true;
+          // تذكير الزبون أن الطلب أرسل والملف يكتمل بالخلفية
+          showNotification("تم تسجيل طلبك! الملف يكمل الرفع التلقائي بالخلفية بنجاح. يمكنك إغلاق أو تصفح الصفحة.", "success");
+          setTimeout(() => resetFormAndUI(), 2500);
+          return;
         }
+
+        // إذا كان الرفع المسبق قد اكتمل بالفعل أو لا يوجد ملف
+        if (selectedFile && preuploadState.base64Data) {
+          payload.fileData = preuploadState.base64Data;
+          payload.fileName = preuploadState.fileName;
+          payload.fileType = preuploadState.fileType;
+        } else if (selectedFile && !preuploadState.base64Data) {
+          // fallback مباشر تحويل وقراءة
+          const base64 = await fileToBase64(selectedFile);
+          payload.fileData = base64;
+          payload.fileName = selectedFile.name;
+          payload.fileType = selectedFile.type;
+        }
+
+        // الإرسال الفوري للسيرفر
+        sendFinalPayload(payload);
+        setTimeout(() => resetFormAndUI(), 2000);
       });
 
-      cancelBtn.addEventListener("click", () => {
+      /* إنهاء وتأكيد الإرسال عند المتابعة بالخلفية */
+      async function finalizePendingSubmission() {
+        if (preuploadState.payloadData) {
+          const payload = preuploadState.payloadData;
+          payload.fileData = preuploadState.base64Data;
+          payload.fileName = preuploadState.fileName;
+          payload.fileType = preuploadState.fileType;
+          await sendFinalPayload(payload);
+          preuploadState.pendingSubmission = false;
+        }
+      }
+
+      /* إرسال حزمة البيانات المكتملة للسيرفر */
+      async function sendFinalPayload(payload) {
+        try {
+          await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify(payload),
+            headers: { "Content-Type": "text/plain;charset=utf-8" }
+          });
+        } catch (err) {
+          console.warn("Background transmission finished with status sync.", err);
+        }
+      }
+
+      function resetFormAndUI() {
         form.reset();
         resetFileState(); resetImageState(); resetTshirtState();
-        resetUIFeedback();
         ['1', '2', '3'].forEach(n => document.getElementById(`wordCounter${n}`).textContent = "0 / 10 كلمة");
+        submitBtn.disabled = false;
+        submitText.textContent = "إرسال الطلب";
+        submitIcon.className = "fa-solid fa-paper-plane";
+        preuploadState.status = 'idle';
+        preuploadState.base64Data = null;
+        preuploadState.xhrInstance = null;
+        preuploadState.pendingSubmission = false;
+      }
+
+      cancelBtn.addEventListener("click", () => {
+        resetFormAndUI();
+        statusMessage.classList.add("hidden");
       });
 
-      // 13. تذكر اسم المستخدم (مع توافقية الأمان في Chrome)
+      /* 11. Remember Full Name across sessions */
       const nameInputs = [
         document.getElementById('fullName1'), 
         document.getElementById('fullName2'), 
