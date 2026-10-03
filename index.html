@@ -824,6 +824,56 @@
         }
       }
       loadSharedFile();
+
+      // ==========================================
+      // 16. زر تثبيت التطبيق (يظهر بعد شاشة الترحيب فقط لغير المثبتين)
+      // ==========================================
+      const installContainer = document.getElementById('installContainer');
+      const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+      let deferredInstallPrompt = null;
+      let splashDone = false;
+
+      const isStandalone = () =>
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.matchMedia('(display-mode: window-controls-overlay)').matches ||
+        window.navigator.standalone === true;
+
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+      function updateInstallButton() {
+        if (isStandalone()) { installContainer.classList.add('hidden'); return; }
+        // أندرويد/كروم: لازم يكون المتصفح أطلق حدث التثبيت | آيفون: نعرض الزر مع تعليمات
+        if (splashDone && (deferredInstallPrompt || isIOS)) installContainer.classList.remove('hidden');
+        else installContainer.classList.add('hidden');
+      }
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        updateInstallButton();
+      });
+
+      window.addEventListener('appinstalled', () => {
+        deferredInstallPrompt = null;
+        installContainer.classList.add('hidden');
+      });
+
+      pwaInstallBtn.addEventListener('click', async () => {
+        if (deferredInstallPrompt) {
+          deferredInstallPrompt.prompt();
+          await deferredInstallPrompt.userChoice;
+          deferredInstallPrompt = null;
+          installContainer.classList.add('hidden');
+        } else if (isIOS) {
+          showNotification('لتثبيت التطبيق: اضغط زر المشاركة في Safari ثم اختر "إضافة إلى الشاشة الرئيسية".', 'success');
+        }
+      });
+
+      // إظهار الزر بعد اختفاء شاشة الترحيب (800ms + 700ms)
+      window.addEventListener('load', () => {
+        setTimeout(() => { splashDone = true; updateInstallButton(); }, 1600);
+      });
     </script>
   </body>
 </html>
