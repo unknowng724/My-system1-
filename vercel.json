@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/share-target", "destination": "/index.html" },
     { "source": "/share-target/", "destination": "/index.html" }
   ],
   "headers": [
