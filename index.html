@@ -576,7 +576,7 @@
           secondsPassed++;
           if (currentPercent < 70) currentPercent += 3; else if (currentPercent < 90) currentPercent += 1; else if (currentPercent < 99 && secondsPassed % 2 === 0) currentPercent += 1;
           progressBar.style.width = `${currentPercent}%`; progressPercent.textContent = `${currentPercent}%`;
-          timerText.textContent = currentPercent >= 90 ? "جاري الإرسال ..." : للتليجرام ~${Math.max(1, 60 - secondsPassed)}s`;
+          timerText.textContent = currentPercent >= 90 ? "جاري الإرسال ..." : `المتبقي: ~${Math.max(1, 60 - secondsPassed)}s`;
         }, 1000);
       }
 
@@ -674,10 +674,9 @@
         try {
           const dateTimeString = getCurrentDateTimeFormatted();
 
-  
+          let message = `🔔 *طلب جديد: ${payload["الخدمة"]}*\n`;
           message += `📅 *الوقت:* ${dateTimeString}\n\n`;
           message += `👤 *الاسم:* ${escMd(payload["الاسم الثلاثي"])}\n`;
-          let message = ` *طلب جديد: ${payload["الخدمة"]}*\n`;
           
           if (payload["طباعة كتب"]) message += `📚 *الكتاب/الصف:* ${payload["طباعة كتب"]}\n`;
           if (payload["عدد النسخ"]) message += `📑 *عدد النسخ:* ${payload["عدد النسخ"]}\n`;
