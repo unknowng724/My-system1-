@@ -674,9 +674,9 @@
         try {
           const dateTimeString = getCurrentDateTimeFormatted();
 
-          let message = `🔔 *طلب جديد: ${payload["الخدمة"]}*\n`;
-          message += `📅 *الوقت:* ${dateTimeString}\n\n`;
-          message += `👤 *الاسم:* ${escMd(payload["الاسم الثلاثي"])}\n`;
+          let message = ` *طلب جديد: ${payload["الخدمة"]}*\n`;
+          message += ` *الوقت:* ${dateTimeString}\n\n`;
+          message += ` *الاسم:* ${escMd(payload["الاسم الثلاثي"])}\n`;
           
           if (payload["طباعة كتب"]) message += `📚 *الكتاب/الصف:* ${payload["طباعة كتب"]}\n`;
           if (payload["عدد النسخ"]) message += `📑 *عدد النسخ:* ${payload["عدد النسخ"]}\n`;
