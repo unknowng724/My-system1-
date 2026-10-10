@@ -505,13 +505,58 @@
       });
 
       // 11. Validation
+      // ===== تنظيف الحروف العربية للمقارنة (يشيل التشكيل والتطويل ويوحّد الأشكال) =====
+      function normalizeArabic(s) {
+        return String(s)
+          .replace(/[\u064B-\u065F\u0670\u0640]/g, '')   // تشكيل + تطويل
+          .replace(/[أإآٱ]/g, 'ا')
+          .replace(/ى/g, 'ي')
+          .replace(/ة/g, 'ه')
+          .toLowerCase();
+      }
+
+      // ===== كلمات ممنوعة (أضف عليها متل ما بدك) =====
+      const BLOCKED_NAME_WORDS = new Set([
+        'جربان', 'جرب', 'تجربه', 'تجربة', 'تجريب', 'تست', 'تيست', 'test', 'testing', 'tester',
+        'اسم', 'الاسم', 'name', 'fullname', 'user', 'username', 'admin',
+        'فلان', 'فلانه', 'علان', 'مجهول', 'بدون', 'لا', 'شي', 'xxx', 'abc', 'null', 'none'
+      ].map(normalizeArabic));
+
+      // ===== أنماط ضغط عشوائي على الكيبورد =====
+      const KEYBOARD_MASH = ['asdf', 'qwer', 'zxcv', 'wasd', 'ضصثق', 'صثقف', 'ثقفغ', 'شسيب', 'سيبل', 'ئءؤر']
+        .map(normalizeArabic);
+
       function isValidFullName(text) {
         if (!text) return false;
         const trimmed = text.trim();
+
+        // حروف عربية أو إنجليزية ومسافات فقط (بدون أرقام أو رموز)
         if (!/^[\u0600-\u06FFa-zA-Z\s]+$/.test(trimmed)) return false;
+
         const words = trimmed.split(/\s+/);
+
+        // 3 كلمات على الأقل، وكل كلمة حرفين على الأقل
         if (words.length < 3) return false;
-        if (!words.every(word => word.length >= 2)) return false;
+        if (!words.every(w => w.length >= 2)) return false;
+
+        const norm = words.map(normalizeArabic);
+
+        // كلمة ممنوعة (جربان، تست، test ...)
+        if (norm.some(w => BLOCKED_NAME_WORDS.has(w))) return false;
+
+        // نفس الحرف 3 مرات ورا بعض
+        if (norm.some(w => /(.)\1{2,}/.test(w))) return false;
+
+        // ضغط عشوائي على الكيبورد
+        const joined = norm.join('');
+        if (KEYBOARD_MASH.some(p => joined.includes(p))) return false;
+
+        // كلمة فيها عربي وإنجليزي مخلوطين
+        if (norm.some(w => /[\u0600-\u06FF]/.test(w) && /[a-z]/.test(w))) return false;
+
+        // كل الكلمات نفس الكلمة
+        if (new Set(norm).size === 1) return false;
+
         return true;
       }
       function isArabicNotesOnly(text) { return !text || /^[\u0600-\u06FF\s\.,،؛\?\!\(\)\[\]"'\-\_0-9]+$/.test(text); }
